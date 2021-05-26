@@ -218,6 +218,21 @@ cd ..
 rm -rf at-3.2.1
 ```
 
+## parallel
+
+```sh
+curl https://ftp.gnu.org/gnu/parallel/parallel-20210522.tar.bz2 -o parallel-20210522.tar.bz2
+tar xvf parallel-20210522.tar.bz2
+cd parallel-20210522
+
+./configure --prefix=/usr
+make
+sudo make install
+
+cd ..
+rm -rf parallel-20210522
+```
+
 ## cpio
 
 ```sh

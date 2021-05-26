@@ -32,11 +32,27 @@ rm -rf jq-1.6
 
 ## yq
 
-This is intended to be a fully portable binary installation, given it is a statically-linked golang binary. In lieu of having to install golang, just download a binary release:
+This is intended to be a fully portable binary installation, given it is a statically-linked golang binary. In lieu of having to install golang, you can just download a binary release:
 
 ```sh
-sudo wget https://github.com/mikefarah/yq/releases/download/v4.2.0/yq_linux_amd64 -O /usr/bin/yq &&\
-    sudo chmod +x /usr/bin/yq
+sudo wget https://github.com/mikefarah/yq/releases/download/v4.2.0/yq_linux_amd64 -O /usr/bin/yq &&
+sudo chmod +x /usr/bin/yq
+```
+
+If you opted to build and install the `go` compiler, you can build `yq` from source. Beware that, though there is a `Makefile`, you cannot run `make` and expect it to work, as this `Makefile` assumes it is being run from a `git` repo and also requires `docker`, which you may or may not have at this point. `go` has a fairly simple toolchain, so we'll just do it the hard way.
+
+```sh
+curl https://github.com/mikefarah/yq/archive/refs/tags/v4.9.3.tar.gz -o yq-4.9.3.tar.gz
+tar xzvf yq-4.9.3.tar.gz
+cd yq-4.9.3
+
+mkdir vendor
+go mod vendor
+GOPATH=/sources/yq-4.9.3/vendor go build
+sudo install -vm755 yq /usr/bin
+
+cd ..
+rm -rf yq-4.9.3
 ```
 
 ## icu

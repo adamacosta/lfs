@@ -72,7 +72,7 @@ rm -rf cmake-3.19.5
 ```sh
 curl https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz -o go1.4-bootstrap-20171003.tar.gz
 tar xzvf go1.4-bootstrap-20171003.tar.gz
-cd go
+cd go/src
 
 CGO_ENABLED=0 ./make.bash
 ```
@@ -85,8 +85,24 @@ mkdir -v go1.16.4
 tar xzvf go1.16.4.tar.gz -C go1.16.4
 cd go1.16.4/src
 
-GOROOT_BOOTSTRAP=/sources/go GOROOT_FINAL=/usr ./all.bash
-sudo mv -v ../bin/go{,fmt} /usr/bin
+export GOROOT_FINAL=/usr/lib/go
+export GOROOT_BOOTSTRAP=/sources/go
+export GOPATH=/sources/go1.16.4
+./make.bash
+
+PATH="$GOPATH/bin:$PATH" go install -v -race std
+PATH="$GOPATH/bin:$PATH" go install -v -buildmode=shared std
+```
+
+To install:
+
+```sh
+sudo install -vdm755 /usr/lib/go &&
+sudo install -vdm755 /usr/share/doc/go
+sudo cp -a bin pkg src lib misc api test /usr/lib/go
+sudo cp -r doc/* /usr/share/doc/go
+sudo ln -svf /usr/lib/go/bin/go /usr/bin/go
+sudo ln -svf /usr/lib/go/bin/gofmt /usr/bin/gofmt
 ```
 
 Now delete both source trees:
@@ -301,7 +317,7 @@ The `regex-base` package needs to be patched in the file `src/Text/Regex/Base/Co
 Now build `cabal` itself:
 
 ```sh
-./hackage-build cabal-install 3.4.0.0
+./hackage-build.sh cabal-install 3.4.0.0
 ```
 
 I have confirmed that `cabal` will run after applying these patches to the dependencies.
