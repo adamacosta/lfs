@@ -55,6 +55,8 @@ cd ..
 rm -rf yq-4.9.3
 ```
 
+Beware that if you don't explicitly set `GOPATH`, it defaults to `~/go` and the installs all of `yq`'s dependencies there. This is likely not what you want, given all `go` executables are statically linked, so you will simply be polluting your home directory with redundant packages. It can be handy, however, if you're actually intended to use `go` as a developer, to keep packages in your home directory as your own projects may link against them without needing to download them separately each time.
+
 ## icu
 
 ```sh

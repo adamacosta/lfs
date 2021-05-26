@@ -1,10 +1,12 @@
 # Linux from Scratch
 
-This document pulls a bit from Linux From Scratch and a bit from Beyond Linux From Scratch to create a basic LFS system that can optionally be run as a VM on a Microsoft Hyper-V hypervisor.
+This document pulls a bit from [Linux From Scratch 10.1-systemd](https://www.linuxfromscratch.org/lfs/view/stable-systemd/index.html) and a bit from [Beyond Linux From Scratch 10.1-systemd](https://www.linuxfromscratch.org/blfs/view/10.1-systemd/index.html) to create a Linux system that can optionally be run as a VM on a Microsoft `Hyper-V` hypervisor.
 
 ## Basic System
 
-1. [Obtaining the sources](base/01-sources.md)
+The first part follows Linux From Scratch pretty closely, creating a base headless system, adding in support for `ssh`, `sudo`, and `PAM`, a non-root user, changing the default shell to `zsh`, and optionally adding support for running under `Hyper-V`.
+
+1. [Getting started](base/01-get-started.md)
 2. [Compiling the cross-toolchain pass 1](base/02-cross-toolchain-pass1.md)
 3. [Cross compiling temporary tools](base/03-cross-compile-temp-tools.md)
 4. [Compiling the cross-toolchain pass 2](base/04-cross-toolchain-pass2.md)
@@ -20,20 +22,24 @@ This document pulls a bit from Linux From Scratch and a bit from Beyond Linux Fr
 
 ## Optional extras
 
-At this point, you have a perfectly functional system you can use. Chances are, you'll want to specialize it for some specific use, but I prefer to have at least a few additional utilities no matter what.
+At this point, you have a perfectly functional system you can use. Chances are, you'll want to specialize it for some specific use. Many options are provided for what can be done, for now keeping the system headless.
 
 Each optional extra will be downloaded and built in the `/sources` directory. Since we will no longer be building as `root`, installation is done using `sudo`.
 
 Beware that some of the crypto tools take a very long time to build and test.
 
+### Extending the toolchain
+
 1. [GnuPG](extras/01-gnupg.md)
 2. [Basic system utilities](extras/02-basic-system-utils.md)
 3. [Additional system utiltiies](extras/03-addt-system-utils.md)
 4. [Network utilities](extras/04-network-utils.md)
-5. [Text processing utilities](extras/05-text-utils.md)
-6. [Developer tools](extras/06-devtools.md)
+5. [General purpose libraries](extras/05-gen-libs.md)
+6. [Text processing utilities](extras/06-text-utils.md)
+7. [Multimedia and documentation generation](extras/07-media-doc-utils.md)
+8. [Developer tools](extras/08-devtools.md)
 
-## System hardening
+### System hardening
 
 1. [Kernel configuration](hardening/01-kernel.md)
 2. [SELinux](hardening/02-selinux.md)
@@ -41,14 +47,14 @@ Beware that some of the crypto tools take a very long time to build and test.
 4. [Setting up a firewall](hardening/04-firewall.md)
 5. [Tripwire](hardening/05-tripwire.md)
 
-## Container tools
+### Container tools
 
 1. [Foundational libraries and runtimes](containers/01-foundations.md)
 2. [Docker](containers/02-docker.md)
 3. [Redhat container tools](containers/03-redhat-tools.md)
 4. [Serving an image registry](containers/04-registry.md)
 
-## Running a hypervisor
+### Running a hypervisor
 
 1. [Kernel configuration](hypervisor/01-kernel.md)
 2. [libvirt](hypervisor/02-libvirt.md)

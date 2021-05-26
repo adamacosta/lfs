@@ -44,6 +44,8 @@ find /{bin,sbin} /usr/{bin,sbin,libexec} -type f \
 
 ## Log out and re-enter chroot
 
+This time without the `+h` in order to allow hashing.
+
 ```sh
 logout
 

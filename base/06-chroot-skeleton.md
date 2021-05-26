@@ -2,11 +2,13 @@
 
 ## Enter the chroot environment
 
+Note that `+h` argument to `bash`, telling it not to hash the paths to executables. This prevents it from using old versions of tools we are reinstalling in-place and allows picking up new tools instantly.
+
 ```sh
-chroot "$LFS" /usr/bin/env -i   \
-    HOME=/root                  \
-    TERM="$TERM"                \
-    PS1='(lfs chroot) \u:\w\$ ' \
+chroot "$LFS" /usr/bin/env -i          \
+    HOME=/root                         \
+    TERM="$TERM"                       \
+    PS1='(lfs chroot) \u:\w\$ '        \
     PATH=/bin:/usr/bin:/sbin:/usr/sbin \
     /bin/bash --login +h
 ```
@@ -16,21 +18,21 @@ chroot "$LFS" /usr/bin/env -i   \
 Refer to [Filesystem Hierarchy Standard](https://refspecs.linuxfoundation.org/fhs.shtml)
 
 ```sh
-mkdir -pv /{boot,home,mnt,opt,srv}
-mkdir -pv /etc/{opt,sysconfig}
-mkdir -pv /lib/firmware
-mkdir -pv /media/{floppy,cdrom}
-mkdir -pv /usr/{,local/}{bin,include,lib,sbin,src}
-mkdir -pv /usr/{,local/}share/{color,dict,doc,info,locale,man}
-mkdir -pv /usr/{,local/}share/{misc,terminfo,zoneinfo}
-mkdir -pv /usr/{,local/}share/man/man{1..8}
-mkdir -pv /var/{cache,local,log,mail,opt,spool}
-mkdir -pv /var/lib/{color,misc,locate}
+mkdir -pv /{boot,home,mnt,opt,srv}                             &&
+mkdir -pv /etc/{opt,sysconfig}                                 &&
+mkdir -pv /lib/firmware                                        &&
+mkdir -pv /media/{floppy,cdrom}                                &&
+mkdir -pv /usr/{,local/}{bin,include,lib,sbin,src}             &&
+mkdir -pv /usr/{,local/}share/{color,dict,doc,info,locale,man} &&
+mkdir -pv /usr/{,local/}share/{misc,terminfo,zoneinfo}         &&
+mkdir -pv /usr/{,local/}share/man/man{1..8}                    &&
+mkdir -pv /var/{cache,local,log,mail,opt,spool}                &&
+mkdir -pv /var/lib/{color,misc,locate}                         &&
 
-ln -sfv /run /var/run
-ln -sfv /run/lock /var/lock
+ln    -sfv /run /var/run       &&
+ln    -sfv /run/lock /var/lock &&
 
-install -dv -m 0750 /root
+install -dv -m 0750 /root &&
 install -dv -m 1777 /tmp /var/tmp
 ```
 
@@ -39,8 +41,8 @@ install -dv -m 1777 /tmp /var/tmp
 See [Linux Standard Base](https://refspecs.linuxfoundation.org/lsb.shtml)
 
 ```sh
-ln -sv /proc/self/mounts /etc/mtab
-echo "127.0.0.1 localhost $(hostname)" > /etc/hosts
+ln -sv /proc/self/mounts /etc/mtab                  &&
+echo "127.0.0.1 localhost $(hostname)" > /etc/hosts &&
 echo "::1       localhost $(hostname)" >> /etc/hosts
 
 cat > /etc/passwd << EOF
@@ -100,6 +102,8 @@ EOF
 
 ## Create a temporary test user
 
+Some tests need to be run as a non-root user, so we will create on temporarily and delete it when system bootstrapping is complete.
+
 ```sh
 echo "tester:x:$(ls -n $(tty) | cut -d" " -f3):101::/home/tester:/bin/bash" >> /etc/passwd
 echo "tester:x:101:" >> /etc/group
@@ -115,8 +119,8 @@ exec /bin/bash --login +h
 ## Create log files for programs
 
 ```sh
-touch /var/log/{btmp,lastlog,faillog,wtmp}
-chgrp -v utmp /var/log/lastlog
-chmod -v 664  /var/log/lastlog
+touch /var/log/{btmp,lastlog,faillog,wtmp} &&
+chgrp -v utmp /var/log/lastlog             &&
+chmod -v 664  /var/log/lastlog             &&
 chmod -v 600  /var/log/btmp
 ```

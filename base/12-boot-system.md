@@ -112,6 +112,60 @@ install -d /usr/share/doc/linux-5.10.17
 cp -r Documentation/* /usr/share/doc/linux-5.10.17
 ```
 
+### Microsoft Hyper-V integration services for Linux
+
+This is only needed if you intend to run your system in a VM on a Microsoft Hyper-V hypervisor.
+
+```sh
+cd linux-5.10.17/tools/hv
+
+CFLAGS+=' -DKVP_SCRIPTS_PATH=\"/usr/lib/hyperv/kvp_scripts/\"' make
+make install
+install -dm755 /usr/lib/hyperv/kvp_scripts
+```
+
+The `systemd` units will need to be manually created:
+
+```sh
+cat > /usr/lib/systemd/system/hv_fcopy_daemon.service << EOF
+[Unit]
+Description=Hyper-V file copy service (FCOPY)
+ConditionPathExists=/dev/vmbus/hv_fcopy
+
+[Service]
+ExecStart=/usr/bin/hv_fcopy_daemon -n
+
+[Install]
+WantedBy=multi-user.target
+EOF
+cat > /usr/lib/systemd/system/hv_kvp_daemon.service << EOF
+[Unit]
+Description=Hyper-V key-value pair (KVP)
+ConditionPathExists=/dev/vmbus/hv_kvp
+
+[Service]
+ExecStart=/usr/bin/hv_kvp_daemon -n
+
+[Install]
+WantedBy=multi-user.target
+EOF
+cat > /usr/lib/systemd/system/hv_vss_daemon.service << EOF
+[Unit]
+Description=Hyper-V volume shadow copy service (VSS)
+ConditionPathExists=/dev/vmbus/hv_vss
+
+[Service]
+ExecStart=/usr/bin/hv_vss_daemon -n
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl enable hv_fcopy_daemon.service
+systemctl enable hv_kvp_daemon.service
+systemctl enable hv_vss_daemon.service
+```
+
 ## Bootloader configuration
 
 This will be specific to your bootloader, but I am using `systemd-boot` and building from an Arch Linux system, which is the default. For this, the `PARTUUID` is needed to pass to the kernel instead of the `UUID`, which will not yet be available in early userspace.

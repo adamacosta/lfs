@@ -2,7 +2,7 @@
 
 ## Sanity check configurations
 
-Ensure you can `ssh` to the host as `lfs` by grabbing the ip address from the `Hyper-V` manager and attempting. Once in, do a few quick checks, such as pinging a popular web url to ensure your network connection works, checking the `/etc/os-release` file to ensure you're actually in the `lfs` system, and checking the status of various services and the kernel with `systemctl status`, `journalctl -xe`, and `dsmseg`. Don't expect no error messages, but all expected services should at least be working.
+Ensure you can `ssh` to the host as `lfs` by grabbing the ip address from the router or the `Hyper-V` manager if running in a VM, and attempting to login remotely. Once in, do a few quick checks, such as pinging a popular web url to ensure your network connection works, checking the `/etc/os-release` file to ensure you're actually in the `lfs` system, and checking the status of various services and the kernel with `systemctl status`, `journalctl -xe`, and `dmesg`. Don't expect no error messages, but all expected services should at least be working.
 
 ## Generate the trust store
 
@@ -12,35 +12,36 @@ Note that we installed the `make-ca` package earlier, in order to install truste
 sudo make-ca -g
 ```
 
-## Rebuid cURL
+## Rebuild cURL
 
-At this point, we have a CA trust store generated, so `cURL` can be rebuilt to use it:
+At this point, we have a CA trust store generated, so `cURL` can be rebuilt to use it. Without doing this, all attempts to connect via https protocol will fail due to not trusting the CA that signed the server certificate.
 
 ```sh
-tar xzvf curl-7.76.1.tar.gz
-cd curl-7.76.1
+tar xzvf curl-7.76.1.tar.gz &&
+cd       curl-7.76.1        &&
 
 ./configure --prefix=/usr    \
             --with-openssl   \
             --with-gnutls    \
             --disable-static \
-            --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
-make -j
-make test
-sudo make install
-sudo rm -v /usr/lib/libcurl.{,l}a
+            --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt &&
 
-cd ..
+make                              &&
+make test                         &&
+sudo make install                 &&
+sudo rm -v /usr/lib/libcurl.{,l}a &&
+
+cd .. &&
 rm -rf curl-7.76.1
 ```
 
 ## Cleanup permissions
 
-There are a few leftover vestiges of using the `lfs` user from the original host system, i.e. the `/` directory itself, plus everything under `/sources`, is owned by some UID > 1000 that will not exist in the new system, so `chown` these to be owned by `root` instead:
+There are a few leftover vestiges of using the `lfs` user from the original host system, i.e. the `/` directory itself, plus everything under `/sources`, is owned by some UID > 1000 that will not exist in the new system, so `chown` the directory to be owned by `root` and the files inside to be owned by `lfs` (or whatever non-root user you created) instead:
 
 ```sh
-sudo chown root:root /
-sudo chown -R root:root /sources
+sudo chown    root:root /
+sudo chown -R lfs:lfs   /sources
 ```
 
 ## vim configuration
@@ -219,7 +220,7 @@ EOF
 Ensure the `EDITOR` environment variable is set:
 
 ```sh
-echo "EDITOR=vim" >> ~/.zshrc
+echo "EDITOR=vim" >> ~/.zshenv
 ```
 
 ## zsh syntax highlighting
@@ -227,13 +228,13 @@ echo "EDITOR=vim" >> ~/.zshrc
 Grab the latest tagged release from `GitHub`. Run, from `/sources`:
 
 ```sh
-curl -L https://github.com/zsh-users/zsh-syntax-highlighting/archive/refs/tags/0.7.1.tar.gz -o zsh-syntax-highlighting-0.7.1.tar.gz
-tar xzvf zsh-syntax-highlighting-0.7.1.tar.gz
-cd zsh-syntax-highlighting-0.7.1
+curl -L https://github.com/zsh-users/zsh-syntax-highlighting/archive/refs/tags/0.7.1.tar.gz -o zsh-syntax-highlighting-0.7.1.tar.gz &&
+tar xzvf zsh-syntax-highlighting-0.7.1.tar.gz          &&
+cd zsh-syntax-highlighting-0.7.1                       &&
 
-sudo make PREFIX=/usr install
+sudo make PREFIX=/usr install &&
 
-cd ..
+cd .. &&
 rm -rf zsh-syntax-highlighting-0.7.1
 ```
 
@@ -246,11 +247,14 @@ echo ". /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ~/.zs
 Optionally, you can add some extra completion functions that haven't made it to the main `zsh` package yet:
 
 ```sh
-curl -L https://github.com/zsh-users/zsh-completions/archive/refs/tags/0.33.0.tar.gz -o zsh-completions-0.33.0.tar.gz
-tar xzvf zsh-completions-0.33.0.tar.gz
-cd zsh-completions-0.33.0
+curl -L https://github.com/zsh-users/zsh-completions/archive/refs/tags/0.33.0.tar.gz -o zsh-completions-0.33.0.tar.gz        &&
+tar xzvf zsh-completions-0.33.0.tar.gz &&
+cd zsh-completions-0.33.0              &&
 
-sudo install -vDm644 src/* /use/share/zsh/
+sudo install -vDm644 src/* /use/share/zsh/ &&
+
+cd .. &&
+rm -rf zsh-completions-0.33.0
 ```
 
 ## Setup cURL to follow redirects by default

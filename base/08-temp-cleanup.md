@@ -8,22 +8,22 @@ find /usr/{lib,libexec} -name \*.la -delete
 
 ```sh
 exit
-umount $LFS/dev{/pts,}
+umount $LFS/dev{/pts,} &&
 umount $LFS/{sys,proc,run}
 ```
 
 ## Strip unneeded symbols
 
 ```sh
-strip --strip-debug $LFS/usr/lib/*
-strip --strip-unneeded $LFS/usr/{,s}bin/*
+strip --strip-debug    $LFS/usr/lib/*     &&
+strip --strip-unneeded $LFS/usr/{,s}bin/* &&
 strip --strip-unneeded $LFS/tools/bin/*
 ```
 
 ## Backup the temporary system
 
 ```sh
-cd $LFS
+cd $LFS &&
 tar cJpvf $HOME/lfs-temp-tools-10.1-systemd.tar.xz .
 ```
 

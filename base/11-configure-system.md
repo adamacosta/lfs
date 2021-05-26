@@ -2,6 +2,8 @@
 
 ## Network configuration
 
+You will also need an identical wireless configuration if your system requires a wireless connection. See `man systemd.network` for a detailed description of all the configuration options. This is enough to enable internet over both IPv4 and IPv6 when connected to a network with a DHCP server (which is the typical home setup). If building Linux From Scratch in a VM and attached to some sort of default NAT network, the host your VM is a guest on will serve as a DHCP server unless you are attached to some internal private network you set up yourself, in which case you likely already know what you are doing.
+
 ```sh
 cat << EOF > /etc/systemd/network/10-ethernet.network
 [Match]
@@ -108,7 +110,6 @@ cat > /etc/shells << EOF
 /bin/sh
 /bin/bash
 /bin/zsh
-/usr/bin/zsh
 
 # End /etc/shells
 EOF
@@ -122,7 +123,7 @@ sed -i 's/\/bash/\/zsh' /etc/default/useradd
 
 ## /etc/os-release
 
-Normally, `Linux From Scratch` does not include this file, but some packages will expect it to exist in order to get information about the installed system. Notably, if you decide to install the Glasgow Haskell Compiler, the recommended way to do it uses a tool `ghcup` that relies upon this file at least existing. It doesn't have to recognize the distro, but will throw an exception if the file does not exist at all. So we will create one:
+Normally, `Linux From Scratch` does not include this file, but some packages will expect it to exist in order to get information about the installed system. Notably, if you decide to install the Glasgow Haskell Compiler, the recommended way to do it uses a tool called `ghcup` that relies upon this file at least existing. It doesn't have to recognize the distro, but will throw an exception if the file does not exist at all. So we will create one:
 
 ```sh
 cat > /usr/lib/os-release << EOF

@@ -22,6 +22,61 @@ cd ..
 rm -rf git-2.31.1
 ```
 
+## Debuggers
+
+### GDB
+
+Fetch:
+
+```sh
+curl https://ftp.gnu.org/gnu/gdb/gdb-10.1.tar.xz -o gdb-10.1.tar.xz &&
+tar xvf gdb-10.1.tar.xz
+```
+
+Build:
+
+```sh
+cd gdb-10.1.tar.xz
+
+mkdir build &&
+cd    build &&
+
+../configure --prefix=/usr          \
+             --with-system-readline \
+             --with-python=/usr/bin/python3 &&
+make
+```
+
+To build documentation, if `Doxygen` is available:
+
+```sh
+make -C gdb/doc doxy
+```
+
+To run the tests:
+
+```sh
+pushd gdb/testsuite &&
+make  site.exp      &&
+echo  "set gdb_test_timeout 120" >> site.exp &&
+runtest
+popd
+```
+
+To install:
+
+```sh
+sudo make -C gdb install
+```
+
+To install the documentation:
+
+```sh
+sudo install -d /usr/share/doc/gdb-10.1 &&
+sudo rm -rf gdb/doc/doxy/xml            &&
+sudo cp -Rv gdb/doc/doxy /usr/share/doc/gdb-10.1
+```
+
 ## Build tools
 
 ### CMake
@@ -65,7 +120,7 @@ rm -rf cmake-3.19.5
 
 ## Programming languages
 
-## golang
+### golang
 
 `go` needs to be bootstrapped from `go-1.4`, the last version that was still written in C, so we first need to download and build that.
 
@@ -112,7 +167,7 @@ cd ../..
 rm -rf go*
 ```
 
-## LLVM and Clang
+### LLVM and Clang
 
 ```sh
 curl https://github.com/llvm/llvm-project/releases/download/llvmorg-11.1.0/llvm-11.1.0.src.tar.xz -o llvm-11.1.0.src.tar.xz
@@ -147,7 +202,7 @@ cd ../..
 rm -rf llvm-11.1.0.src
 ```
 
-## Haskell
+### Haskell
 
 `ghc` requires `ghc` to build, and unlike `go`, there is no option for bootstrapping via a C compiler. Thus, we need to first install a pre-built binary distribution of `ghc` via `ghcup`. When attempting to install `ghc`, `ghcup` will try to link against `libtinfo` from the `ncurses` package. This library is built into `libncursesw`, so a link needs to be created:
 
@@ -165,7 +220,9 @@ chmod +x ~/.ghcup/bin/ghcup
 
 Tests are optional, but if you choose to run them, `ghc` takes a `THREADS` argument and offers various suites, including `fasttest`, `test`, and `slowtest`. The example invocation uses `fasttest`. If built with `LLVM`, at least 5 tests were failing as of `LLVM-11.1.0` and `ghc-9.1.0`.
 
-To build html documentation, `sphinx-build` is required, which can be installed by running `pip install --user sphinx`. Beware that `ghc` applies heavy optimizations unless you tell it not to, so this will likely take a very long time. Beware that `ghc` is quite massive, so unless you expect to be doing a lot of debugging, you may wish to use `make install-strip` rather than `make install` to install it and its libs.
+Beware that `ghc` applies heavy optimizations unless you tell it not to, so this will likely take a very long time. `ghc` is also quite massive, so unless you expect to be doing a lot of debugging, you may wish to use `make install-strip` rather than `make install` to install it and its libs.
+
+To build html documentation, `sphinx-build` is required, which can be installed by running `pip install [--user] sphinx` if you did not already do that earlier.
 
 ```sh
 curl https://downloads.haskell.org/~ghc/9.0.1/ghc-9.0.1-src.tar.xz -o ghc-9.0.1.src.tar.xz
@@ -328,13 +385,127 @@ Go ahead and clean up the massive installation of `ghc` left behind by `ghcup`:
 rm -rf /home/lfs/.ghcup
 ```
 
-## Rust
+### Rust
+
+Take the warnings about `ghc` and quadruple them. `rust` vendors its own version of `LLVM` and caches a ton of dependencies. We can tell it to use the system `LLVM`, but the download and build will nonetheless be quite large. The bootstrapping process creates multiple copies of all libraries and tools and it is not clear what is safe to delete before attempting to install. I had a 30 GB disk (Linux From Scratch's recommended size) and had to shut down my VM to expand it because that was not enough space to build the documentation, even after deleting all other downloaded source tarballs and re-stripping all executables and libraries.
+
+The build below takes up roughly 15 GB on disk when completed. The installation is 1.5 GB, with the rest taken up by all of the intermediate bootstrap and test binaries.
+
+To start, first we'll grab some patches from the folks at `Arch Linux`:
 
 ```sh
-
+curl https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/rust/trunk/0001-bootstrap-Change-libexec-dir.patch -o rustc-bootstrap-change-libexec-dir.patch
+curl https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/rust/trunk/0001-cargo-Change-libexec-dir.patch -o cargo-change-libexec-dir.patch
+curl https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/rust/trunk/0002-compiler-Change-LLVM-targets.patch -o rustc-change-llvm-targets.patch
 ```
 
-## Ruby
+Now download the `rustc` tarball itself, apply the patches, and create the build config:
+
+```sh
+curl https://static.rust-lang.org/dist/rustc-1.52.1-src.tar.gz -o rustc-1.52.1-src.tar.gz
+tar xzvf rustc-1.52.1-src.tar.gz
+cd rustc-1.52.1-src
+```
+
+Now apply the patches and create a config file for `cargo`:
+
+```sh
+patch -Np1 -i ../rustc-bootstrap-change-libexec-dir.patch
+patch -d src/tools/cargo -Np1 < ../cargo-change-libexec-dir.patch
+patch -Np1 -i ../rustc-change-llvm-targets.patch
+
+cat > config.toml << EOF
+[llvm]
+link-shared = true
+
+[build]
+target = ["x86_64-unknown-linux-gnu"]
+tools = ["cargo", "rls", "clippy", "miri", "rustfmt", "analysis", "src"]
+python = "/usr/bin/python"
+extended = true
+sanitizers = true
+profiler = true
+vendor = true
+
+[install]
+prefix = "/usr/lib/rustc-1.52.1"
+
+[rust]
+# LLVM crashes when passing an object through ThinLTO twice.  This is triggered
+# when using rust code in cross-language LTO if libstd was built using ThinLTO.
+# http://blog.llvm.org/2019/09/closing-gap-cross-language-lto-between.html
+# https://github.com/rust-lang/rust/issues/54872
+codegen-units-std = 1
+codegen-tests = false
+debuginfo-level-std = 2
+channel = "stable"
+rpath = false
+
+[target.x86_64]
+llvm-config = "/usr/bin/llvm-config"
+EOF
+```
+
+Build:
+
+```sh
+export RUSTFLAGS="$RUSTFLAGS -C link-args=-lffi"
+./x.py build -j 12
+```
+
+Test:
+
+```sh
+./x.py test -j 12 --verbose --no-fail-fast | tee rustc-tests.log
+```
+
+First, do a destdir install:
+
+```sh
+export LIBSSH2_SYS_USE_PKG_CONFIG=1 &&
+DESTDIR=${PWD}/install python3 ./x.py install &&
+unset LIBSSH2_SYS_USE_PKG_CONFIG
+```
+
+Now, install to the system:
+
+```sh
+sudo chown -R root:root install &&
+sudo cp -a install/* /
+sudo mv -v /usr/lib/rustc-1.52.1/share/doc/rust /usr/share/doc/rust-1.52.1
+sudo mv -v /usr/lib/rustc-1.52.1/share/man/man1/* /usr/share/man/man1/
+sudo mv -v /usr/lib/rustc-1.52.1/share/zsh/site-functions/* /usr/share/zsh/site-functions/
+for TOOL in $(ls /usr/lib/rustc-1.52.1/bin); do
+    sudo ln -sv ../../../usr/lib/rustc-1.52.1/bin/${TOOL} /usr/bin/${TOOL}
+done
+```
+
+Configure `ld.so` to find the runtime libraries:
+
+```sh
+sudo su -
+cat > /etc/ld.so.conf.d/rustc-1.52.1.conf << EOF
+# Begin rustc addition
+
+/usr/lib/rustc-1.52.1/lib
+
+# End rustc addition
+EOF
+
+ldconfig
+```
+
+To sanity check the installation:
+
+```sh
+mkdir -v ~/hellor && cd ~/hellor
+cargo init
+cargo run
+```
+
+This should print out "Hello world!" if all went well.
+
+### Ruby
 
 ```sh
 curl https://cache.ruby-lang.org/pub/ruby/3.0/ruby-3.0.1.tar.gz -o ruby-3.0.1.tar.gz
@@ -350,24 +521,4 @@ sudo make install
 
 cd ..
 rm -rf ruby-3.0.1
-```
-
-## Documentation generation
-
-### Doxygen
-
-```sh
-
-```
-
-### pandoc
-
-```sh
-
-```
-
-### mdbook
-
-```sh
-
 ```
