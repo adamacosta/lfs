@@ -1,16 +1,22 @@
 # Install temporary tools
 
+At this point, we can build the remainder of our temporary toolchain that will be used to build the real LFS system, now that we no longer have any dependencies on the host system.
+
 From the `/sources` directory:
 
+(if you created an in-memory build tree)
+
 ```sh
-cd sources
+cd build_dir
 ```
 
 ## libstdc++
 
+First, we need to complete the build of `gcc` pass 2, which did not initially include `libstdc++`.
+
 ```sh
-tar xvf gcc-10.2.0.xz &&
-cd      gcc-10.2.0    &&
+tar xvf $LFS/sources/gcc-11.1.0.tar.xz &&
+cd       gcc-11.1.0                    &&
 
 ln -s gthr-posix.h libgcc/gthr-default.h &&
 
@@ -23,23 +29,25 @@ cd       build &&
     --disable-multilib               \
     --disable-nls                    \
     --host=$(uname -m)-lfs-linux-gnu \
-    --disable-libstdcxx-pch
-make &&
-make install
+    --disable-libstdcxx-pch &&
+
+make         &&
+make install &&
 
 cd ../.. &&
-rm -rf gcc-10.2.0
+rm -rf gcc-11.1.0
 ```
 
 ## gettext
 
 ```sh
-tar xvf gettext-0.21.tar.xz &&
-cd      gettext-0.21        &&
+tar xvf $LFS/sources/gettext-0.21.tar.xz &&
+cd       gettext-0.21                    &&
 
-./configure --disable-shared
-make &&
-cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} /usr/bin
+./configure --disable-shared &&
+
+make                                                        &&
+cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} /usr/bin &&
 
 cd .. &&
 rm -rf gettext-0.21
@@ -48,23 +56,23 @@ rm -rf gettext-0.21
 ## bison
 
 ```sh
-tar xvf bison-3.7.5.tar.xz &&
-cd      bison-3.7.5        &&
+tar xvf $LFS/sources/bison-3.7.6.tar.xz &&
+cd       bison-3.7.6                    &&
 
 ./configure --prefix=/usr \
-            --docdir=/usr/share/doc/bison-3.7.5
-make &&
-make install
+            --docdir=/usr/share/doc/bison-3.7.5 &&
+make         &&
+make install &&
 
 cd .. &&
-rm bison-3.7.5
+rm -rf bison-3.7.6
 ```
 
 ## perl
 
 ```sh
-tar xvf perl-5.32.1.tar.xz &&
-cd      perl-5.32.1        &&
+tar xvf $LFS/sources/perl-5.32.1.tar.xz &&
+cd       perl-5.32.1                    &&
 
 sh Configure -des                                        \
              -Dprefix=/usr                               \
@@ -74,12 +82,13 @@ sh Configure -des                                        \
              -Dsitelib=/usr/lib/perl5/5.32/site_perl     \
              -Dsitearch=/usr/lib/perl5/5.32/site_perl    \
              -Dvendorlib=/usr/lib/perl5/5.32/vendor_perl \
-             -Dvendorarch=/usr/lib/perl5/5.32/vendor_perl
-make &&
-make install
+             -Dvendorarch=/usr/lib/perl5/5.32/vendor_perl &&
+
+make         &&
+make install &&
 
 cd .. &&
-rm perl-5.32.1
+rm -rf perl-5.32.1
 ```
 
 ## Python
@@ -87,38 +96,40 @@ rm perl-5.32.1
 We do not need `pip` in the temporary environment.
 
 ```sh
-tar xvf Python-3.9.2.tar.xz &&
-cd      Python-3.9.2        &&
+tar xvf $LFS/sources/Python-3.9.5.tar.xz &&
+cd       Python-3.9.5                    &&
 
 ./configure --prefix=/usr   \
             --enable-shared \
-            --without-ensurepip
-make &&
-make install
+            --without-ensurepip &&
+
+make         &&
+make install &&
 
 cd .. &&
-rm -rf Python-3.9.2
+rm -rf Python-3.9.5
 ```
 
 ## texinfo
 
 ```sh
-tar xvf textinfo-6.7.tar.xz &&
-cd      textinfo-6.7        &&
+tar xvf $LFS/sources/texinfo-6.7.tar.xz &&
+cd       texinfo-6.7                    &&
 
-./configure --prefix=/usr
-make &&
-make install
+./configure --prefix=/usr &&
+
+make         &&
+make install &&
 
 cd .. &&
-rm -rf textinfo-6.7
+rm -rf texinfo-6.7
 ```
 
 ## util-linux
 
 ```sh
-tar xvf util-linux-2.36.2.tar.xz &&
-cd      util-linux-2.36.2        &&
+tar xvf $LFS/sources/util-linux-2.36.2.tar.xz &&
+cd       util-linux-2.36.2                    &&
 
 mkdir -pv /var/lib/hwclock &&
 
@@ -133,10 +144,11 @@ mkdir -pv /var/lib/hwclock &&
             --disable-pylibmount \
             --disable-static     \
             --without-python     \
-            runstatedir=/run
-make &&
-make install
+            runstatedir=/run &&
+
+make         &&
+make install &&
 
 cd .. &&
-rm util-linux-2.36.2
+rm -rf util-linux-2.36.2
 ```

@@ -1,13 +1,13 @@
 # Build the LFS system
 
-Remount virtual filesystems and enter chroot environment
+We are now ready to use our self-contained temporary toolchain to build the final LFS system. First, re-enter the chroot environment, either using the previously saved off script, or manually:
 
 ```sh
-mount -v --bind /dev     $LFS/dev     &&
-mount -v --bind /dev/pts $LFS/dev/pts &&
-mount -vt      proc proc $LFS/proc    &&
-mount -vt    sysfs sysfs $LFS/sys     &&
-mount -vt    tmpfs tmpfs $LFS/run
+mount -v --bind /dev        $LFS/dev     &&
+mount -v --bind /dev/pts    $LFS/dev/pts &&
+mount -vt       proc proc   $LFS/proc    &&
+mount -vt       sysfs sysfs $LFS/sys     &&
+mount -vt       tmpfs tmpfs $LFS/run
 
 chroot "$LFS" /usr/bin/env -i          \
     HOME=/root                         \
@@ -20,43 +20,47 @@ chroot "$LFS" /usr/bin/env -i          \
 cd /sources
 ```
 
+If you created a separate build tree: `cd build_dir`.
+
 ## Install basic system software
 
 ### man-pages
 
 ```sh
-tar xvf man-pages-5.10.tar.xz &&
-cd      man-pages-5.10
+tar xvf $LFS/sources/man-pages-5.11.tar.xz &&
+cd       man-pages-5.11                    &&
 
-make install
+make install &&
 
 cd .. &&
-rm -rf man-pages-5.10
+rm -rf man-pages-5.11
 ```
 
 ### iana-etc
 
 ```sh
-tar xzvf iana-etc-20210202.tar.gz &&
-cd       iana-etc-20210202        &&
+tar xzvf $LFS/sources/iana-etc-20210407.tar.gz &&
+cd        iana-etc-20210407                    &&
 
 cp services protocols /etc &&
 
 cd .. &&
-rm -rf iana-etc-20210202
+rm -rf iana-etc-20210407
 ```
 
 ### glibc
 
 #### Build glibc
 
-```sh
-tar xvf glibc-2.33.tar.xz &&
-cd      glibc-2.33
+First is the initial compile and installation of the Name Service Cache Daemon and locales. Beware that at least a few tests are likely to fail here. You can check the LFS book for expected failures. Generally at least some of cpu feature tests are going to fail depending upon architecture. The install step will complain if `/etc/ld.so.conf` does not exist, so we will create it even though it will be empty for now.
 
-patch -Np1 -i ../glibc-2.33-fhs-1.patch &&
+```sh
+tar xvf $LFS/sources/glibc-2.33.tar.xz &&
+cd       glibc-2.33                    &&
+
+patch -Np1 -i ../../glibc-2.33-fhs-1.patch &&
 sed -e '402a\      *result = local->data.services[database_index];' \
-    -i nss/nss_database.c               &&
+    -i nss/nss_database.c &&
 
 mkdir -v build &&
 cd       build &&
@@ -66,7 +70,7 @@ cd       build &&
              --enable-kernel=3.2                      \
              --enable-stack-protector=strong          \
              --with-headers=/usr/include              \
-             libc_cv_slibdir=/lib
+             libc_cv_slibdir=/lib &&
 
 make -j 4                                                           &&
 make -j 4 check                                                     &&
@@ -85,6 +89,8 @@ make localedata/install-locales
 ```
 
 #### Configure glibc
+
+Set a configuration for the namespace switch service and add timezone data.
 
 ```sh
 cat > /etc/nsswitch.conf << EOF
@@ -105,15 +111,15 @@ rpc: files
 # End /etc/nsswitch.conf
 EOF
 
-tar -xf ../../tzdata2021a.tar.gz
+tar -xf ../../../tzdata2021a.tar.gz &&
 
 ZONEINFO=/usr/share/zoneinfo
-mkdir -pv $ZONEINFO/{posix,right}
+mkdir -pv $ZONEINFO/{posix,right} &&
 
 for tz in etcetera southamerica northamerica europe africa antarctica  \
           asia australasia backward; do
-    zic -L /dev/null   -d $ZONEINFO       ${tz}
-    zic -L /dev/null   -d $ZONEINFO/posix ${tz}
+    zic -L /dev/null   -d $ZONEINFO       ${tz} &&
+    zic -L /dev/null   -d $ZONEINFO/posix ${tz} &&
     zic -L leapseconds -d $ZONEINFO/right ${tz}
 done
 
@@ -125,6 +131,8 @@ ln -sfv /usr/share/zoneinfo/America/Chicago /etc/localtime
 ```
 
 #### Configure ld.so
+
+Now we'll add the real loading linker search paths we want in addition to the defaults.
 
 ```sh
 cat > /etc/ld.so.conf << EOF
@@ -142,6 +150,8 @@ mkdir -pv /etc/ld.so.conf.d
 
 #### Cleanup
 
+When complete, we will remove the build tree.
+
 ```sh
 cd ../.. &&
 rm -rf glibc-2.33
@@ -150,14 +160,16 @@ rm -rf glibc-2.33
 ### zlib
 
 ```sh
-tar xvf zlib-1.2.11.tar.xz &&
-cd      zlib-1.2.11        &&
+tar xvf $LFS/sources/zlib-1.2.11.tar.xz &&
+cd       zlib-1.2.11                    &&
 
-./configure --prefix=/usr
+./configure --prefix=/usr &&
+
 make         &&
 make check   &&
 make install &&
-rm -fv /usr/lib/libz.a
+
+rm -fv /usr/lib/libz.a &&
 
 cd .. &&
 rm -rf zlib-1.2.11
@@ -166,12 +178,12 @@ rm -rf zlib-1.2.11
 ### bzip2
 
 ```sh
-tar xzvf bzip2-1.0.8.tar.gz &&
-cd       bzip2-1.0.8        &&
+tar xzvf $LFS/sources/bzip2-1.0.8.tar.gz &&
+cd        bzip2-1.0.8                    &&
 
-patch -Np1 -i ../bzip2-1.0.8-install_docs-1.patch     &&
-sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile   &&
-sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile &&
+patch -Np1 -i ../../bzip2-1.0.8-install_docs-1.patch     &&
+sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@'   Makefile    &&
+sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile    &&
 
 make -f Makefile-libbz2_so &&
 make clean                 &&
@@ -183,20 +195,24 @@ cp -av libbz2.so*   /usr/lib       &&
 rm -v  /usr/bin/{bunzip2,bzcat}    &&
 ln -sv bzip2 /usr/bin/bunzip2      &&
 ln -sv bzip2 /usr/bin/bzcat        &&
-rm -fv /usr/lib/libbz2.a
+rm -fv /usr/lib/libbz2.a           &&
+
+cd .. &&
+rm -rf bzip2-1.0.8
 ```
 
 ### xz
 
 ```sh
-tar xvf xz-5.2.5.tar.xz &&
-cd      xz-5.2.5        &&
+tar xvf $LFS/sources/xz-5.2.5.tar.xz &&
+cd       xz-5.2.5                    &&
 
 ./configure --prefix=/usr    \
             --disable-static \
-            --docdir=/usr/share/doc/xz-5.2.5
-make &&
-make install
+            --docdir=/usr/share/doc/xz-5.2.5 &&
+
+make         &&
+make install &&
 
 cd .. &&
 rm -rf xz-5.2.5
@@ -204,40 +220,43 @@ rm -rf xz-5.2.5
 
 ### zstd
 
+Beware that at least one test of first block run length encoding fails. I'm not sure why this is.
+
 ```sh
-tar xzvf zstd-1.4.8.tar.gz &&
-cd       zstd-1.4.8        &&
+tar xzvf $LFS/sources/zstd-1.4.9.tar.gz &&
+cd        zstd-1.4.9                    &&
 
 make                     &&
 make check               &&
 make prefix=/usr install &&
 
-rm -v /usr/lib/libzstd.a
+rm -v /usr/lib/libzstd.a &&
 
-cd ..
-rm -rf zstd-1.4.8
+cd .. &&
+rm -rf zstd-1.4.9
 ```
 
 ### file
 
 ```sh
-tar xvf file-5.39.tar.xz &&
-cd      file-5.39        &&
+tar xzvf $LFS/sources/file-5.40.tar.gz &&
+cd        file-5.40                    &&
 
-./configure --prefix=/usr
-make       &&
-make check &&
-make install
+./configure --prefix=/usr &&
+
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
-rm -rf file-5.39
+rm -rf file-5.40
 ```
 
 ### readline
 
 ```sh
-tar xzvf readline-8.1.tar.gz &&
-cd       readline-8.1        &&
+tar xzvf $LFS/sources/readline-8.1.tar.gz &&
+cd        readline-8.1                    &&
 
 sed -i '/MV.*old/d' Makefile.in              &&
 sed -i '/{OLDSUFF}/c:' support/shlib-install &&
@@ -245,10 +264,12 @@ sed -i '/{OLDSUFF}/c:' support/shlib-install &&
 ./configure --prefix=/usr    \
             --disable-static \
             --with-curses    \
-            --docdir=/usr/share/doc/readline-8.1
+            --docdir=/usr/share/doc/readline-8.1 &&
+
 make SHLIB_LIBS="-lncursesw"         &&
 make SHLIB_LIBS="-lncursesw" install &&
-install -v -m644 doc/*.{ps,pdf,html,dvi} /usr/share/doc/readline-8.1
+
+install -v -m644 doc/*.{ps,pdf,html,dvi} /usr/share/doc/readline-8.1 &&
 
 cd .. &&
 rm -rf readline-8.1
@@ -257,16 +278,17 @@ rm -rf readline-8.1
 ### m4
 
 ```sh
-tar xvf m4-1.4.18.tar.xz &&
-cd      m4-1.4.18        &&
+tar xvf $LFS/sources/m4-1.4.18.tar.xz &&
+cd       m4-1.4.18                    &&
 
 sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c        &&
 echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h &&
 
-./configure --prefix=/usr
-make       &&
-make check &&
-make install
+./configure --prefix=/usr &&
+
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf m4-1.4.18
@@ -275,31 +297,34 @@ rm -rf m4-1.4.18
 ### bc
 
 ```sh
-tar xvf bc-3.3.0.tar.xz &&
-cd      bc-3.3.0        &&
+tar xvf $LFS/sources/bc-4.0.1.tar.xz &&
+cd       bc-4.0.1                    &&
 
-PREFIX=/usr CC=gcc ./configure.sh -G -O3
-make      &&
-make test &&
-make install
+PREFIX=/usr CC=gcc ./configure.sh -G -O3 &&
+
+make         &&
+make test    &&
+make install &&
 
 cd .. &&
-rm -rf bc-3.3.0
+rm -rf bc-4.0.1
 ```
 
 ### flex
 
 ```sh
-tar xzvf flex-2.6.4.tar.gz &&
-cd       flex-2.6.4        &&
+tar xzvf $LFS/sources/flex-2.6.4.tar.gz &&
+cd        flex-2.6.4                    &&
 
 ./configure --prefix=/usr \
             --docdir=/usr/share/doc/flex-2.6.4 \
-            --disable-static
+            --disable-static &&
+
 make         &&
 make check   &&
 make install &&
-ln -sv flex /usr/bin/lex
+
+ln -sv flex /usr/bin/lex &&
 
 cd .. &&
 rm -rf flex-2.6.4
@@ -308,17 +333,17 @@ rm -rf flex-2.6.4
 ### tcl
 
 ```sh
-tar xzvf tcl8.6.11-src.tar.gz                       &&
-cd       tcl8.6.11                                  &&
-tar xzvf ../tcl8.6.11-html.tar.gz --strip-component &&
+tar xzvf $LFS/sources/tcl8.6.11-src.tar.gz            &&
+cd        tcl8.6.11                                   &&
+tar xzvf ../tcl8.6.11-html.tar.gz --strip-component=1 &&
 
 SRCDIR=$(pwd)
 cd unix &&
 ./configure --prefix=/usr           \
             --mandir=/usr/share/man \
-            --enable-64bit
-make &&
+            --enable-64bit &&
 
+make &&
 
 sed -e "s|$SRCDIR/unix|/usr/lib|" \
     -e "s|$SRCDIR|/usr/include|"  \
@@ -342,7 +367,8 @@ make install                       &&
 chmod -v u+w /usr/lib/libtcl8.6.so &&
 make install-private-headers       &&
 ln -sfv tclsh8.6 /usr/bin/tclsh    &&
-mv /usr/share/man/man3/{Thread,Tcl_Thread}.3
+
+mv /usr/share/man/man3/{Thread,Tcl_Thread}.3 &&
 
 cd ../.. &&
 rm -rf tcl8.6.11
@@ -351,18 +377,20 @@ rm -rf tcl8.6.11
 ### expect
 
 ```sh
-tar xzvf expect5.45.4.tar.gz &&
-cd       expect5.45.4        &&
+tar xzvf $LFS/sources/expect5.45.4.tar.gz &&
+cd        expect5.45.4                    &&
 
 ./configure --prefix=/usr           \
             --with-tcl=/usr/lib     \
             --enable-shared         \
             --mandir=/usr/share/man \
-            --with-tclinclude=/usr/include
+            --with-tclinclude=/usr/include &&
+
 make         &&
 make test    &&
 make install &&
-ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib
+
+ln -svf expect5.45.4/libexpect5.45.4.so /usr/lib &&
 
 cd .. &&
 rm -rf expect5.45.4
@@ -370,17 +398,28 @@ rm -rf expect5.45.4
 
 ### DejaGNU
 
-```sh
-tar xzvf dejagnu-1.6.2.tar.gz &&
-cd       dejagnu-1.6.2        &&
+If tests fail due to "your system has no more ptys," check that:
 
-./configure --prefix=/usr
+1. The `/dev/pts` virtual filesystem has been mounted
+2. Your kernel is compiled with the option `CONFIG_DEVPTS_FS=y`
+3. If running Arch Linux, you may need to restart since kernel modules get pulled out from underneath you during a system upgrade
+
+If this happens, it is critical to fix as it will prevent any tests run by `expect` from working and these are needed to validate many of the critical system utilities.
+
+```sh
+tar xzvf $LFS/sources/dejagnu-1.6.2.tar.gz &&
+cd        dejagnu-1.6.2                    &&
+
+./configure --prefix=/usr &&
+
 makeinfo --html --no-split -o doc/dejagnu.html doc/dejagnu.texi         &&
 makeinfo --plaintext       -o doc/dejagnu.txt  doc/dejagnu.texi         &&
 make     install                                                        &&
+
 install  -v -dm755  /usr/share/doc/dejagnu-1.6.2                        &&
 install  -v -m644   doc/dejagnu.{html,txt} /usr/share/doc/dejagnu-1.6.2 &&
-make     check
+
+make     check &&
 
 cd .. &&
 rm -rf dejagnu-1.6.2
@@ -390,9 +429,11 @@ rm -rf dejagnu-1.6.2
 
 `--enable-targets=x86_64-pep` enables support for EFI executables and is a dependency of `gnu-efi`.
 
+Beware that four tests are known to fail, in the suite for `ld`, all saying some variety of "Run property."
+
 ```sh
-tar xvf binutils-2.36.1.tar.xz &&
-cd      binutils-2.36.1        &&
+tar xvf $LFS/sources/binutils-2.36.1.tar.xz &&
+cd       binutils-2.36.1                    &&
 
 sed -i '/@\tincremental_copy/d' gold/testsuite/Makefile.in &&
 
@@ -407,11 +448,13 @@ cd       build &&
              --disable-werror    \
              --enable-64-bit-bfd \
              --with-system-zlib  \
-             --enable-targets=x86_64-pep
+             --enable-targets=x86_64-pep &&
+
 make tooldir=/usr         &&
 make -k check             &&
 make tooldir=/usr install &&
-rm -fv /usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes}.a
+
+rm -fv /usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes}.a &&
 
 cd ../.. &&
 rm -rf binutils-2.36.1
@@ -420,19 +463,22 @@ rm -rf binutils-2.36.1
 ### gmp
 
 ```sh
-tar xvf gmp-6.2.1.tar.xz &&
-cd      gmp-6.2.1        &&
+tar xvf $LFS/sources/gmp-6.2.1.tar.xz &&
+cd       gmp-6.2.1                    &&
 
 ./configure --prefix=/usr    \
             --enable-cxx     \
             --disable-static \
-            --docdir=/usr/share/doc/gmp-6.2.1
-make                                                        &&
-make html                                                   &&
-make check 2>&1 | tee gmp-check-log                         &&
+            --docdir=/usr/share/doc/gmp-6.2.1 &&
+
+make                                &&
+make html                           &&
+make check 2>&1 | tee gmp-check-log &&
+
 awk '/# PASS:/{total+=$3} ; END{print total}' gmp-check-log &&
-make install                                                &&
-make install-html
+
+make install      &&
+make install-html &&
 
 cd .. &&
 rm -rf gmp-6.2.1
@@ -441,19 +487,19 @@ rm -rf gmp-6.2.1
 ### mpfr
 
 ```sh
-tar xvf mpfr-4.1.0.tar.xz &&
-cd      mpfr-4.1.0        &&
+tar xvf $LFS/sources/mpfr-4.1.0.tar.xz &&
+cd       mpfr-4.1.0                    &&
 
 ./configure --prefix=/usr        \
             --disable-static     \
             --enable-thread-safe \
-            --docdir=/usr/share/doc/mpfr-4.1.0
+            --docdir=/usr/share/doc/mpfr-4.1.0 &&
 
-make         &&
-make html    &&
-make check   &&
-make install &&
-make install-html
+make              &&
+make html         &&
+make check        &&
+make install      &&
+make install-html &&
 
 cd .. &&
 rm -rf mpfr-4.1.0
@@ -462,72 +508,90 @@ rm -rf mpfr-4.1.0
 ### mpc
 
 ```sh
-tar xzvf mpc-1.2.1.tar.gz &&
-cd       mpc-1.2.1        &&
+tar xzvf $LFS/sources/mpc-1.2.1.tar.gz &&
+cd        mpc-1.2.1                    &&
 
 ./configure --prefix=/usr    \
             --disable-static \
-            --docdir=/usr/share/doc/mpc-1.2.1
+            --docdir=/usr/share/doc/mpc-1.2.1 &&
+
 make              &&
 make html         &&
 make check        &&
 make install      &&
-make install-html
+make install-html &&
 
 cd .. &&
 rm -rf mpc-1.2.1
 ```
 
+### isl
+
+```sh
+tar xvf $LFS/sources/isl-0.24.tar.xz &&
+cd       isl-0.24                    &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make              &&
+make check        &&
+make install      &&
+
+cd .. &&
+rm -rf isl-0.24
+```
+
 ### attr
 
 ```sh
-tar xzvf attr-2.4.8.tar.gz &&
-cd       attr-2.4.8        &&
+tar xzvf $LFS/sources/attr-2.5.1.tar.gz &&
+cd        attr-2.5.1                    &&
 
 ./configure --prefix=/usr     \
             --disable-static  \
             --sysconfdir=/etc \
-            --docdir=/usr/share/doc/attr-2.4.48
+            --docdir=/usr/share/doc/attr-2.5.1 &&
 
 make         &&
 make check   &&
-make install
+make install &&
 
 cd .. &&
-rm -rf attr-2.4.8
+rm -rf attr-2.5.1
 ```
 
 ### acl
 
 ```sh
-tar xzvf acl-2.3.53.tar.gz &&
-cd       acl-2.3.53        &&
+tar xvf $LFS/sources/acl-2.3.1.tar.xz &&
+cd        acl-2.3.1                   &&
 
 ./configure --prefix=/usr         \
             --disable-static      \
             --libexecdir=/usr/lib \
-            --docdir=/usr/share/doc/acl-2.2.53
+            --docdir=/usr/share/doc/acl-2.2.1 &&
 
-make &&
-make install
+make         &&
+make install &&
 
 cd .. &&
-rm -rf acl-2.3.53
+rm -rf acl-2.3.1
 ```
 
 ### libcap
 
 ```sh
-tar xvf libcap-2.48.tar.xz &&
-cd      libcap-2.48        &&
+tar xvf $LFS/sources/libcap-2.49.tar.xz &&
+cd       libcap-2.49                    &&
 
 sed -i '/install -m.*STA/d' libcap/Makefile &&
 make prefix=/usr lib=lib                    &&
 make test                                   &&
-make prefix=/usr lib=lib install
+make prefix=/usr lib=lib install            &&
 
 cd .. &&
-rm -rf libcap-2.48
+rm -rf libcap-2.49
 ```
 
 ### shadow
@@ -535,8 +599,8 @@ rm -rf libcap-2.48
 #### Installation
 
 ```sh
-tar xvf shadow-4.8.1.tar.xz &&
-cd      shadow-4.8.1        &&
+tar xvf $LFS/sources/shadow-4.8.1.tar.xz &&
+cd       shadow-4.8.1                    &&
 
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in                     &&
 find man -name Makefile.in -exec sed -i 's/groups\.1 / /'   {} \; &&
@@ -549,10 +613,10 @@ sed -i 's/1000/999/' etc/useradd                        &&
 touch /usr/bin/passwd                                   &&
 
 ./configure --sysconfdir=/etc \
-            --with-group-name-max-length=32
+            --with-group-name-max-length=32 &&
 
-make &&
-make install
+make         &&
+make install &&
 
 cd .. &&
 rm -rf shadow-4.8.1
@@ -572,8 +636,8 @@ passwd root
 ### gcc
 
 ```sh
-tar xvf gcc-10.2.0.tar.xz &&
-cd      gcc-10.2.0        &&
+tar xvf $LFS/sources/gcc-11.1.0.tar.xz &&
+cd       gcc-11.1.0                    &&
 
 sed -e '/m64=/s/lib64/lib/' \
     -i.orig gcc/config/i386/t-linux64 &&
@@ -586,42 +650,74 @@ cd       build &&
              --enable-languages=c,c++ \
              --disable-multilib       \
              --disable-bootstrap      \
-             --with-system-zlib
+             --with-system-zlib &&
 
-make -j 4
+make -j 4 &&
 
 ulimit -s 32768    &&
 chown -Rv tester . &&
-su tester -c "PATH=$PATH make -k check"
+su tester -c "PATH=$PATH make -k check" &&
 
 make install &&
 
-rm -rf      /usr/lib/gcc/$(gcc -dumpmachine)/10.2.0/include-fixed/bits/ &&
+rm    -rf   /usr/lib/gcc/$(gcc -dumpmachine)/10.2.0/include-fixed/bits/ &&
 chown -v -R root:root /usr/lib/gcc/*linux-gnu/10.2.0/include{,-fixed}   &&
-ln -sv    ../usr/bin/cpp /lib/cpp                                       &&
-ln -sfv   ../../libexec/gcc/$(gcc -dumpmachine)/10.2.0/liblto_plugin.so \
+ln    -sv   ../usr/bin/cpp /lib/cpp                                     &&
+ln    -sfv  ../../libexec/gcc/$(gcc -dumpmachine)/10.2.0/liblto_plugin.so \
             /usr/lib/bfd-plugins/                                       &&
 mkdir -pv   /usr/share/gdb/auto-load/usr/lib                            &&
-mv    -v    /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
+mv    -v    /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib           &&
 
 cd ../.. &&
-rm -rf gcc-10.2.0
+rm -rf gcc-11.1.0
 ```
+
+#### Sanity check gcc
+
+Linux From Scratch recommends making a simple test program:
+
+```sh
+echo 'int main(){}' > dummy.c
+cc dummy.c -v -Wl,--verbose &> dummy.log
+readelf -l a.out | grep ': /lib'
+```
+
+This should print out:
+
+```
+[Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]
+```
+
+Then ensure we're setup to use the correct start files:
+
+```sh
+grep -o '/usr/lib.*/crt[1in].*succeeded' dummy.log
+```
+
+Should print:
+
+```
+/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/../../../../lib/crt1.o succeeded
+/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/../../../../lib/crti.o succeeded
+/usr/lib/gcc/x86_64-pc-linux-gnu/11.1.0/../../../../lib/crtn.o succeeded
+```
+
+Note that it should say differently if you're not running on `x86_64` architecture.
 
 ### pkgconfig
 
 ```sh
-tar xzvf pkg-config-0.29.2 &&
-cd       pkg-config-0.29.2 &&
+tar xzvf $LFS/sources/pkg-config-0.29.2 &&
+cd        pkg-config-0.29.2             &&
 
 ./configure --prefix=/usr              \
             --with-internal-glib       \
             --disable-host-tool        \
-            --docdir=/usr/share/doc/pkg-config-0.29.2
+            --docdir=/usr/share/doc/pkg-config-0.29.2 &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf pkg-config-0.29.2
@@ -630,8 +726,8 @@ rm -rf pkg-config-0.29.2
 ### ncurses
 
 ```sh
-tar xzvf ncurses-6.2.tar.gz &&
-cd       ncurses-6.2        &&
+tar xzvf $LFS/sources/ncurses-6.2.tar.gz &&
+cd        ncurses-6.2                    &&
 
 ./configure --prefix=/usr           \
             --mandir=/usr/share/man \
@@ -639,14 +735,14 @@ cd       ncurses-6.2        &&
             --without-debug         \
             --without-normal        \
             --enable-pc-files       \
-            --enable-widec
+            --enable-widec &&
 
-make &&
-make install
+make         &&
+make install &&
 
 for lib in ncurses form panel menu ; do
-    rm -vf                    /usr/lib/lib${lib}.so
-    echo "INPUT(-l${lib}w)" > /usr/lib/lib${lib}.so
+    rm -vf                    /usr/lib/lib${lib}.so        &&
+    echo "INPUT(-l${lib}w)" > /usr/lib/lib${lib}.so        &&
     ln -sfv ${lib}w.pc        /usr/lib/pkgconfig/${lib}.pc
 done
 
@@ -655,7 +751,7 @@ echo "INPUT(-lncursesw)" > /usr/lib/libcursesw.so &&
 ln -sfv libncurses.so      /usr/lib/libcurses.so  &&
 rm -fv /usr/lib/libncurses++w.a                   &&
 mkdir -v       /usr/share/doc/ncurses-6.2         &&
-cp -v -R doc/* /usr/share/doc/ncurses-6.2
+cp -v -R doc/* /usr/share/doc/ncurses-6.2         &&
 
 cd .. &&
 rm -rf ncurses-6.2
@@ -664,10 +760,11 @@ rm -rf ncurses-6.2
 ### sed
 
 ```sh
-tar xvf sed-4.8.tar.xz &&
-cd      sed-4.8        &&
+tar xvf $LFS/sources/sed-4.8.tar.xz &&
+cd       sed-4.8                    &&
 
-./configure --prefix=/usr --bindir=/bin
+./configure --prefix=/usr \
+            --bindir=/bin &&
 
 make      &&
 make html &&
@@ -677,7 +774,7 @@ su tester -c "PATH=$PATH make -k check" &&
 
 make install                                      &&
 install -d -m755           /usr/share/doc/sed-4.8 &&
-install -m644 doc/sed.html /usr/share/doc/sed-4.8
+install -m644 doc/sed.html /usr/share/doc/sed-4.8 &&
 
 cd .. &&
 rm -rf sed-4.8
@@ -686,13 +783,13 @@ rm -rf sed-4.8
 ### psmisc
 
 ```sh
-tar xvf psmisc-23.4.tar.xz &&
-cd      psmisc-23.4        &&
+tar xvf $LFS/sources/psmisc-23.4.tar.xz &&
+cd       psmisc-23.4                    &&
 
-./configure --prefix=/usr
+./configure --prefix=/usr &&
 
-make &&
-make install
+make         &&
+make install &&
 
 cd .. &&
 rm -rf psmisc-23.4
@@ -701,17 +798,18 @@ rm -rf psmisc-23.4
 ### gettext
 
 ```sh
-tar xvf gettext-0.21.tar.xz &&
-cd      gettext-0.21        &&
+tar xvf $LFS/sources/gettext-0.21.tar.xz &&
+cd       gettext-0.21                    &&
 
 ./configure --prefix=/usr    \
             --disable-static \
-            --docdir=/usr/share/doc/gettext-0.21
+            --docdir=/usr/share/doc/gettext-0.21 &&
 
 make         &&
 make check   &&
 make install &&
-chmod -v 0755 /usr/lib/preloadable_libintl.so
+
+chmod -v 0755 /usr/lib/preloadable_libintl.so &&
 
 cd .. &&
 rm -rf gettext-0.21
@@ -720,15 +818,15 @@ rm -rf gettext-0.21
 ### bison
 
 ```sh
-tar xvf bison-3.7.5.tar.xz &&
-cd      bison-3.7.5        &&
+tar xvf $LFS/sources/bison-3.7.5.tar.xz &&
+cd       bison-3.7.5                    &&
 
 ./configure --prefix=/usr \
-            --docdir=/usr/share/doc/bison-3.7.5
+            --docdir=/usr/share/doc/bison-3.7.5 &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf bison-3.7.5
@@ -737,15 +835,15 @@ rm -rf bison-3.7.5
 ### grep
 
 ```sh
-tar xvf grep-3.6.tar.xz &&
-cd      grep-3.6        &&
+tar xvf $LFS/sources/grep-3.6.tar.xz &&
+cd       grep-3.6                    &&
 
 ./configure --prefix=/usr \
-            --bindir=/bin
+            --bindir=/bin &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf grep-3.6
@@ -754,24 +852,24 @@ rm -rf grep-3.6
 ### bash
 
 ```sh
-tar xzvf bash-5.1.tar.gz &&
-cd       bash-5.1        &&
+tar xzvf $LFS/sources/bash-5.1.tar.gz &&
+cd        bash-5.1                    &&
 
 sed -i  '/^bashline.o:.*shmbchar.h/a bashline.o: ${DEFDIR}/builtext.h' Makefile.in &&
 
 ./configure --prefix=/usr                    \
             --docdir=/usr/share/doc/bash-5.1 \
             --without-bash-malloc            \
-            --with-installed-readline
+            --with-installed-readline &&
 
 make               &&
 chown -Rv tester . &&
-su tester << EOF
+su tester << EOF   &&
 PATH=$PATH make tests < $(tty)
 EOF
 
 make install &&
-exec /bin/bash --login +h
+exec /bin/bash --login +h &&
 
 cd .. &&
 rm -rf base-5.1
@@ -780,15 +878,16 @@ rm -rf base-5.1
 ### libtool
 
 ```sh
-tar xvf libtool-2.4.6.tar.xz &&
-cd      libtool-2.4.6        &&
+tar xvf $LFS/sources/libtool-2.4.6.tar.xz &&
+cd       libtool-2.4.6                    &&
 
-./configure --prefix=/usr
+./configure --prefix=/usr &&
 
 make         &&
 make check   &&
 make install &&
-rm -fv /usr/lib/libltdl.a
+
+rm -fv /usr/lib/libltdl.a &&
 
 cd .. &&
 rm -rf libtool-2.4.6
@@ -797,16 +896,16 @@ rm -rf libtool-2.4.6
 ### gdbm
 
 ```sh
-tar xzvf gdbm-1.19.tar.gz &&
-cd       gdbm-1.19        &&
+tar xzvf $LFS/sources/gdbm-1.19.tar.gz &&
+cd        gdbm-1.19                    &&
 
 ./configure --prefix=/usr    \
             --disable-static \
-            --enable-libgdbm-compat
+            --enable-libgdbm-compat &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf gdbm-1.19
@@ -815,15 +914,15 @@ rm -rf gdbm-1.19
 ### gperf
 
 ```sh
-tar xzvf gperf-3.1.tar.gz &&
-cd       gperf-3.1        &&
+tar xzvf $LFS/sources/gperf-3.1.tar.gz &&
+cd        gperf-3.1                    &&
 
 ./configure --prefix=/usr \
-            --docdir=/usr/share/doc/gperf-3.1
+            --docdir=/usr/share/doc/gperf-3.1 &&
 
-make           &&
-make -j1 check &&
-make     install
+make             &&
+make -j1 check   &&
+make     install &&
 
 cd .. &&
 rm -rf gperg-3.1
@@ -832,17 +931,18 @@ rm -rf gperg-3.1
 ### expat
 
 ```sh
-tar xvf expat-2.2.10.tar.xz &&
-cd      expat-2.2.10        &&
+tar xvf $LFS/sources/expat-2.2.10.tar.xz &&
+cd       expat-2.2.10                    &&
 
 ./configure --prefix=/usr    \
             --disable-static \
-            --docdir=/usr/share/doc/expat-2.2.10
+            --docdir=/usr/share/doc/expat-2.2.10 &&
 
-make
+make         &&
 make check   &&
 make install &&
-install -v -m644 doc/*.{html,png,css} /usr/share/doc/expat-2.2.10
+
+install -v -m644 doc/*.{html,png,css} /usr/share/doc/expat-2.2.10 &&
 
 cd .. &&
 rm -rf expat-2.2.10
@@ -851,8 +951,8 @@ rm -rf expat-2.2.10
 ### inetutils
 
 ```sh
-tar xvf inetutils-2.0.tar.xz &&
-cd      inetutils-2.0        &&
+tar xvf $LFS/sources/inetutils-2.0.tar.xz &&
+cd       inetutils-2.0                    &&
 
 ./configure --prefix=/usr        \
             --localstatedir=/var \
@@ -862,11 +962,11 @@ cd      inetutils-2.0        &&
             --disable-rexec      \
             --disable-rlogin     \
             --disable-rsh        \
-            --disable-servers
+            --disable-servers &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf inetutils-2.0
@@ -875,8 +975,8 @@ rm -rf inetutils-2.0
 ### perl
 
 ```sh
-tar xvf perl-5.32.1.tar.xz &&
-cd      perl-5.32.1        &&
+tar xvf $LFS/sources/perl-5.32.1.tar.xz &&
+cd       perl-5.32.1                    &&
 
 export BUILD_ZLIB=False &&
 export BUILD_BZIP2=0    &&
@@ -894,12 +994,12 @@ sh Configure -des                                         \
              -Dman3dir=/usr/share/man/man3                \
              -Dpager="/usr/bin/less -isR"                 \
              -Duseshrplib                                 \
-             -Dusethreads
+             -Dusethreads &&
 
 make         &&
 make test    &&
 make install &&
-unset BUILD_ZLIB BUILD_BZIP2
+unset BUILD_ZLIB BUILD_BZIP2 &&
 
 cd .. &&
 rm -rf perl-5.32.1
@@ -910,13 +1010,13 @@ rm -rf perl-5.32.1
 This is an additional Perl module used by other tools.
 
 ```sh
-tar xzvf XML-Parser-2.46.tar.gz &&
-cd       XML-Parser-2.46        &&
+tar xzvf $LFS/sources/XML-Parser-2.46.tar.gz &&
+cd        XML-Parser-2.46                    &&
 
 perl Makefile.PL &&
 make             &&
 make test        &&
-make install
+make install     &&
 
 cd .. &&
 rm -rf XML-Parser-2.46
@@ -925,8 +1025,8 @@ rm -rf XML-Parser-2.46
 ### intltool
 
 ```sh
-tar xzvf intltool-0.51.0.tar.gz &&
-cd       intltool-0.51.0        &&
+tar xzvf $LFS/sources/intltool-0.51.0.tar.gz &&
+cd        intltool-0.51.0                    &&
 
 sed -i 's:\\\${:\\\$\\{:' intltool-update.in &&
 ./configure --prefix=/usr
@@ -934,7 +1034,8 @@ sed -i 's:\\\${:\\\$\\{:' intltool-update.in &&
 make         &&
 make check   &&
 make install &&
-install -v -Dm644 doc/I18N-HOWTO /usr/share/doc/intltool-0.51.0/I18N-HOWTO
+
+install -v -Dm644 doc/I18N-HOWTO /usr/share/doc/intltool-0.51.0/I18N-HOWTO &&
 
 cd .. &&
 rm -rf intltool-0.51.0
@@ -943,32 +1044,32 @@ rm -rf intltool-0.51.0
 ### autoconf
 
 ```sh
-tar xvf autoconf-2.71.tar.xz &&
-cd      autoconf-2.71        &&
+tar xvf $LFS/sources/autoconf-2.71.tar.xz &&
+cd       autoconf-2.71                    &&
 
-./configure --prefix=/usr
+./configure --prefix=/usr &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
-cd ..
+cd .. &&
 rm -rf autoconf-2.71
 ```
 
 ### automake
 
 ```sh
-tar xvf automake-1.16.3.tar.xz &&
-cd      automake-1.16.3        &&
+tar xvf $LFS/sources/automake-1.16.3.tar.xz &&
+cd       automake-1.16.3                    &&
 
 sed -i "s/''/etags/" t/tags-lisp-space.sh &&
 ./configure --prefix=/usr \
-            --docdir=/usr/share/doc/automake-1.16.3
+            --docdir=/usr/share/doc/automake-1.16.3 &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf automake-1.16.3
@@ -977,8 +1078,8 @@ rm -rf automake-1.16.3
 ### kmod
 
 ```sh
-tar xvf kmod-28.tar.xz &&
-cd      kmod-28        &&
+tar xvf $LFS/sources/kmod-28.tar.xz &&
+cd       kmod-28                    &&
 
 ./configure --prefix=/usr          \
             --bindir=/bin          \
@@ -986,11 +1087,12 @@ cd      kmod-28        &&
             --with-rootlibdir=/lib \
             --with-xz              \
             --with-zstd            \
-            --with-zlib
+            --with-zlib &&
 
 make         &&
 make install &&
-ln -sfv kmod /bin/lsmod
+
+ln -sfv kmod /bin/lsmod &&
 
 cd .. &&
 rm -rf kmod-28
@@ -999,19 +1101,19 @@ rm -rf kmod-28
 ### libelf
 
 ```sh
-tar xvf elfutils-0.183.tar.bz2 &&
-cd      elfutils-0.183.0       &&
+tar xvf $LFS/sources/elfutils-0.183.tar.bz2 &&
+cd       elfutils-0.183.0                   &&
 
 ./configure --prefix=/usr                \
             --disable-debuginfod         \
             --enable-libdebuginfod=dummy \
-            --libdir=/lib
+            --libdir=/lib &&
 
 make                                               &&
 make check                                         &&
 make -C libelf install                             &&
 install -vm644 config/libelf.pc /usr/lib/pkgconfig &&
-rm /lib/libelf.a
+rm /lib/libelf.a                                   &&
 
 cd .. &&
 rm -rf elfutils-0.183.0
@@ -1020,16 +1122,16 @@ rm -rf elfutils-0.183.0
 ### libffi
 
 ```sh
-tar xzvf libffi-3.3.tar.gz &&
-cd       libffi-3.3        &&
+tar xzvf $LFS/sources/libffi-3.3.tar.gz &&
+cd        libffi-3.3                    &&
 
 ./configure --prefix=/usr    \
             --disable-static \
-            --with-gcc-arch=native
+            --with-gcc-arch=native &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf libffi-3.3
@@ -1038,77 +1140,79 @@ rm -rf libffi-3.3
 ### openssl
 
 ```sh
-tar xzvf openssl-1.1.1j.tar.gz &&
-cd       openssl-1.1.1j        &&
+tar xzvf $LFS/sources/openssl-1.1.1k.tar.gz &&
+cd        openssl-1.1.1k                    &&
 
 ./config --prefix=/usr         \
          --openssldir=/etc/ssl \
          --libdir=lib          \
          shared                \
-         zlib-dynamic
+         zlib-dynamic &&
 
 make                                                       &&
 make test                                                  &&
 sed -i '/INSTALL_LIBS/s/libcrypto.a libssl.a//' Makefile   &&
 make MANSUFFIX=ssl install                                 &&
-mv -v /usr/share/doc/openssl /usr/share/doc/openssl-1.1.1j &&
-cp -vfr doc/* /usr/share/doc/openssl-1.1.1j
+mv -v /usr/share/doc/openssl /usr/share/doc/openssl-1.1.1k &&
+cp -vfr doc/* /usr/share/doc/openssl-1.1.1k                &&
 
-cd ..
+cd .. &&
 rm -rf openssl-1.1.1j
 ```
 
 ### Python
 
+We will provide links from `/usr/bin/python3` to `/usr/bin/python` and `/usr/bin/pip3` to `/usr/bin/pip` as has been standard on many distros since Python 2 went past its EOL.
+
 ```sh
-tar xvf Python-3.9.2.tar.xz &&
-cd      Python-3.9.2        &&
+tar xvf $LFS/sources/Python-3.9.5.tar.xz &&
+cd       Python-3.9.5                    &&
 
 ./configure --prefix=/usr          \
             --enable-shared        \
             --enable-optimizations \
             --with-system-expat    \
             --with-system-ffi      \
-            --with-ensurepip=yes
+            --with-ensurepip=yes &&
 
 make         &&
 make test    &&
 make install &&
 
-install -v -dm755 /usr/share/doc/python-3.9.2/html &&
+install -v -dm755 /usr/share/doc/python-3.9.5/html &&
 
 tar --strip-components=1  \
     --no-same-owner       \
     --no-same-permissions \
-    -C /usr/share/doc/python-3.9.2/html \
-    -xvf ../python-3.9.2-docs-html.tar.bz2 &&
+    -C /usr/share/doc/python-3.9.5/html \
+    -xvf ../python-3.9.5-docs-html.tar.bz2 &&
 ln -sfv /usr/bin/python3 /usr/bin/python   &&
-ln -sfv /usr/bin/pip3 /usr/bin/pip
+ln -sfv /usr/bin/pip3 /usr/bin/pip         &&
 
 cd .. &&
-rm -rf Python-3.9.2
+rm -rf Python-3.9.5
 ```
 
 ### ninja
 
 ```sh
-tar xzvf ninja-1.10.2.tar.gz &&
-cd       ninja-1.10.2        &&
+tar xzvf $LFS/sources/ninja-1.10.2.tar.gz &&
+cd        ninja-1.10.2                    &&
 
 sed -i '/int Guess/a \
   int   j = 0;\
   char* jobs = getenv( "NINJAJOBS" );\
   if ( jobs != NULL ) j = atoi( jobs );\
   if ( j > 0 ) return j;\
-' src/ninja.cc &&
-python3 configure.py --bootstrap
+' src/ninja.cc                   &&
+python3 configure.py --bootstrap &&
 
 ./ninja ninja_test                                      &&
 ./ninja_test --gtest_filter=-SubprocessTest.SetWithLots &&
 
 install -vm755 ninja /usr/bin/                                                    &&
 install -vDm644 misc/bash-completion /usr/share/bash-completion/completions/ninja &&
-install -vDm644 misc/zsh-completion  /usr/share/zsh/site-functions/_ninja
+install -vDm644 misc/zsh-completion  /usr/share/zsh/site-functions/_ninja         &&
 
 cd .. &&
 rm -rf ninja-1.10.2
@@ -1117,12 +1221,12 @@ rm -rf ninja-1.10.2
 ### meson
 
 ```sh
-tar xzvf meson-0.57.1.tar.gz &&
-cd       meson-0.57.1
+tar xzvf $LFS/sources/meson-0.57.1.tar.gz &&
+cd        meson-0.57.1                    &&
 
 python3 setup.py build               &&
 python3 setup.py install --root=dest &&
-cp -rv dest/* /
+cp -rv dest/* /                      &&
 
 cd .. &&
 rm -rf meson-0.57.1
@@ -1131,15 +1235,15 @@ rm -rf meson-0.57.1
 ### coreutils
 
 ```sh
-tar xvf coreutils-8.32.tar.xz &&
-cd      coreutils-8.32        &&
+tar xvf $LFS/sources/coreutils-8.32.tar.xz &&
+cd       coreutils-8.32                    &&
 
-patch -Np1 -i ../coreutils-8.32-i18n-1.patch      &&
-sed -i '/test.lock/s/^/#/' gnulib-tests/gnulib.mk &&
-autoreconf -fiv                                   &&
+patch -Np1 -i ../coreutils-8.32-i18n-1.patch        &&
+sed -i '/test.lock/s/^/#/' gnulib-tests/gnulib.mk   &&
+autoreconf -fiv                                     &&
 FORCE_UNSAFE_CONFIGURE=1 ./configure \
             --prefix=/usr            \
-            --enable-no-install-program=kill,uptime
+            --enable-no-install-program=kill,uptime &&
 
 make                                                         &&
 make NON_ROOT_USERNAME=tester check-root                     &&
@@ -1150,7 +1254,7 @@ sed -i '/dummy/d' /etc/group                                 &&
 make install                                                 &&
 
 mv -v /usr/share/man/man1/chroot.1 /usr/share/man/man8/chroot.8 &&
-sed -i 's/"1"/"8"/' /usr/share/man/man8/chroot.8
+sed -i 's/"1"/"8"/' /usr/share/man/man8/chroot.8                &&
 
 cd .. &&
 rm -rf coreutils-8.32
@@ -1159,15 +1263,15 @@ rm -rf coreutils-8.32
 ### check
 
 ```sh
-tar xzvf check-0.15.2.tar.gz &&
-cd       check-0.15.2        &&
+tar xzvf $LFS/sources/check-0.15.2.tar.gz &&
+cd        check-0.15.2                    &&
 
 ./configure --prefix=/usr \
-            --disable-static
+            --disable-static &&
 
-make       &&
-make check &&
-make docdir=/usr/share/doc/check-0.15.2 install
+make                                            &&
+make check                                      &&
+make docdir=/usr/share/doc/check-0.15.2 install &&
 
 cd .. &&
 rm -rf check-0.15.2
@@ -1176,14 +1280,14 @@ rm -rf check-0.15.2
 ### diffutils
 
 ```sh
-tar xvf diffutils-3.7.tar.xz &&
-cd      diffutils-3.7        &&
+tar xvf $LFS/sources/diffutils-3.7.tar.xz &&
+cd       diffutils-3.7                    &&
 
-./configure --prefix=/usr
+./configure --prefix=/usr &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf diffutils-3.7
@@ -1192,17 +1296,17 @@ rm -rf diffutils-3.7
 ### gawk
 
 ```sh
-tar xvf gawk-5.1.0.tar.xz &&
-cd      gawk-5.1.0        &&
+tar xvf $LFS/sources/gawk-5.1.0.tar.xz &&
+cd       gawk-5.1.0                    &&
 
 sed -i 's/extras//' Makefile.in &&
-./configure --prefix=/usr
+./configure --prefix=/usr       &&
 
 make                               &&
 make check                         &&
 make install                       &&
 mkdir -v /usr/share/doc/gawk-5.1.0 &&
-cp    -v doc/{awkforai.txt,*.{eps,pdf,jpg}} /usr/share/doc/gawk-5.1.0
+cp    -v doc/{awkforai.txt,*.{eps,pdf,jpg}} /usr/share/doc/gawk-5.1.0 &&
 
 cd .. &&
 rm -rf gawk-5.1.0
@@ -1211,18 +1315,18 @@ rm -rf gawk-5.1.0
 ### findutils
 
 ```sh
-tar xvf findutils-4.8.0.tar.xz &&
-cd      findutils-4.8.0        &&
+tar xvf $LFS/sources/findutils-4.8.0.tar.xz &&
+cd       findutils-4.8.0                    &&
 
 ./configure --prefix=/usr \
-            --localstatedir=/var/lib/locate
+            --localstatedir=/var/lib/locate &&
 
 make                                    &&
 chown -Rv tester .                      &&
 su tester -c "PATH=$PATH make -j check" &&
 make install                            &&
 
-sed -i 's|find:=${BINDIR}|find:=/bin|' /usr/bin/updatedb
+sed -i 's|find:=${BINDIR}|find:=/bin|' /usr/bin/updatedb &&
 
 cd .. &&
 rm -rf findutils-4.8.0
@@ -1231,13 +1335,13 @@ rm -rf findutils-4.8.0
 ### groff
 
 ```sh
-tar xzvf groff-1.22.4.tar.gz &&
-cd       groff-1.22.4        &&
+tar xzvf $LFS/sources/groff-1.22.4.tar.gz &&
+cd        groff-1.22.4                    &&
 
-PAGE=letter ./configure --prefix=/usr
+PAGE=letter ./configure --prefix=/usr &&
 
-make -j1 &&
-make -j1 install
+make -j1         &&
+make -j1 install &&
 
 cd .. &&
 rm -rf groff-1.22.4
@@ -1246,14 +1350,14 @@ rm -rf groff-1.22.4
 ### less
 
 ```sh
-tar xzvf less-563.tar.gz &&
-cd       less-563        &&
+tar xzvf $LFS/sources/less-563.tar.gz &&
+cd        less-563                    &&
 
 ./configure --prefix=/usr \
-            --sysconfdir=/etc
+            --sysconfdir=/etc &&
 
-make &&
-make install
+make         &&
+make install &&
 
 cd .. &&
 rm -rf less-563
@@ -1262,14 +1366,14 @@ rm -rf less-563
 ### gzip
 
 ```sh
-tar xvf gzip-1.10.tar.xz &&
-cd      gzip-1.10        &&
+tar xvf $LFS/sources/gzip-1.10.tar.xz &&
+cd       gzip-1.10                    &&
 
-./configure --prefix=/usr
+./configure --prefix=/usr &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf gzip-1.10
@@ -1278,14 +1382,15 @@ rm -rf gzip-1.10
 ### iproute2
 
 ```sh
-tar xvf iproute2-5.10.0.tar.xz &&
-cd      iproute2-5.10.0        &&
+tar xvf $LFS/sources/iproute2-5.10.0.tar.xz &&
+cd       iproute2-5.10.0                    &&
 
 sed -i  /ARPD/d Makefile          &&
 rm  -fv man/man8/arpd.8           &&
 sed -i 's/.m_ipt.0//' tc/Makefile &&
-make                              &&
-make DOCDIR=/usr/share/doc/iproute2-5.10.0 install
+
+make                                               &&
+make DOCDIR=/usr/share/doc/iproute2-5.10.0 install &&
 
 cd .. &&
 rm -rf iproute2-5.10.0
@@ -1294,20 +1399,20 @@ rm -rf iproute2-5.10.0
 ### kbd
 
 ```sh
-tar xvf kbd-2.4.0.tar.xz &&
-cd      kbd-2.4.0        &&
+tar xvf $LFS/sources/kbd-2.4.0.tar.xz &&
+cd       kbd-2.4.0                    &&
 
 patch -Np1 -i ../kbd-2.4.0-backspace-1.patch         &&
 sed -i '/RESIZECONS_PROGS=/s/yes/no/' configure      &&
 sed -i 's/resizecons.8 //' docs/man/man8/Makefile.in &&
 ./configure --prefix=/usr \
-            --disable-vlock
+            --disable-vlock &&
 
 make                                         &&
 make check                                   &&
 make install                                 &&
 mkdir -v            /usr/share/doc/kbd-2.4.0 &&
-cp -R -v docs/doc/* /usr/share/doc/kbd-2.4.0
+cp -R -v docs/doc/* /usr/share/doc/kbd-2.4.0 &&
 
 cd .. &&
 rm -rf kbd-2.4.0
@@ -1316,14 +1421,14 @@ rm -rf kbd-2.4.0
 ### libpipeline
 
 ```sh
-tar xzvf libpipeline-1.5.3.tar.gz &&
-cd       libpipeline-1.5.3        &&
+tar xzvf $LFS/sources/libpipeline-1.5.3.tar.gz &&
+cd        libpipeline-1.5.3                    &&
 
-./configure --prefix=/usr
+./configure --prefix=/usr &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf libpipeline-1.5.3
@@ -1332,14 +1437,14 @@ rm -rf libpipeline-1.5.3
 ### make
 
 ```sh
-tar xzvf make-4.3.tar.gz &&
-cd       make-4.3        &&
+tar xzvf $LFS/sources/make-4.3.tar.gz &&
+cd        make-4.3                    &&
 
-./configure --prefix=/usr
+./configure --prefix=/usr &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf make-4.3
@@ -1348,14 +1453,14 @@ rm -rf make-4.3
 ### patch
 
 ```sh
-tar xvf patch-2.7.6.tar.xz &&
-cd      patch-2.7.6        &&
+tar xvf $LFS/sources/patch-2.7.6.tar.xz &&
+cd       patch-2.7.6                    &&
 
-./configure --prefix=/usr
+./configure --prefix=/usr &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf patch
@@ -1364,8 +1469,8 @@ rm -rf patch
 ### man-db
 
 ```sh
-tar xvf man-db-2.9.4.tar.xz &&
-cd      man-db-2.9.4        &&
+tar xvf $LFS/sources/man-db-2.9.4.tar.xz &&
+cd       man-db-2.9.4                    &&
 
 sed -i '/find/s@/usr@@' init/systemd/man-db.service.in &&
 ./configure --prefix=/usr                        \
@@ -1375,11 +1480,11 @@ sed -i '/find/s@/usr@@' init/systemd/man-db.service.in &&
             --enable-cache-owner=bin             \
             --with-browser=/usr/bin/lynx         \
             --with-vgrind=/usr/bin/vgrind        \
-            --with-grap=/usr/bin/grap
+            --with-grap=/usr/bin/grap &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf man-db-2.9.4
@@ -1388,34 +1493,34 @@ rm -rf man-db-2.9.4
 ### tar
 
 ```sh
-tar xvf tar-1.34.tar.xz &&
-cd      tar-1.34        &&
+tar xvf $LFS/sources/tar-1.34.tar.xz &&
+cd       tar-1.34                    &&
 
 FORCE_UNSAFE_CONFIGURE=1  \
 ./configure --prefix=/usr \
-            --bindir=/bin
+            --bindir=/bin &&
 
 make         &&
 make check   &&
 make install &&
-make -C doc install-html docdir=/usr/share/doc/tar-1.34
+make -C doc install-html docdir=/usr/share/doc/tar-1.34 &&
 
-cd ..
+cd .. &&
 rm -rf tar-1.34
 ```
 
 ### texinfo
 
 ```sh
-tar xvf texinfo-6.7.tar.xz &&
-cd      texinfo-6.7        &&
+tar xvf $LFS/sources/texinfo-6.7.tar.xz &&
+cd       texinfo-6.7                    &&
 
-./configure --prefix=/usr
+./configure --prefix=/usr &&
 
 make         &&
 make check   &&
 make install &&
-make TEXMF=/usr/share/texmf install-tex
+make TEXMF=/usr/share/texmf install-tex &&
 
 pushd /usr/share/info
   rm -v dir
@@ -1431,25 +1536,25 @@ rm -rf textinfo-6.7
 ### vim
 
 ```sh
-tar xzvf vim-8.2.2433.tar.gz &&
-cd       vim-8.2.2433        &&
+tar xzvf $LFS/sources/vim-8.2.2433.tar.gz &&
+cd        vim-8.2.2433                    &&
 
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h &&
-./configure --prefix=/usr
+./configure --prefix=/usr                                   &&
 
 make                                                          &&
 chown -Rv tester .                                            &&
 su tester -c "LANG=en_US.UTF-8 make -j1 test" &> vim-test.log &&
 make install                                                  &&
 
-ln -sv vim /usr/bin/vi
+ln -sv vim /usr/bin/vi &&
 
 for L in  /usr/share/man/{,*/}man1/vim.1; do
     ln -sv vim.1 $(dirname $L)/vi.1
 done
-ln -sv ../vim/vim82/doc /usr/share/doc/vim-8.2.2433
+ln -sv ../vim/vim82/doc /usr/share/doc/vim-8.2.2433 &&
 
-cat > /etc/vimrc << EOF
+cat > /etc/vimrc << EOF &&
 " Begin /etc/vimrc
 
 " Ensure defaults are set before customizing settings, not after
@@ -1476,11 +1581,11 @@ rm -rf vim-8.2.2433
 This is not part of base Linux From Scratch, but required for using `systemd-boot`.
 
 ```sh
-tar xzvf gnu-efi-3.0.12.tar.gz &&
-cd       gnu-efi-3.0.12        &&
+tar xzvf $LFS/sources/gnu-efi-3.0.12.tar.gz &&
+cd        gnu-efi-3.0.12                    &&
 
-make
-make PREFIX=/usr install
+make                     &&
+make PREFIX=/usr install &&
 
 cd .. &&
 rm -rf gnu-efi-3.0.12
@@ -1491,14 +1596,14 @@ rm -rf gnu-efi-3.0.12
 This is not part of base Linux From Scratch, but enables better and more secure authentication rules.
 
 ```sh
-tar xvf Linux-PAM-1.5.1.tar.xz &&
-cd      Linux-PAM-1.5.1        &&
+tar xvf $LFS/sources/Linux-PAM-1.5.1.tar.xz &&
+cd       Linux-PAM-1.5.1                    &&
 
 ./configure --prefix=/usr                    \
             --sysconfdir=/etc                \
             --libdir=/usr/lib                \
             --enable-securedir=/lib/security \
-            --docdir=/usr/share/doc/Linux-PAM-1.5.1
+            --docdir=/usr/share/doc/Linux-PAM-1.5.1 &&
 
 make
 ```
@@ -1506,8 +1611,8 @@ make
 If this is the first installation, tests require the presence of an `/etc/pam.d/other` file, so create it:
 
 ```sh
-install -v -m755 -d /etc/pam.d
-cat > /etc/pam.d << EOF
+install -v -m755 -d /etc/pam.d &&
+cat > /etc/pam.d << EOF        &&
 #%PAM-1.0
 auth     required   pam_deny.so
 account  required   pam_deny.so
@@ -1532,7 +1637,7 @@ Then install the package:
 
 ```sh
 make install                    &&
-chmod -v 4755 /sbin/unix_chkpwd
+chmod -v 4755 /sbin/unix_chkpwd &&
 
 cd .. &&
 rm -rf Linux-PAM-1.5.1
@@ -1541,7 +1646,7 @@ rm -rf Linux-PAM-1.5.1
 Next, create some configuration files:
 
 ```sh
-install -vdm755 /etc/pam.d &&
+install -vdm755 /etc/pam.d             &&
 cat > /etc/pam.d/system-account << EOF &&
 # Begin /etc/pam.d/system-account
 
@@ -1612,12 +1717,12 @@ sed -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
 sed -i 's/1000/999/' etc/useradd                      &&
 
 ./configure --sysconfdir=/etc \
-            --with-group-name-max-length=32
+            --with-group-name-max-length=32 &&
 
-make &&
-make install
+make         &&
+make install &&
 
-cd ..
+cd .. &&
 rm -rf shadow-4.8.1
 ```
 
@@ -1777,7 +1882,7 @@ EOF
 for PROGRAM in chfn chgpasswd chpasswd chsh groupadd groupdel \
                groupmems groupmod newusers useradd userdel usermod
 do
-    install -v -m644 /etc/pam.d/chage /etc/pam.d/${PROGRAM}
+    install -v -m644 /etc/pam.d/chage /etc/pam.d/${PROGRAM} &&
     sed -i "s/chage/$PROGRAM/" /etc/pam.d/${PROGRAM}
 done
 ```
@@ -1792,8 +1897,8 @@ Remove limits and access files if they exist:
 ### sudo
 
 ```sh
-tar xzvf sudo-1.9.7.tar.gz &&
-cd       sudo-1.9.7        &&
+tar xzvf $LFS/sources/sudo-1.9.7.tar.gz &&
+cd        sudo-1.9.7                    &&
 
 ./configure --prefix=/usr              \
             --libexecdir=/usr/lib      \
@@ -1801,7 +1906,7 @@ cd       sudo-1.9.7        &&
             --with-all-insults         \
             --with-env-editor          \
             --docdir=/usr/share/doc/sudo-1.9.5p2 \
-            --with-passprompt="[sudo] password for %p: "
+            --with-passprompt="[sudo] password for %p: " &&
 
 make
 ```
@@ -1816,8 +1921,8 @@ grep failed make-check.log
 If pass, install:
 
 ```sh
-make install &&
-ln -sfv libsudo_util.so.0.0.0 /usr/lib/sudo/libsudo_util.so.0
+make install                                                  &&
+ln -sfv libsudo_util.so.0.0.0 /usr/lib/sudo/libsudo_util.so.0 &&
 
 cd .. &&
 rm -rf sudo-1.9.7
@@ -1862,8 +1967,8 @@ chmod 644 /etc/pam.d/sudo
 ### libcap PAM module
 
 ```sh
-tar xvf libcap-2.48.tar.xz &&
-cd      libcap-2.48        &&
+tar xvf $LFS/sources/libcap-2.48.tar.xz &&
+cd       libcap-2.48                    &&
 
 make -C pam_cap &&
 
@@ -1876,7 +1981,7 @@ cat > /etc/pam.d/system-auth << EOF &&
 
 auth      optional    pam_cap.so
 EOF
-tail -n +3 /etc/pam.d/system-auth.bak >> /etc/pam.d/system-auth
+tail -n +3 /etc/pam.d/system-auth.bak >> /etc/pam.d/system-auth &&
 
 cd .. &&
 rm -rf libcap-2.48
@@ -1885,15 +1990,15 @@ rm -rf libcap-2.48
 ### libtasn
 
 ```sh
-tar xzvf libtasn1-4.16.0.tar.gz &&
-cd       libtasn1-4.16.0        &&
+tar xzvf $LFS/sources/libtasn1-4.16.0.tar.gz &&
+cd        libtasn1-4.16.0                    &&
 
 ./configure --prefix=/usr \
-            --disable-static
+            --disable-static &&
 
 make         &&
 make install &&
-make -C doc/reference install-data-local
+make -C doc/reference install-data-local &&
 
 cd .. &&
 rm -rf libtasn1-4.16.0
@@ -1902,8 +2007,8 @@ rm -rf libtasn1-4.16.0
 ### p11-kit
 
 ```sh
-tar xvf p11-kit-0.23.22.tar.xz &&
-cd      p11-key-0.23.22        &&
+tar xvf $LFS/sources/p11-kit-0.23.22.tar.xz &&
+cd       p11-key-0.23.22                    &&
 
 sed '20,$ d' -i trust/trust-extract-compat &&
 cat >> trust/trust-extract-compat << "EOF" &&
@@ -1916,13 +2021,13 @@ EOF
 
 ./configure --prefix=/usr     \
             --sysconfdir=/etc \
-            --with-trust-paths=/etc/pki/anchors
+            --with-trust-paths=/etc/pki/anchors &&
 
-make
+make         &&
 make install &&
 ln -sfv /usr/libexec/p11-kit/trust-extract-compat \
-        /usr/bin/update-ca-certificates &&
-ln -sfv ./pkcs11/p11-kit-trust.so /usr/lib/libnssckbi.so
+        /usr/bin/update-ca-certificates                  &&
+ln -sfv ./pkcs11/p11-kit-trust.so /usr/lib/libnssckbi.so &&
 
 cd .. &&
 rm -rf p11-kit-0.23.22
@@ -1931,11 +2036,11 @@ rm -rf p11-kit-0.23.22
 ### make-ca
 
 ```sh
-tar xvf make-ca-1.7.tar.xz &&
-cd      make-ca-1.7        &&
+tar xvf $LFS/sources/make-ca-1.7.tar.xz &&
+cd       make-ca-1.7                    &&
 
-make install &&
-install -vdm755 /etc/ssl/local
+make install                   &&
+install -vdm755 /etc/ssl/local &&
 
 cd .. &&
 rm -rf make-ca-1.7
@@ -1950,18 +2055,18 @@ systemctl enable update-pki.timer
 ### nettle
 
 ```sh
-tar xzvf nettle-3.7.1.tar.gz &&
-cd       nettle-3.7.1        &&
+tar xzvf $LFS/sources/nettle-3.7.1.tar.gz &&
+cd        nettle-3.7.1                    &&
 
 ./configure --prefix=/usr \
-            --disable-static
+            --disable-static &&
 
 make         &&
 make install &&
 
-chmod   -v   755 /usr/lib/lib{hogweed,nettle}.so &&
-install -v -m755 -d /usr/share/doc/nettle-3.7.1  &&
-install -v -m644 nettle.html /usr/share/doc/nettle-3.7.1
+chmod   -v   755 /usr/lib/lib{hogweed,nettle}.so         &&
+install -v -m755 -d /usr/share/doc/nettle-3.7.1          &&
+install -v -m644 nettle.html /usr/share/doc/nettle-3.7.1 &&
 
 cd .. &&
 rm -rf nettle-3.7.1
@@ -1970,15 +2075,15 @@ rm -rf nettle-3.7.1
 ### libunistring
 
 ```sh
-tar xvf libunistring-0.9.10.tar.gz &&
-cd      libunistring-0.9.10        &&
+tar xvf $LFS/sources/libunistring-0.9.10.tar.gz &&
+cd       libunistring-0.9.10                    &&
 
 ./configure --prefix=/usr    \
             --disable-static \
-            --docdir=/usr/share/doc/libunistring-0.9.10
+            --docdir=/usr/share/doc/libunistring-0.9.10 &&
 
-make &&
-make install
+make         &&
+make install &&
 
 cd .. &&
 rm -rf libunistring-0.9.10
@@ -1987,17 +2092,17 @@ rm -rf libunistring-0.9.10
 ### GnuTLS
 
 ```sh
-tar xvf gnutls-3.7.0.tar.xz &&
-cd      gnutls-3.7.0        &&
+tar xvf $LFS/sources/gnutls-3.7.0.tar.xz &&
+cd       gnutls-3.7.0                    &&
 
 ./configure --prefix=/usr                        \
             --docdir=/usr/share/doc/gnutls-3.7.0 \
             --disable-guile                      \
-            --with-default-trust-store-pkcs11="pkcs11:"
+            --with-default-trust-store-pkcs11="pkcs11:" &&
 
-make         &&
-make install &&
-make -C doc/reference install-data-local
+make                                     &&
+make install                             &&
+make -C doc/reference install-data-local &&
 
 cd .. &&
 rm -rf gnutls-3.7.0
@@ -2006,28 +2111,28 @@ rm -rf gnutls-3.7.0
 ### cURL
 
 ```sh
-tar xzvf curl-7.76.1.tar.gz &&
-cd       curl-7.76.1        &&
+tar xzvf $LFS/sources/curl-7.76.1.tar.gz &&
+cd        curl-7.76.1                    &&
 
 ./configure --prefix=/usr    \
             --with-openssl   \
             --with-gnutls    \
             --disable-static
 
-make         &&
-make test    &&
-make install &&
-rm -v /usr/lib/libcurl.la
+make                      &&
+make test                 &&
+make install              &&
+rm -v /usr/lib/libcurl.la &&
 
-cd ..
+cd .. &&
 rm -rf curl-7.76.1
 ```
 
 ### pcre
 
 ```sh
-tar xvf pcre-8.44.tar.bz2 &&
-cd      pcre-8.44         &&
+tar xvf $LFS/sources/pcre-8.44.tar.bz2 &&
+cd       pcre-8.44                     &&
 
 ./configure --prefix=/usr                     \
             --docdir=/usr/share/doc/pcre-8.44 \
@@ -2037,20 +2142,20 @@ cd      pcre-8.44         &&
             --enable-pcregrep-libz            \
             --enable-pcregrep-libbz2          \
             --enable-pcretest-libreadline     \
-            --disable-static
+            --disable-static &&
 
-make &&
-make install
+make         &&
+make install &&
 
-cd ..
+cd .. &&
 rm -rf pcre-8.44
 ```
 
 ### zsh
 
 ```sh
-tar xvf zsh-5.8.tar.xz &&
-cd      zsh-5.8        &&
+tar xvf $LFS/sources/zsh-5.8.tar.xz &&
+cd       zsh-5.8                    &&
 
 ./configure --prefix=/usr                         \
         --docdir=/usr/share/doc/zsh               \
@@ -2080,7 +2185,7 @@ make infodir=/usr/share/info install.info                             &&
 
 install -v -m755 -d                 /usr/share/doc/zsh-5.8/html &&
 install -v -m644 Doc/html/*         /usr/share/doc/zsh-5.8/html &&
-install -v -m644 Doc/zsh.{html,txt} /usr/share/doc/zsh-5.8
+install -v -m644 Doc/zsh.{html,txt} /usr/share/doc/zsh-5.8      &&
 
 cd .. &&
 rm -rf zsh-5.8
@@ -2089,14 +2194,14 @@ rm -rf zsh-5.8
 ### which
 
 ```sh
-tar xzvf which-2.21.tar.gz &&
-cd       which-2.21        &&
+tar xzvf $LFS/sources/which-2.21.tar.gz &&
+cd        which-2.21                    &&
 
 ./configure --prefix=/usr     \
-            --sysconfdir=/etc
+            --sysconfdir=/etc &&
 
-make &&
-make install
+make         &&
+make install &&
 
 cd .. &&
 rm -rf which-2.21
@@ -2107,8 +2212,8 @@ rm -rf which-2.21
 The `gnu-efi=true` option is added to build the efi executables installed by `bootctl install`.
 
 ```sh
-tar xzvf systemd-247.tar.gz &&
-cd       systemd-247        &&
+tar xzvf $LFS/sources/systemd-247.tar.gz &&
+cd        systemd-247                    &&
 
 patch -Np1 -i ../systemd-247-upstream_fixes-1.patch                       &&
 ln -sf /bin/true /usr/bin/xsltproc                                        &&
@@ -2143,7 +2248,7 @@ meson --prefix=/usr                       \
       -Dmode=release                      \
       -Ddocdir=/usr/share/doc/systemd-247 \
       -Dgnu-efi=true                      \
-      ..
+      .. &&
 
 LANG=en_US.UTF-8 ninja         &&
 LANG=en_US.UTF-8 ninja install &&
@@ -2151,9 +2256,9 @@ LANG=en_US.UTF-8 ninja install &&
 rm -f  /usr/bin/xsltproc &&
 rm -rf /usr/lib/pam.d    &&
 
-systemd-machine-id-setup &&
-systemctl preset-all     &&
-systemctl disable systemd-time-wait-sync.service
+systemd-machine-id-setup                         &&
+systemctl preset-all                             &&
+systemctl disable systemd-time-wait-sync.service &&
 
 cd ../.. &&
 rm -rf systemd-247
@@ -2178,13 +2283,13 @@ useradd  -c 'sshd PrivSep' \
 Then unpack and build:
 
 ```sh
-tar xzvf openssh-8.6p1.tar.gz &&
-cd       openssh-8.6p1        &&
+tar xzvf $LFS/sources/openssh-8.6p1.tar.gz &&
+cd        openssh-8.6p1                    &&
 
 sed -e '/INSTALLKEYS_SH/s/)//' -e '260a\  )' -i contrib/ssh-copy-id &&
 ./configure --prefix=/usr                     \
             --sysconfdir=/etc/ssh             \
-            --with-privsep-path=/var/lib/sshd
+            --with-privsep-path=/var/lib/sshd &&
 make
 ```
 
@@ -2205,7 +2310,7 @@ install -v -m644    contrib/ssh-copy-id.1 \
                     /usr/share/man/man1              &&
 install -v -m755 -d /usr/share/doc/openssh-8.6p1     &&
 install -v -m644    INSTALL LICENCE OVERVIEW README* \
-                    /usr/share/doc/openssh-8.6p1
+                    /usr/share/doc/openssh-8.6p1     &&
 
 cd .. &&
 rm -rf openssh-8.6p1
@@ -2232,8 +2337,8 @@ systemctl enable sshd.service
 ### D-Bus
 
 ```sh
-tar xzvf dbus-1.12.20.tar.gz &&
-cd       dbus-1.12.20        &&
+tar xzvf $LFS/sources/dbus-1.12.20.tar.gz &&
+cd        dbus-1.12.20                    &&
 
 ./configure --prefix=/usr                        \
             --sysconfdir=/etc                    \
@@ -2244,12 +2349,12 @@ cd       dbus-1.12.20        &&
             --docdir=/usr/share/doc/dbus-1.12.20 \
             --with-console-auth-dir=/run/console \
             --with-system-pid-file=/run/dbus/pid \
-            --with-system-socket=/run/dbus/system_bus_socket
+            --with-system-socket=/run/dbus/system_bus_socket &&
 
 make         &&
 make install &&
 
-ln -sfv /etc/machine-id /var/lib/dbus
+ln -sfv /etc/machine-id /var/lib/dbus &&
 
 cd .. &&
 rm -rf dbus-1.12.20
@@ -2258,8 +2363,8 @@ rm -rf dbus-1.12.20
 ### procps-ng
 
 ```sh
-tar xvf procps-ng-3.3.17.tar.xz &&
-cd      procps-3.3.17           &&
+tar xvf $LFS/sources/procps-ng-3.3.17.tar.xz &&
+cd       procps-3.3.17                       &&
 
 ./configure --prefix=/usr                            \
             --exec-prefix=                           \
@@ -2267,11 +2372,11 @@ cd      procps-3.3.17           &&
             --docdir=/usr/share/doc/procps-ng-3.3.17 \
             --disable-static                         \
             --disable-kill                           \
-            --with-systemd
+            --with-systemd &&
 
-make       &&
-make check &&
-make install
+make         &&
+make check   &&
+make install &&
 
 cd .. &&
 rm -rf procps-3.3.17
@@ -2280,8 +2385,8 @@ rm -rf procps-3.3.17
 ### util-linux
 
 ```sh
-tar xvf util-linux-2.36.2.tar.xz &&
-cd      util-linux-2.36.2        &&
+tar xvf $LFS/sources/util-linux-2.36.2.tar.xz &&
+cd       util-linux-2.36.2                    &&
 
 ./configure ADJTIME_PATH=/var/lib/hwclock/adjtime   \
             --docdir=/usr/share/doc/util-linux-2.36.2 \
@@ -2294,21 +2399,25 @@ cd      util-linux-2.36.2        &&
             --disable-pylibmount \
             --disable-static     \
             --without-python     \
-            runstatedir=/run
+            runstatedir=/run &&
 
 make                         &&
 chown -Rv tester .           &&
 su tester -c "make -k check" &&
-make install
+make install                 &&
 
-cd ..
+cd .. &&
 rm -rf util-linux-2.36.2
 ```
 
-### e2fsprogs
+### Filesystem programs
+
+Select whichever of these you need support for, depending upon the filesystem(s) you created on your LFS partition(s).
+
+#### e2fsprogs
 
 ```sh
-tar xzvf e2fsprogs-1.46.1.tar.gz &&
+tar xzvf $LFS/sources/e2fsprogs-1.46.1.tar.gz &&
 cd       e2fsprogs-1.46.1        &&
 
 mkdir -v build &&
@@ -2332,8 +2441,20 @@ gunzip -v /usr/share/info/libext2fs.info.gz                                &&
 install-info --dir-file=/usr/share/info/dir /usr/share/info/libext2fs.info &&
 makeinfo -o      doc/com_err.info ../lib/et/com_err.texinfo                &&
 install -v -m644 doc/com_err.info /usr/share/info                          &&
-install-info --dir-file=/usr/share/info/dir /usr/share/info/com_err.info
+install-info --dir-file=/usr/share/info/dir /usr/share/info/com_err.info   &&
 
 cd ../.. &&
 rm -rf e2fsprogs-1.46.1
 ```
+
+#### btrfsprogs
+
+
+
+#### lvm2
+
+
+
+#### mdadm
+
+

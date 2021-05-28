@@ -1,17 +1,6 @@
 # Create initial system skeleton in chroot
 
-## Enter the chroot environment
-
-Note that `+h` argument to `bash`, telling it not to hash the paths to executables. This prevents it from using old versions of tools we are reinstalling in-place and allows picking up new tools instantly.
-
-```sh
-chroot "$LFS" /usr/bin/env -i          \
-    HOME=/root                         \
-    TERM="$TERM"                       \
-    PS1='(lfs chroot) \u:\w\$ '        \
-    PATH=/bin:/usr/bin:/sbin:/usr/sbin \
-    /bin/bash --login +h
-```
+Now we need to fill out the system's directory tree with required and expected files.
 
 ## Create other directories
 
@@ -41,9 +30,12 @@ install -dv -m 1777 /tmp /var/tmp
 See [Linux Standard Base](https://refspecs.linuxfoundation.org/lsb.shtml)
 
 ```sh
-ln -sv /proc/self/mounts /etc/mtab                  &&
-echo "127.0.0.1 localhost $(hostname)" > /etc/hosts &&
-echo "::1       localhost $(hostname)" >> /etc/hosts
+ln -sv /proc/self/mounts /etc/mtab
+
+cat > /etc/hosts << EOF
+127.0.0.1 localhost $(hostname)
+::1       localhost
+EOF
 
 cat > /etc/passwd << EOF
 root:x:0:0:root:/root:/bin/bash
@@ -102,15 +94,17 @@ EOF
 
 ## Create a temporary test user
 
-Some tests need to be run as a non-root user, so we will create on temporarily and delete it when system bootstrapping is complete.
+Some tests need to be run as a non-root user, so we will create one temporarily and delete it when system bootstrapping is complete.
 
 ```sh
-echo "tester:x:$(ls -n $(tty) | cut -d" " -f3):101::/home/tester:/bin/bash" >> /etc/passwd
-echo "tester:x:101:" >> /etc/group
+echo "tester:x:$(ls -n $(tty) | cut -d" " -f3):101::/home/tester:/bin/bash" >> /etc/passwd &&
+echo "tester:x:101:" >> /etc/group                                                         &&
 install -o tester -d /home/tester
 ```
 
 ## Remove `I have no name!` from prompt
+
+Now that the root user exists, we can re-login to associated uid 0 with the name.
 
 ```sh
 exec /bin/bash --login +h

@@ -99,13 +99,16 @@ Inside the root of the `<new system>` will be a directory tree conforming to the
         /mnt
 ```
 
-Creating the full directory layout in the Linux From Scratch guest happens later. For now, just create a `/sources` directory and mount it:
+Creating the full directory layout in the Linux From Scratch guest happens later. For now, just create a `/sources` directory and mount it, ensuring the stick bit is set:
 
 ```sh
-sudo mkdir -p  /mnt/lfs
-sudo mkfs.ext4 /dev/<your lfs partition>
-sudo mount     /dev/<your lfs partition> /mnt/lfs
-sudo mkdir -p  /mnt/lfs/sources
+sudo su -
+export LFS=/mnt/lfs
+sudo mkdir -p       $LFS
+sudo mkfs.ext4      /dev/<your lfs partition>
+sudo mount          /dev/<your lfs partition> $LFS
+sudo mkdir -v       $LFS/sources
+sudo chmod -v  a+wt $LFS/sources
 ```
 
 Then set the environment variable `LFS` to `/mnt/lfs` to follow the instructions for obtaining and building the initial set of bootstrapping packages.
@@ -115,7 +118,8 @@ Then set the environment variable `LFS` to `/mnt/lfs` to follow the instructions
 In order to minimize the risk of damaging your host system, Linux From Scratch recommends creating a user `lfs` and giving it ownership of the sources directory:
 
 ```sh
-sudo useradd -m lfs -s /bin/bash
+sudo groupadd lfs
+sudo useradd -m -k /dev/null -g lfs -s /bin/bash lfs
 sudo chown lfs:lfs /mnt/lfs/sources
 su lfs
 ```
@@ -148,16 +152,29 @@ EOF
 From the host system, download the list of packages and checksums provided by Linux From Scratch and use it to download the required packages into the `$LFS/sources` directory:
 
 ```sh
-wget https://www.linuxfromscratch.org/lfs/view/stable-systemd/wget-list
-wget https://www.linuxfromscratch.org/lfs/view/stable-systemd/md5sums
-
-mkdir -v $LFS/sources
-chmod -v a+wt $LFS/sources
+wget https://www.linuxfromscratch.org/lfs/view/development/wget-list &&
+wget https://www.linuxfromscratch.org/lfs/view/development/md5sums   &&
 
 wget --input-file=wget-list --continue --directory-prefix=$LFS/sources
+cp md5sums $LFS/sources &&
 pushd $LFS/sources
   md5sum -c md5sums
 popd
+```
+
+### Updates from LFS 10.1-systemd
+
+We will be using packages from the development version of Linux From Scratch, rather than stable LFS, as well as `linux-5.12.7`, which is the latest stable version of the Linux kernel. Download these and replace the versions provided by `LFS`:
+
+```sh
+wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.12.7.tar.xz -O $LFS/sources/linux-5.12.7.tar.xz &&
+rm  $LFS/sources/linux-5.12.2.tar.xz
+```
+
+We will also download `isl-0.24`, which is an optional dependency of `gcc` for manipulating constrained integer sets:
+
+```sh
+wget http://isl.gforge.inria.fr/isl-0.24.tar.xz -O $LFS/sources/isl-0.24.tar.xz
 ```
 
 ### Add-ons
@@ -165,30 +182,31 @@ popd
 These additional packages are not in the default LFS list, but are needed for `systemd-boot` to work, which we will be using in lieu of `GRUB`:
 
 ```sh
-wget https://github.com/kontais/gnu-efi/archive/refs/tags/3.0.12.tar.gz -O $LFS/sources/gnu-efi-3.0.12.tar.gz
-wget https://github.com/rhboot/efivar/releases/download/37/efivar-37.tar.bz2 -O $LFS/sources/efivar-37.tar.bz2
-wget https://www.linuxfromscratch.org/patches/blfs/svn/efivar-37-gcc_9-1.patch -O $LFS/sources/efivar-37-gcc_9-1.patch
+wget https://github.com/kontais/gnu-efi/archive/refs/tags/3.0.12.tar.gz -O $LFS/sources/gnu-efi-3.0.12.tar.gz          &&
+wget https://github.com/rhboot/efivar/releases/download/37/efivar-37.tar.bz2 -O $LFS/sources/efivar-37.tar.bz2         &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/efivar-37-gcc_9-1.patch -O $LFS/sources/efivar-37-gcc_9-1.patch &&
+rm grub-2.06~rc1.tar.xz
 ```
 
 We will also add `curl`, `openssh`, `pam`, and `sudo` to make life a bit easier for using the new system as a headless VM, allowing connection without needing to use a management console. Even for a bare metal headless system, this can be handy since you can utilize a graphical web browser and cut and paste features via `ssh` from a terminal emulator rather than the bare console.
 
 ```sh
-wget https://curl.se/download/curl-7.76.1.tar.gz -O $LFS/sources/curl-7.76.1.tar.gz
-wget https://mirror.esc7.net/pub/OpenBSD/OpenSSH/portable/openssh-8.6p1.tar.gz -O $LFS/sources/openssh-8.6p1.tar.gz
-wget https://github.com/linux-pam/linux-pam/releases/download/v1.5.1/Linux-PAM-1.5.1.tar.xz -O $LFS/sources/Linux-PAM-1.5.1.tar.xz
+wget https://curl.se/download/curl-7.76.1.tar.gz -O $LFS/sources/curl-7.76.1.tar.gz                                                &&
+wget https://mirror.esc7.net/pub/OpenBSD/OpenSSH/portable/openssh-8.6p1.tar.gz -O $LFS/sources/openssh-8.6p1.tar.gz                &&
+wget https://github.com/linux-pam/linux-pam/releases/download/v1.5.1/Linux-PAM-1.5.1.tar.xz -O $LFS/sources/Linux-PAM-1.5.1.tar.xz &&
 wget https://www.sudo.ws/dist/sudo-1.9.7.tar.gz -O $LFS/sources/sudo-1.9.7.tar.gz
 ```
 
 We will also be adding `libtasn`, `p11-kit`, `make-ca`, `nettle`, `libunistring`, `GnuTLS`, `PCRE`, and `zsh`:
 
 ```sh
-wget https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.16.0.tar.gz -O $LFS/sources/libtasn1-4.16.0.tar.gz
-wget https://github.com/p11-glue/p11-kit/releases/download/0.23.22/p11-kit-0.23.22.tar.xz -O $LFS/sources/p11-kit-0.23.22.tar.xz
-wget https://github.com/djlucas/make-ca/releases/download/v1.7/make-ca-1.7.tar.xz -O $LFS/sources/make-ca-1.7.tar.xz
-wget https://ftp.gnu.org/gnu/nettle/nettle-3.7.1.tar.gz -O $LFS/sources/nettle-3.7.1.tar.gz
-wget https://ftp.gnu.org/gnu/libunistring/libunistring-0.9.10.tar.xz -O $LFS/sources/libunistring-0.9.10.tar.gz
-wget https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/gnutls-3.7.0.tar.xz -O $LFS/sources/gnutls-3.7.0.tar.xz
-wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.bz2 -O $LFS/sources/pcre-8.44.tar.bz2
+wget https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.16.0.tar.gz -O $LFS/sources/libtasn1-4.16.0.tar.gz                              &&
+wget https://github.com/p11-glue/p11-kit/releases/download/0.23.22/p11-kit-0.23.22.tar.xz -O $LFS/sources/p11-kit-0.23.22.tar.xz &&
+wget https://github.com/djlucas/make-ca/releases/download/v1.7/make-ca-1.7.tar.xz -O $LFS/sources/make-ca-1.7.tar.xz             &&
+wget https://ftp.gnu.org/gnu/nettle/nettle-3.7.1.tar.gz -O $LFS/sources/nettle-3.7.1.tar.gz                                      &&
+wget https://ftp.gnu.org/gnu/libunistring/libunistring-0.9.10.tar.xz -O $LFS/sources/libunistring-0.9.10.tar.gz                  &&
+wget https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/gnutls-3.7.0.tar.xz -O $LFS/sources/gnutls-3.7.0.tar.xz                        &&
+wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.bz2 -O $LFS/sources/pcre-8.44.tar.bz2                                           &&
 wget http://www.zsh.org/pub/zsh-5.8.tar.xz -O $LFS/sources/zsh-5.8.tar.xz
 ```
 

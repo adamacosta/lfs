@@ -8,7 +8,8 @@ find /usr/{lib,libexec} -name \*.la -delete
 
 ```sh
 exit
-umount $LFS/dev{/pts,} &&
+umount $LFS/dev{/pts,}               &&
+umount $LFS/sys/firmware/efi/efivars &&
 umount $LFS/{sys,proc,run}
 ```
 
@@ -24,7 +25,7 @@ strip --strip-unneeded $LFS/tools/bin/*
 
 ```sh
 cd $LFS &&
-tar cJpvf $HOME/lfs-temp-tools-10.1-systemd.tar.xz .
+tar cJpvf $HOME/lfs-temp-tools-10.1-systemd.tar.xz --exclude='sources' .
 ```
 
 If a restore is needed, run:
