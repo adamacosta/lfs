@@ -47,6 +47,19 @@ This can then be customized using the `ncurses` based graphical config editor (r
 make LANG=en_US.UTF-8 make menuconfig
 ```
 
+### UEFI booting
+
+To ensure support for EFI is enabled:
+
+```
+CONFIG_EFI_VARS=y : Firmware Drivers > EFI (Extensible Firmware Interface) Support > EFI Variable Support via sysfs
+CONFIG_EFI_RUNTIME_MAP=y : Firmware Drivers > EFI (Extensible Firmware Interface) Support > Export EFI runtime maps to sysfs
+CONFIG_EFI_BOOTLOADER_CONTROL=y : Firmware Drivers > EFI (Extensible Firmware Interface) Support > EFI Bootloader Control
+CONFIG_EFIVAR_FS=y : File systems > Pseudo filesystems > EFI Variable filesystem
+```
+
+### Running LFS in a VM
+
 In order to run under Microsoft Hyper-V, all of the following options need to be set:
 
 ```
@@ -68,18 +81,43 @@ CONFIG_VSOCKETS: Networking support > Networking options > Virtual Socket protoc
 CONFIG_HYPERV_VSOCKETS: Networking support > Networking options > Hyper-V transport for Virtual Sockets
 ```
 
-Also ensure support for EFI is enabled:
+### Running as a hypervisor
+
+To include support for virtualization in the kernel, include the following options, noting that only one of `CONFIG_KVM_INTEL` or `CONFIG_KVM_AMD` is needed, depending on which processor type you have.
 
 ```
-CONFIG_EFI_VARS=y : Firmware Drivers > EFI (Extensible Firmware Interface) Support > EFI Variable Support via sysfs
-CONFIG_EFI_RUNTIME_MAP=y : Firmware Drivers > EFI (Extensible Firmware Interface) Support > Export EFI runtime maps to sysfs
-CONFIG_EFI_BOOTLOADER_CONTROL=y : Firmware Drivers > EFI (Extensible Firmware Interface) Support > EFI Bootloader Control
-CONFIG_EFIVAR_FS=y : File systems > Pseudo filesystems > EFI Variable filesystem
+[*] Virtualization:  --->                                             [CONFIG_VIRTUALIZATION]
+  <*/M>   Kernel-based Virtual Machine (KVM) support [CONFIG_KVM]
+  <*/M>     KVM for Intel (and compatible) processors support         [CONFIG_KVM_INTEL]
+  <*/M>     KVM for AMD processors support                            [CONFIG_KVM_AMD]
+
+[*] Networking support  --->                         [CONFIG_NET]
+  Networking options  --->
+    <*/M> 802.1d Ethernet Bridging                   [CONFIG_BRIDGE]
+Device Drivers  --->
+  [*] Network device support  --->                   [CONFIG_NETDEVICES]
+    <*/M>    Universal TUN/TAP device driver support [CONFIG_TUN]
 ```
 
-Finally, ensure whichever filesystem(s) you chose to create on your partitions are enabled.
+To see if your processor supports virtualization (vmx is Intel, svm is AMD):
 
-Once the final `.config` file has been generated, build the kernel and install modules (provided you enabled module support):
+```sh
+egrep --color=auto '(vmx|svm)' /proc/cpuinfo
+```
+
+Beware that this will print out the information for every processor core, so if you have a many core processor, you may want to filter to just look at the first one:
+
+```sh
+cat /proc/cpuinfo | grep -A19 'processor.*: 0' | egrep --color=auto '(vmx|svm)'
+```
+
+### Filesystem support
+
+Finally, ensure whichever filesystem(s) you chose to create on your partition(s) are enabled.
+
+### Building
+
+Once the final `.config` file has been generated, build the kernel and install modules (provided you enabled module support), you can perform the build. If you are updating or changing the kernel, you may want to diff the `.config` file with the options saved off from your last kernel build, or even just use the same file if you didn't intend to change anything. Note that if the update is more than a patch, config options may have changed, so be careful blindly applying the same config.
 
 ```sh
 make
@@ -105,7 +143,7 @@ cp -iv System.map /boot/System.map-5.10.17
 cp -iv .config /boot/config-5.10.17
 ```
 
-Finally, install the kernel documentation:
+To install the kernel documentation:
 
 ```sh
 install -d /usr/share/doc/linux-5.10.17
