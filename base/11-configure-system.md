@@ -12,6 +12,8 @@ Type=ether
 [Network]
 DHCP=yes
 IPv6PrivacyExtensions=yes
+DNSOverTLS=yes
+MulticastDNS=yes
 
 [DHCPv4]
 RouteMetric=512
@@ -21,6 +23,27 @@ RouteMetric=512
 EOF
 
 ln -sfv /run/systemd/resolve/resolv.conf /etc/resolv.conf
+```
+
+Optional wireless config:
+
+```sh
+cat << EOF > /etc/systemd/network/20-wlan.network
+[Match]
+Type=wlan
+
+[Network]
+DHCP=yes
+IPv6PrivacyExtensions=yes
+DNSOverTLS=yes
+MulticastDNS=yes
+
+[DHCPv4]
+RouteMetric=1024
+
+[DHCPv6]
+RouteMetric=1024
+EOF
 ```
 
 ## Configure hostname and hosts file
@@ -51,9 +74,13 @@ EOF
 
 ## Configure locale
 
+It is up to you how you want to configure the locale. Every locale available in `glibc` was built, so there is no need to create them. Simply set the necessary variables. The following are my personal preferences:
+
 ```sh
 cat > /etc/locale.conf << EOF
 LANG=en_US.UTF-8
+LC_TIME=en_DK.UTF-8
+LC_COLLATE=C
 EOF
 ```
 
@@ -168,8 +195,8 @@ Afterwards, set the prompt and colorize the `ls` command:
 
 ```sh
 echo "autoload -U colors && colors" >> ~/.zshrc
-echo "PS1=\"[%(#.%F{red}.%F{blue})%n%f@%F{blue}%m %1~%f]%(#.#.$) \"" >> ~/.zshrc
-echo "eval $(dircolors)" >> ~/.zshrc
+echo "PS1=\"[%(#.%F{red}.%F{cyan})%n%f@%F{cyan}%m %1~%f]%(#.#.$) \"" >> ~/.zshrc
+eval dircolors >> ~/.zshrc
 echo "alias ls='ls --color=auto'" >> ~/.zshrc
 ```
 
@@ -194,8 +221,7 @@ wget https://github.com/${USER}.keys -O $LFS/home/lfs/.ssh/authorized_keys
 Then, from inside the chroot:
 
 ```sh
-chown lfs:lfs /home/lfs/.ssh
-chown lfs:lfs /home/lfs/.ssh/authorized_keys
+sudo chown -R lfs:lfs /home/lfs/.ssh
 chmod 750 /home/lfs/.ssh
 chmod 640 /home/lfs/.ssh/authorized_keys
 ```

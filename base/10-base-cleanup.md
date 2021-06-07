@@ -5,18 +5,9 @@
 ### Save off copies of symbols needed for valgrind and gdb tests
 
 ```sh
-save_lib="ld-2.33.so libc-2.33.so libpthread-2.33.so libthread_db-1.0.so"
-
-cd /lib
-
-for LIB in $save_lib; do
-    objcopy --only-keep-debug $LIB $LIB.dbg
-    strip --strip-unneeded $LIB
-    objcopy --add-gnu-debuglink=$LIB.dbg $LIB
-done
-
-save_usrlib="libquadmath.so.0.0.0 libstdc++.so.6.0.28
-             libitm.so.1.0.0 libatomic.so.1.2.0"
+save_lib="ld-2.33.so libc-2.33.so libpthread-2.33.so libthread_db-1.0.so
+          libquadmath.so.0.0.0 libstdc++.so.6.0.28
+          libitm.so.1.0.0 libatomic.so.1.2.0"
 
 cd /usr/lib
 
@@ -26,7 +17,7 @@ for LIB in $save_usrlib; do
     objcopy --add-gnu-debuglink=$LIB.dbg $LIB
 done
 
-unset LIB save_lib save_usrlib
+unset LIB save_lib
 ```
 
 ### Strip symbols from remaining libs and bins
@@ -35,10 +26,10 @@ unset LIB save_lib save_usrlib
 find /usr/lib -type f -name \*.a \
    -exec strip --strip-debug {} ';'
 
-find /lib /usr/lib -type f -name \*.so\* ! -name \*dbg \
+find /usr/lib -type f -name \*.so\* ! -name \*dbg \
    -exec strip --strip-unneeded {} ';'
 
-find /{bin,sbin} /usr/{bin,sbin,libexec} -type f \
+find /usr/{bin,sbin,libexec} -type f \
     -exec strip --strip-all {} ';'
 ```
 

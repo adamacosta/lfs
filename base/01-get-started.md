@@ -167,7 +167,7 @@ popd
 We will be using packages from the development version of Linux From Scratch, rather than stable LFS, as well as `linux-5.12.7`, which is the latest stable version of the Linux kernel. Download these and replace the versions provided by `LFS`:
 
 ```sh
-wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.12.7.tar.xz -O $LFS/sources/linux-5.12.7.tar.xz &&
+wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.12.9.tar.xz -O $LFS/sources/linux-5.12.9.tar.xz &&
 rm  $LFS/sources/linux-5.12.2.tar.xz
 ```
 

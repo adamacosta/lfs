@@ -93,12 +93,12 @@ rm -rf sendmail-8.16.1
 ## SQLite
 
 ```sh
-curl https://sqlite.org/2021/sqlite-autoconf-3340100.tar.gz -o sqlite-autoconf-3340100.tar.gz
-curl https://sqlite.org/2021/sqlite-doc-3340100.zip -o sqlite-doc-3340100.zip
-tar xzvf sqlite-autoconf-3340100.tar.gz
-cd sqlite-autoconf-3340100
+curl https://sqlite.org/2021/sqlite-autoconf-3340100.tar.gz -o sqlite-autoconf-3340100.tar.gz &&
+curl https://sqlite.org/2021/sqlite-doc-3340100.zip -o sqlite-doc-3340100.zip                 &&
+tar  xzvf sqlite-autoconf-3340100.tar.gz                                                      &&
+cd   sqlite-autoconf-3340100                                                                  &&
 
-unzip -q ../sqlite-doc-3340100.zip
+unzip -q ../sqlite-doc-3340100.zip &&
 ./configure --prefix=/usr     \
             --disable-static  \
             --enable-fts5     \
@@ -109,7 +109,8 @@ unzip -q ../sqlite-doc-3340100.zip
             -DSQLITE_ENABLE_UNLOCK_NOTIFY=1   \
             -DSQLITE_ENABLE_DBSTAT_VTAB=1     \
             -DSQLITE_SECURE_DELETE=1          \
-            -DSQLITE_ENABLE_FTS3_TOKENIZER=1"
+            -DSQLITE_ENABLE_FTS3_TOKENIZER=1" &&
+
 make
 sudo make install
 sudo install -v -m755 -d /usr/share/doc/sqlite-3.34.1 &&
@@ -118,6 +119,8 @@ sudo cp -v -R sqlite-doc-3340100/* /usr/share/doc/sqlite-3.34.1
 cd ..
 rm -rf sqlite-autoconf-3340100
 ```
+
+At this point, you may wish to rebuild `Python` to enable the optional loadable extension modules.
 
 ## Aspell
 
@@ -281,4 +284,10 @@ sudo make install
 
 cd ..
 rm -rf fcron-3.2.1
+```
+
+## PCRE2
+
+```sh
+
 ```

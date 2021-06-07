@@ -27,8 +27,8 @@ If you created a separate build tree: `cd build_dir`.
 ### man-pages
 
 ```sh
-tar xvf $LFS/sources/man-pages-5.11.tar.xz &&
-cd       man-pages-5.11                    &&
+tar xvf /sources/man-pages-5.11.tar.xz &&
+cd       man-pages-5.11                &&
 
 make install &&
 
@@ -39,8 +39,8 @@ rm -rf man-pages-5.11
 ### iana-etc
 
 ```sh
-tar xzvf $LFS/sources/iana-etc-20210407.tar.gz &&
-cd        iana-etc-20210407                    &&
+tar xzvf /sources/iana-etc-20210407.tar.gz &&
+cd        iana-etc-20210407                &&
 
 cp services protocols /etc &&
 
@@ -55,8 +55,8 @@ rm -rf iana-etc-20210407
 First is the initial compile and installation of the Name Service Cache Daemon and locales. Beware that at least a few tests are likely to fail here. You can check the LFS book for expected failures. Generally at least some of cpu feature tests are going to fail depending upon architecture. The install step will complain if `/etc/ld.so.conf` does not exist, so we will create it even though it will be empty for now.
 
 ```sh
-tar xvf $LFS/sources/glibc-2.33.tar.xz &&
-cd       glibc-2.33                    &&
+tar xvf /sources/glibc-2.33.tar.xz &&
+cd       glibc-2.33                &&
 
 patch -Np1 -i ../../glibc-2.33-fhs-1.patch &&
 sed -e '402a\      *result = local->data.services[database_index];' \
@@ -160,8 +160,8 @@ rm -rf glibc-2.33
 ### zlib
 
 ```sh
-tar xvf $LFS/sources/zlib-1.2.11.tar.xz &&
-cd       zlib-1.2.11                    &&
+tar xvf /sources/zlib-1.2.11.tar.xz &&
+cd       zlib-1.2.11                &&
 
 ./configure --prefix=/usr &&
 
@@ -178,8 +178,8 @@ rm -rf zlib-1.2.11
 ### bzip2
 
 ```sh
-tar xzvf $LFS/sources/bzip2-1.0.8.tar.gz &&
-cd        bzip2-1.0.8                    &&
+tar xzvf /sources/bzip2-1.0.8.tar.gz &&
+cd        bzip2-1.0.8                &&
 
 patch -Np1 -i ../../bzip2-1.0.8-install_docs-1.patch     &&
 sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@'   Makefile    &&
@@ -190,12 +190,13 @@ make clean                 &&
 make                       &&
 make PREFIX=/usr install   &&
 
-cp -v  bzip2-shared /usr/bin/bzip2 &&
-cp -av libbz2.so*   /usr/lib       &&
-rm -v  /usr/bin/{bunzip2,bzcat}    &&
-ln -sv bzip2 /usr/bin/bunzip2      &&
-ln -sv bzip2 /usr/bin/bzcat        &&
-rm -fv /usr/lib/libbz2.a           &&
+cp -v  bzip2-shared /usr/bin/bzip2      &&
+cp -av libbz2.so*   /usr/lib            &&
+ln -sv libbz2.so.1.0 /usr/lib/libbz2.so &&
+rm -v  /usr/bin/{bunzip2,bzcat}         &&
+ln -sv bzip2 /usr/bin/bunzip2           &&
+ln -sv bzip2 /usr/bin/bzcat             &&
+rm -fv /usr/lib/libbz2.a                &&
 
 cd .. &&
 rm -rf bzip2-1.0.8
@@ -204,8 +205,8 @@ rm -rf bzip2-1.0.8
 ### xz
 
 ```sh
-tar xvf $LFS/sources/xz-5.2.5.tar.xz &&
-cd       xz-5.2.5                    &&
+tar xvf /sources/xz-5.2.5.tar.xz &&
+cd       xz-5.2.5                &&
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -656,14 +657,83 @@ make -j 4 &&
 
 ulimit -s 32768    &&
 chown -Rv tester . &&
-su tester -c "PATH=$PATH make -k check" &&
+su tester -c "PATH=$PATH make -k check"
+```
 
+To check the results, run:
+
+```sh
+../contrib/test_summary | grep -A7 Summ
+```
+
+This will produce output that looks like this:
+
+```
+        === g++ Summary ===
+
+# of expected passes        208074
+# of unexpected failures    3
+# of unexpected successes   3
+# of expected failures      1054
+# of unsupported tests      8962
+/sources/build_dir/gcc-11.1.0/build/gcc/xg++  version 11.1.0 (GCC)
+--
+        === gcc Summary ===
+
+# of expected passes        160277
+# of expected failures      860
+# of unsupported tests      2389
+/sources/build_dir/gcc-11.1.0/build/gcc/xgcc  version 11.1.0 (GCC)
+
+        === libatomic tests ===
+--
+        === libatomic Summary ===
+
+# of expected passes        54
+        === libgomp tests ===
+
+
+Running target unix
+
+        === libgomp Summary ===
+
+# of expected passes        2894
+# of expected failures      6
+# of unsupported tests      308
+        === libitm tests ===
+
+
+--
+        === libitm Summary ===
+
+# of expected passes        42
+# of expected failures      3
+# of unsupported tests      1
+        === libstdc++ tests ===
+
+
+--
+        === libstdc++ Summary ===
+
+# of expected passes        14769
+# of unexpected failures    7
+# of expected failures      104
+# of unsupported tests      352
+
+Compiler version: 11.1.0 (GCC)
+```
+
+You can compare to results found at [gcc test results archive](https://gcc.gnu.org/pipermail/gcc-testresults/). Many tests will fail, but just be sure you're not seeing disproportionately more failures than the developers.
+
+To install:
+
+```sh
 make install &&
 
-rm    -rf   /usr/lib/gcc/$(gcc -dumpmachine)/10.2.0/include-fixed/bits/ &&
-chown -v -R root:root /usr/lib/gcc/*linux-gnu/10.2.0/include{,-fixed}   &&
+rm    -rf   /usr/lib/gcc/$(gcc -dumpmachine)/11.1.0/include-fixed/bits/ &&
+chown -v -R root:root /usr/lib/gcc/*linux-gnu/11.1.0/include{,-fixed}   &&
 ln    -sv   ../usr/bin/cpp /lib/cpp                                     &&
-ln    -sfv  ../../libexec/gcc/$(gcc -dumpmachine)/10.2.0/liblto_plugin.so \
+ln    -sfv  ../../libexec/gcc/$(gcc -dumpmachine)/11.1.0/liblto_plugin.so \
             /usr/lib/bfd-plugins/                                       &&
 mkdir -pv   /usr/share/gdb/auto-load/usr/lib                            &&
 mv    -v    /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib           &&
@@ -674,7 +744,7 @@ rm -rf gcc-11.1.0
 
 #### Sanity check gcc
 
-Linux From Scratch recommends making a simple test program:
+Linux From Scratch recommends making a simple test program. It is an empty program because we are only interested in the build log.
 
 ```sh
 echo 'int main(){}' > dummy.c
@@ -707,8 +777,8 @@ Note that it should say differently if you're not running on `x86_64` architectu
 ### pkgconfig
 
 ```sh
-tar xzvf $LFS/sources/pkg-config-0.29.2 &&
-cd        pkg-config-0.29.2             &&
+tar xzvf $LFS/sources/pkg-config-0.29.2.tar.gz &&
+cd        pkg-config-0.29.2                    &&
 
 ./configure --prefix=/usr              \
             --with-internal-glib       \
@@ -740,7 +810,7 @@ cd        ncurses-6.2                    &&
 make         &&
 make install &&
 
-for lib in ncurses form panel menu ; do
+for lib in ncurses form panel menu tinfo ; do
     rm -vf                    /usr/lib/lib${lib}.so        &&
     echo "INPUT(-l${lib}w)" > /usr/lib/lib${lib}.so        &&
     ln -sfv ${lib}w.pc        /usr/lib/pkgconfig/${lib}.pc
@@ -818,18 +888,18 @@ rm -rf gettext-0.21
 ### bison
 
 ```sh
-tar xvf $LFS/sources/bison-3.7.5.tar.xz &&
-cd       bison-3.7.5                    &&
+tar xvf $LFS/sources/bison-3.7.6.tar.xz &&
+cd       bison-3.7.6                    &&
 
 ./configure --prefix=/usr \
-            --docdir=/usr/share/doc/bison-3.7.5 &&
+            --docdir=/usr/share/doc/bison-3.7.6 &&
 
 make         &&
 make check   &&
 make install &&
 
 cd .. &&
-rm -rf bison-3.7.5
+rm -rf bison-3.7.6
 ```
 
 ### grep
@@ -868,14 +938,25 @@ su tester << EOF   &&
 PATH=$PATH make tests < $(tty)
 EOF
 
-make install &&
-exec /bin/bash --login +h &&
+make install
+```
 
+Be sure to log back in now that you have a new installation.
+
+```sh
+exec /bin/bash --login +h
+```
+
+Then delete the build tree:
+
+```sh
 cd .. &&
-rm -rf base-5.1
+rm -rf bash-5.1
 ```
 
 ### libtool
+
+As noted in Linux From Scratch, five tests are expected to fail when run before `automake` is built due to circular dependencies.
 
 ```sh
 tar xvf $LFS/sources/libtool-2.4.6.tar.xz &&
@@ -894,6 +975,8 @@ rm -rf libtool-2.4.6
 ```
 
 ### gdbm
+
+The "version" test is known to fail.
 
 ```sh
 tar xzvf $LFS/sources/gdbm-1.19.tar.gz &&
@@ -925,27 +1008,27 @@ make -j1 check   &&
 make     install &&
 
 cd .. &&
-rm -rf gperg-3.1
+rm -rf gperf-3.1
 ```
 
 ### expat
 
 ```sh
-tar xvf $LFS/sources/expat-2.2.10.tar.xz &&
-cd       expat-2.2.10                    &&
+tar xvf $LFS/sources/expat-2.4.1.tar.xz &&
+cd       expat-2.4.1                    &&
 
 ./configure --prefix=/usr    \
             --disable-static \
-            --docdir=/usr/share/doc/expat-2.2.10 &&
+            --docdir=/usr/share/doc/expat-2.4.1 &&
 
 make         &&
 make check   &&
 make install &&
 
-install -v -m644 doc/*.{html,png,css} /usr/share/doc/expat-2.2.10 &&
+install -v -m644 doc/*.{html,png,css} /usr/share/doc/expat-2.4.1 &&
 
 cd .. &&
-rm -rf expat-2.2.10
+rm -rf expat-2.4.1
 ```
 
 ### inetutils
@@ -962,7 +1045,8 @@ cd       inetutils-2.0                    &&
             --disable-rexec      \
             --disable-rlogin     \
             --disable-rsh        \
-            --disable-servers &&
+            --disable-servers    \
+            --disable-talk &&
 
 make         &&
 make check   &&
@@ -1059,9 +1143,11 @@ rm -rf autoconf-2.71
 
 ### automake
 
+Several `automake` tests are expected to fail.
+
 ```sh
-tar xvf $LFS/sources/automake-1.16.3.tar.xz &&
-cd       automake-1.16.3                    &&
+tar xvf /sources/automake-1.16.3.tar.xz &&
+cd       automake-1.16.3                &&
 
 sed -i "s/''/etags/" t/tags-lisp-space.sh &&
 ./configure --prefix=/usr \
@@ -1075,11 +1161,13 @@ cd .. &&
 rm -rf automake-1.16.3
 ```
 
+At this point, you should be able to rebuild `libtool` if you wish to make all of the tests pass.
+
 ### kmod
 
 ```sh
-tar xvf $LFS/sources/kmod-28.tar.xz &&
-cd       kmod-28                    &&
+tar xvf /sources/kmod-28.tar.xz &&
+cd       kmod-28                &&
 
 ./configure --prefix=/usr          \
             --bindir=/bin          \
@@ -1092,7 +1180,9 @@ cd       kmod-28                    &&
 make         &&
 make install &&
 
-ln -sfv kmod /bin/lsmod &&
+for target in depmod insmod lsmod modinfo modprobe rmmod; do
+  sudo ln -sfv kmod /usr/bin/$target
+done
 
 cd .. &&
 rm -rf kmod-28
@@ -1101,8 +1191,8 @@ rm -rf kmod-28
 ### libelf
 
 ```sh
-tar xvf $LFS/sources/elfutils-0.183.tar.bz2 &&
-cd       elfutils-0.183.0                   &&
+tar xvf /sources/elfutils-0.183.tar.bz2 &&
+cd       elfutils-0.183                 &&
 
 ./configure --prefix=/usr                \
             --disable-debuginfod         \
@@ -1116,14 +1206,14 @@ install -vm644 config/libelf.pc /usr/lib/pkgconfig &&
 rm /lib/libelf.a                                   &&
 
 cd .. &&
-rm -rf elfutils-0.183.0
+rm -rf elfutils-0.183
 ```
 
 ### libffi
 
 ```sh
-tar xzvf $LFS/sources/libffi-3.3.tar.gz &&
-cd        libffi-3.3                    &&
+tar xzvf /sources/libffi-3.3.tar.gz &&
+cd        libffi-3.3                &&
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -1157,16 +1247,39 @@ mv -v /usr/share/doc/openssl /usr/share/doc/openssl-1.1.1k &&
 cp -vfr doc/* /usr/share/doc/openssl-1.1.1k                &&
 
 cd .. &&
-rm -rf openssl-1.1.1j
+rm -rf openssl-1.1.1k
 ```
 
 ### Python
 
 We will provide links from `/usr/bin/python3` to `/usr/bin/python` and `/usr/bin/pip3` to `/usr/bin/pip` as has been standard on many distros since Python 2 went past its EOL.
 
+Python can optionally include C modules for `uuid` and `sqlite` if these are available on the system. Though presented as optional extras, you may wish to install them now. If you add `sqlite`, also add the `--enable-loadable-sqlite-extensions` flag to the `configure` script.
+
+#### libuuid
+
+If you wish to install this:
+
 ```sh
-tar xvf $LFS/sources/Python-3.9.5.tar.xz &&
-cd       Python-3.9.5                    &&
+tar xvf /sources/libuuid-1.0.3.tar.gz &&
+cd       libuuid-1.0.3                &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make         &&
+make check   &&
+make install &&
+
+cd ..
+rm -rf libuuid-1.0.3
+```
+
+It is not recommended to run tests in the chroot environment as the socket tests will hang indefinitely. When the new system is booted into and a network is available, `Python` can be rebuilt and tests run. This is a good chance to add `sqlite` support.
+
+```sh
+tar xvf /sources/Python-3.9.5.tar.xz &&
+cd       Python-3.9.5                &&
 
 ./configure --prefix=/usr          \
             --enable-shared        \
@@ -1176,7 +1289,6 @@ cd       Python-3.9.5                    &&
             --with-ensurepip=yes &&
 
 make         &&
-make test    &&
 make install &&
 
 install -v -dm755 /usr/share/doc/python-3.9.5/html &&
@@ -1185,9 +1297,9 @@ tar --strip-components=1  \
     --no-same-owner       \
     --no-same-permissions \
     -C /usr/share/doc/python-3.9.5/html \
-    -xvf ../python-3.9.5-docs-html.tar.bz2 &&
-ln -sfv /usr/bin/python3 /usr/bin/python   &&
-ln -sfv /usr/bin/pip3 /usr/bin/pip         &&
+    -xvf ../../python-3.9.5-docs-html.tar.bz2 &&
+ln -sfv /usr/bin/python3 /usr/bin/python      &&
+ln -sfv /usr/bin/pip3 /usr/bin/pip            &&
 
 cd .. &&
 rm -rf Python-3.9.5
@@ -1221,15 +1333,15 @@ rm -rf ninja-1.10.2
 ### meson
 
 ```sh
-tar xzvf $LFS/sources/meson-0.57.1.tar.gz &&
-cd        meson-0.57.1                    &&
+tar xzvf $LFS/sources/meson-0.58.0.tar.gz &&
+cd        meson-0.58.0                    &&
 
 python3 setup.py build               &&
 python3 setup.py install --root=dest &&
 cp -rv dest/* /                      &&
 
 cd .. &&
-rm -rf meson-0.57.1
+rm -rf meson-0.58.0
 ```
 
 ### coreutils
@@ -1238,9 +1350,9 @@ rm -rf meson-0.57.1
 tar xvf $LFS/sources/coreutils-8.32.tar.xz &&
 cd       coreutils-8.32                    &&
 
-patch -Np1 -i ../coreutils-8.32-i18n-1.patch        &&
-sed -i '/test.lock/s/^/#/' gnulib-tests/gnulib.mk   &&
-autoreconf -fiv                                     &&
+patch -Np1 -i ../../coreutils-8.32-i18n-1.patch   &&
+sed -i '/test.lock/s/^/#/' gnulib-tests/gnulib.mk &&
+autoreconf -fiv                                   &&
 FORCE_UNSAFE_CONFIGURE=1 ./configure \
             --prefix=/usr            \
             --enable-no-install-program=kill,uptime &&
@@ -1335,8 +1447,8 @@ rm -rf findutils-4.8.0
 ### groff
 
 ```sh
-tar xzvf $LFS/sources/groff-1.22.4.tar.gz &&
-cd        groff-1.22.4                    &&
+tar xzvf /sources/groff-1.22.4.tar.gz &&
+cd        groff-1.22.4                &&
 
 PAGE=letter ./configure --prefix=/usr &&
 
@@ -1350,8 +1462,8 @@ rm -rf groff-1.22.4
 ### less
 
 ```sh
-tar xzvf $LFS/sources/less-563.tar.gz &&
-cd        less-563                    &&
+tar xzvf /sources/less-581.tar.gz &&
+cd        less-581                &&
 
 ./configure --prefix=/usr \
             --sysconfdir=/etc &&
@@ -1360,14 +1472,14 @@ make         &&
 make install &&
 
 cd .. &&
-rm -rf less-563
+rm -rf less-581
 ```
 
 ### gzip
 
 ```sh
-tar xvf $LFS/sources/gzip-1.10.tar.xz &&
-cd       gzip-1.10                    &&
+tar xvf /sources/gzip-1.10.tar.xz &&
+cd       gzip-1.10                &&
 
 ./configure --prefix=/usr &&
 
@@ -1382,27 +1494,27 @@ rm -rf gzip-1.10
 ### iproute2
 
 ```sh
-tar xvf $LFS/sources/iproute2-5.10.0.tar.xz &&
-cd       iproute2-5.10.0                    &&
+tar xvf /sources/iproute2-5.12.0.tar.xz &&
+cd       iproute2-5.12.0                &&
 
 sed -i  /ARPD/d Makefile          &&
 rm  -fv man/man8/arpd.8           &&
 sed -i 's/.m_ipt.0//' tc/Makefile &&
 
 make                                               &&
-make DOCDIR=/usr/share/doc/iproute2-5.10.0 install &&
+make DOCDIR=/usr/share/doc/iproute2-5.12.0 install &&
 
 cd .. &&
-rm -rf iproute2-5.10.0
+rm -rf iproute2-5.12.0
 ```
 
 ### kbd
 
 ```sh
-tar xvf $LFS/sources/kbd-2.4.0.tar.xz &&
-cd       kbd-2.4.0                    &&
+tar xvf /sources/kbd-2.4.0.tar.xz &&
+cd       kbd-2.4.0                &&
 
-patch -Np1 -i ../kbd-2.4.0-backspace-1.patch         &&
+patch -Np1 -i ../../kbd-2.4.0-backspace-1.patch      &&
 sed -i '/RESIZECONS_PROGS=/s/yes/no/' configure      &&
 sed -i 's/resizecons.8 //' docs/man/man8/Makefile.in &&
 ./configure --prefix=/usr \
@@ -1421,8 +1533,8 @@ rm -rf kbd-2.4.0
 ### libpipeline
 
 ```sh
-tar xzvf $LFS/sources/libpipeline-1.5.3.tar.gz &&
-cd        libpipeline-1.5.3                    &&
+tar xzvf /sources/libpipeline-1.5.3.tar.gz &&
+cd        libpipeline-1.5.3                &&
 
 ./configure --prefix=/usr &&
 
@@ -1437,8 +1549,8 @@ rm -rf libpipeline-1.5.3
 ### make
 
 ```sh
-tar xzvf $LFS/sources/make-4.3.tar.gz &&
-cd        make-4.3                    &&
+tar xzvf /sources/make-4.3.tar.gz &&
+cd        make-4.3                &&
 
 ./configure --prefix=/usr &&
 
@@ -1453,8 +1565,8 @@ rm -rf make-4.3
 ### patch
 
 ```sh
-tar xvf $LFS/sources/patch-2.7.6.tar.xz &&
-cd       patch-2.7.6                    &&
+tar xvf /sources/patch-2.7.6.tar.xz &&
+cd       patch-2.7.6                &&
 
 ./configure --prefix=/usr &&
 
@@ -1463,14 +1575,14 @@ make check   &&
 make install &&
 
 cd .. &&
-rm -rf patch
+rm -rf patch-2.7.6
 ```
 
 ### man-db
 
 ```sh
-tar xvf $LFS/sources/man-db-2.9.4.tar.xz &&
-cd       man-db-2.9.4                    &&
+tar xvf /sources/man-db-2.9.4.tar.xz &&
+cd       man-db-2.9.4                &&
 
 sed -i '/find/s@/usr@@' init/systemd/man-db.service.in &&
 ./configure --prefix=/usr                        \
@@ -1492,9 +1604,11 @@ rm -rf man-db-2.9.4
 
 ### tar
 
+Test 227 'binary store/restore' is known to fail.
+
 ```sh
-tar xvf $LFS/sources/tar-1.34.tar.xz &&
-cd       tar-1.34                    &&
+tar xvf /sources/tar-1.34.tar.xz &&
+cd       tar-1.34                &&
 
 FORCE_UNSAFE_CONFIGURE=1  \
 ./configure --prefix=/usr \
@@ -1512,8 +1626,8 @@ rm -rf tar-1.34
 ### texinfo
 
 ```sh
-tar xvf $LFS/sources/texinfo-6.7.tar.xz &&
-cd       texinfo-6.7                    &&
+tar xvf /sources/texinfo-6.7.tar.xz &&
+cd       texinfo-6.7                &&
 
 ./configure --prefix=/usr &&
 
@@ -1530,14 +1644,14 @@ pushd /usr/share/info
 popd
 
 cd .. &&
-rm -rf textinfo-6.7
+rm -rf texinfo-6.7
 ```
 
 ### vim
 
 ```sh
-tar xzvf $LFS/sources/vim-8.2.2433.tar.gz &&
-cd        vim-8.2.2433                    &&
+tar xzvf /sources/vim-8.2.2813.tar.gz &&
+cd        vim-8.2.2813                &&
 
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h &&
 ./configure --prefix=/usr                                   &&
@@ -1552,7 +1666,7 @@ ln -sv vim /usr/bin/vi &&
 for L in  /usr/share/man/{,*/}man1/vim.1; do
     ln -sv vim.1 $(dirname $L)/vi.1
 done
-ln -sv ../vim/vim82/doc /usr/share/doc/vim-8.2.2433 &&
+ln -sv ../vim/vim82/doc /usr/share/doc/vim-8.2.2813 &&
 
 cat > /etc/vimrc << EOF &&
 " Begin /etc/vimrc
@@ -1573,7 +1687,7 @@ endif
 EOF
 
 cd .. &&
-rm -rf vim-8.2.2433
+rm -rf vim-8.2.2813
 ```
 
 ### gnu-efi
@@ -1581,8 +1695,8 @@ rm -rf vim-8.2.2433
 This is not part of base Linux From Scratch, but required for using `systemd-boot`.
 
 ```sh
-tar xzvf $LFS/sources/gnu-efi-3.0.12.tar.gz &&
-cd        gnu-efi-3.0.12                    &&
+tar xzvf /sources/gnu-efi-3.0.12.tar.gz &&
+cd        gnu-efi-3.0.12                &&
 
 make                     &&
 make PREFIX=/usr install &&
@@ -1596,8 +1710,8 @@ rm -rf gnu-efi-3.0.12
 This is not part of base Linux From Scratch, but enables better and more secure authentication rules.
 
 ```sh
-tar xvf $LFS/sources/Linux-PAM-1.5.1.tar.xz &&
-cd       Linux-PAM-1.5.1                    &&
+tar xvf /sources/Linux-PAM-1.5.1.tar.xz &&
+cd       Linux-PAM-1.5.1                &&
 
 ./configure --prefix=/usr                    \
             --sysconfdir=/etc                \
@@ -1612,7 +1726,7 @@ If this is the first installation, tests require the presence of an `/etc/pam.d/
 
 ```sh
 install -v -m755 -d /etc/pam.d &&
-cat > /etc/pam.d << EOF        &&
+cat > /etc/pam.d/other << EOF
 #%PAM-1.0
 auth     required   pam_deny.so
 account  required   pam_deny.so
@@ -1701,8 +1815,8 @@ EOF
 This is to enable `shadow` to use `PAM`.
 
 ```sh
-tar xvf shadow-4.8.1.tar.xz &&
-cd      shadow-4.8.1        &&
+tar xvf /sources/shadow-4.8.1.tar.xz &&
+cd       shadow-4.8.1                &&
 
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in &&
 
@@ -1897,8 +2011,8 @@ Remove limits and access files if they exist:
 ### sudo
 
 ```sh
-tar xzvf $LFS/sources/sudo-1.9.7.tar.gz &&
-cd        sudo-1.9.7                    &&
+tar xzvf /sources/sudo-1.9.7.tar.gz &&
+cd        sudo-1.9.7                &&
 
 ./configure --prefix=/usr              \
             --libexecdir=/usr/lib      \
@@ -1967,8 +2081,8 @@ chmod 644 /etc/pam.d/sudo
 ### libcap PAM module
 
 ```sh
-tar xvf $LFS/sources/libcap-2.48.tar.xz &&
-cd       libcap-2.48                    &&
+tar xvf /sources/libcap-2.49.tar.xz &&
+cd       libcap-2.49                &&
 
 make -C pam_cap &&
 
@@ -1984,14 +2098,14 @@ EOF
 tail -n +3 /etc/pam.d/system-auth.bak >> /etc/pam.d/system-auth &&
 
 cd .. &&
-rm -rf libcap-2.48
+rm -rf libcap-2.49
 ```
 
 ### libtasn
 
 ```sh
-tar xzvf $LFS/sources/libtasn1-4.16.0.tar.gz &&
-cd        libtasn1-4.16.0                    &&
+tar xzvf /sources/libtasn1-4.16.0.tar.gz &&
+cd        libtasn1-4.16.0                &&
 
 ./configure --prefix=/usr \
             --disable-static &&
@@ -2007,8 +2121,8 @@ rm -rf libtasn1-4.16.0
 ### p11-kit
 
 ```sh
-tar xvf $LFS/sources/p11-kit-0.23.22.tar.xz &&
-cd       p11-key-0.23.22                    &&
+tar xvf /sources/p11-kit-0.23.22.tar.xz &&
+cd       p11-kit-0.23.22                &&
 
 sed '20,$ d' -i trust/trust-extract-compat &&
 cat >> trust/trust-extract-compat << "EOF" &&
@@ -2036,8 +2150,8 @@ rm -rf p11-kit-0.23.22
 ### make-ca
 
 ```sh
-tar xvf $LFS/sources/make-ca-1.7.tar.xz &&
-cd       make-ca-1.7                    &&
+tar xvf /sources/make-ca-1.7.tar.xz &&
+cd       make-ca-1.7                &&
 
 make install                   &&
 install -vdm755 /etc/ssl/local &&
@@ -2046,17 +2160,11 @@ cd .. &&
 rm -rf make-ca-1.7
 ```
 
-Also enable the automated update service:
-
-```sh
-systemctl enable update-pki.timer
-```
-
 ### nettle
 
 ```sh
-tar xzvf $LFS/sources/nettle-3.7.1.tar.gz &&
-cd        nettle-3.7.1                    &&
+tar xzvf /sources/nettle-3.7.1.tar.gz &&
+cd        nettle-3.7.1                &&
 
 ./configure --prefix=/usr \
             --disable-static &&
@@ -2075,8 +2183,8 @@ rm -rf nettle-3.7.1
 ### libunistring
 
 ```sh
-tar xvf $LFS/sources/libunistring-0.9.10.tar.gz &&
-cd       libunistring-0.9.10                    &&
+tar xvf /sources/libunistring-0.9.10.tar.gz &&
+cd       libunistring-0.9.10                &&
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -2092,8 +2200,8 @@ rm -rf libunistring-0.9.10
 ### GnuTLS
 
 ```sh
-tar xvf $LFS/sources/gnutls-3.7.0.tar.xz &&
-cd       gnutls-3.7.0                    &&
+tar xvf /sources/gnutls-3.7.0.tar.xz &&
+cd       gnutls-3.7.0                &&
 
 ./configure --prefix=/usr                        \
             --docdir=/usr/share/doc/gnutls-3.7.0 \
@@ -2111,8 +2219,8 @@ rm -rf gnutls-3.7.0
 ### cURL
 
 ```sh
-tar xzvf $LFS/sources/curl-7.76.1.tar.gz &&
-cd        curl-7.76.1                    &&
+tar xzvf /sources/curl-7.76.1.tar.gz &&
+cd        curl-7.76.1                &&
 
 ./configure --prefix=/usr    \
             --with-openssl   \
@@ -2131,8 +2239,8 @@ rm -rf curl-7.76.1
 ### pcre
 
 ```sh
-tar xvf $LFS/sources/pcre-8.44.tar.bz2 &&
-cd       pcre-8.44                     &&
+tar xvf /sources/pcre-8.44.tar.bz2 &&
+cd       pcre-8.44                 &&
 
 ./configure --prefix=/usr                     \
             --docdir=/usr/share/doc/pcre-8.44 \
@@ -2154,27 +2262,26 @@ rm -rf pcre-8.44
 ### zsh
 
 ```sh
-tar xvf $LFS/sources/zsh-5.8.tar.xz &&
-cd       zsh-5.8                    &&
+tar xvf /sources/zsh-5.8.tar.xz &&
+cd       zsh-5.8                &&
 
-./configure --prefix=/usr                         \
-        --docdir=/usr/share/doc/zsh               \
-        --htmldir=/usr/share/doc/zsh/html         \
-        --enable-etcdir=/etc/zsh                  \
-        --enable-zshenv=/etc/zsh/zshenv           \
-        --enable-zlogin=/etc/zsh/zlogin           \
-        --enable-zlogout=/etc/zsh/zlogout         \
-        --enable-zprofile=/etc/zsh/zprofile       \
-        --enable-zshrc=/etc/zsh/zshrc             \
-        --with-term-lib='ncursesw'                \
-        --enable-multibyte                        \
-        --enable-function-subdirs                 \
-        --enable-fndir=/usr/share/zsh/functions   \
-        --enable-scriptdir=/usr/share/zsh/scripts \
-        --with-tcsetpgrp                          \
-        --enable-pcre                             \
-        --enable-cap                              \
-        --enable-zsh-secure-free
+./configure --prefix=/usr                             \
+            --docdir=/usr/share/doc/zsh               \
+            --htmldir=/usr/share/doc/zsh/html         \
+            --enable-etcdir=/etc/zsh                  \
+            --enable-zshenv=/etc/zsh/zshenv           \
+            --enable-zlogin=/etc/zsh/zlogin           \
+            --enable-zlogout=/etc/zsh/zlogout         \
+            --enable-zprofile=/etc/zsh/zprofile       \
+            --enable-zshrc=/etc/zsh/zshrc             \
+            --enable-multibyte                        \
+            --enable-function-subdirs                 \
+            --enable-fndir=/usr/share/zsh/functions   \
+            --enable-scriptdir=/usr/share/zsh/scripts \
+            --with-tcsetpgrp                          \
+            --enable-pcre                             \
+            --enable-cap                              \
+            --enable-zsh-secure-free &&
 
 make                                                                  &&
 makeinfo  Doc/zsh.texi --plaintext -o Doc/zsh.txt                     &&
@@ -2194,8 +2301,8 @@ rm -rf zsh-5.8
 ### which
 
 ```sh
-tar xzvf $LFS/sources/which-2.21.tar.gz &&
-cd        which-2.21                    &&
+tar xzvf /sources/which-2.21.tar.gz &&
+cd        which-2.21                &&
 
 ./configure --prefix=/usr     \
             --sysconfdir=/etc &&
@@ -2212,16 +2319,14 @@ rm -rf which-2.21
 The `gnu-efi=true` option is added to build the efi executables installed by `bootctl install`.
 
 ```sh
-tar xzvf $LFS/sources/systemd-247.tar.gz &&
-cd        systemd-247                    &&
+tar xzvf /sources/systemd-248.tar.gz &&
+cd        systemd-248                &&
 
-patch -Np1 -i ../systemd-247-upstream_fixes-1.patch                       &&
-ln -sf /bin/true /usr/bin/xsltproc                                        &&
-tar -xf ../systemd-man-pages-247.tar.xz                                   &&
-sed '181,$ d' -i src/resolve/meson.build                                  &&
+patch -Np1 -i ../../systemd-248-upstream_fixes-1.patch                    &&
 sed -i 's/GROUP="render"/GROUP="video"/' rules.d/50-udev-default.rules.in &&
 
-cd build &&
+mkdir -v build &&
+cd       build &&
 LANG=en_US.UTF-8                          \
 meson --prefix=/usr                       \
       --sysconfdir=/etc                   \
@@ -2231,37 +2336,36 @@ meson --prefix=/usr                       \
       -Ddefault-dnssec=no                 \
       -Dfirstboot=false                   \
       -Dinstall-tests=false               \
-      -Dkmod-path=/bin/kmod               \
       -Dldconfig=false                    \
-      -Dmount-path=/bin/mount             \
-      -Drootprefix=                       \
-      -Drootlibdir=/lib                   \
-      -Dsplit-usr=true                    \
-      -Dsulogin-path=/sbin/sulogin        \
       -Dsysusers=false                    \
-      -Dumount-path=/bin/umount           \
       -Db_lto=false                       \
       -Drpmmacrosdir=no                   \
       -Dhomed=false                       \
       -Duserdb=false                      \
-      -Dman=true                          \
+      -Dman=false                         \
       -Dmode=release                      \
-      -Ddocdir=/usr/share/doc/systemd-247 \
+      -Ddocdir=/usr/share/doc/systemd-248 \
       -Dgnu-efi=true                      \
       .. &&
 
 LANG=en_US.UTF-8 ninja         &&
 LANG=en_US.UTF-8 ninja install &&
 
-rm -f  /usr/bin/xsltproc &&
-rm -rf /usr/lib/pam.d    &&
+tar -xf ../../../systemd-man-pages-248.tar.xz --strip-components=1 -C /usr/share/man &&
+rm  -rf /usr/lib/pam.d                                                               &&
 
 systemd-machine-id-setup                         &&
 systemctl preset-all                             &&
 systemctl disable systemd-time-wait-sync.service &&
 
 cd ../.. &&
-rm -rf systemd-247
+rm -rf systemd-248
+```
+
+Also enable the automated update service for `make-ca`:
+
+```sh
+systemctl enable update-pki.timer
 ```
 
 ### openssh
@@ -2283,8 +2387,8 @@ useradd  -c 'sshd PrivSep' \
 Then unpack and build:
 
 ```sh
-tar xzvf $LFS/sources/openssh-8.6p1.tar.gz &&
-cd        openssh-8.6p1                    &&
+tar xzvf /sources/openssh-8.6p1.tar.gz &&
+cd        openssh-8.6p1                &&
 
 sed -e '/INSTALLKEYS_SH/s/)//' -e '260a\  )' -i contrib/ssh-copy-id &&
 ./configure --prefix=/usr                     \
@@ -2337,8 +2441,8 @@ systemctl enable sshd.service
 ### D-Bus
 
 ```sh
-tar xzvf $LFS/sources/dbus-1.12.20.tar.gz &&
-cd        dbus-1.12.20                    &&
+tar xzvf /sources/dbus-1.12.20.tar.gz &&
+cd        dbus-1.12.20                &&
 
 ./configure --prefix=/usr                        \
             --sysconfdir=/etc                    \
@@ -2363,8 +2467,8 @@ rm -rf dbus-1.12.20
 ### procps-ng
 
 ```sh
-tar xvf $LFS/sources/procps-ng-3.3.17.tar.xz &&
-cd       procps-3.3.17                       &&
+tar xvf /sources/procps-ng-3.3.17.tar.xz &&
+cd       procps-3.3.17                   &&
 
 ./configure --prefix=/usr                            \
             --exec-prefix=                           \
@@ -2379,14 +2483,14 @@ make check   &&
 make install &&
 
 cd .. &&
-rm -rf procps-3.3.17
+rm -rf procps-ng-3.3.17
 ```
 
 ### util-linux
 
 ```sh
-tar xvf $LFS/sources/util-linux-2.36.2.tar.xz &&
-cd       util-linux-2.36.2                    &&
+tar xvf /sources/util-linux-2.36.2.tar.xz &&
+cd       util-linux-2.36.2                &&
 
 ./configure ADJTIME_PATH=/var/lib/hwclock/adjtime   \
             --docdir=/usr/share/doc/util-linux-2.36.2 \
@@ -2417,8 +2521,8 @@ Select whichever of these you need support for, depending upon the filesystem(s)
 #### e2fsprogs
 
 ```sh
-tar xzvf $LFS/sources/e2fsprogs-1.46.1.tar.gz &&
-cd       e2fsprogs-1.46.1        &&
+tar xzvf /sources/e2fsprogs-1.46.2.tar.gz &&
+cd        e2fsprogs-1.46.2                &&
 
 mkdir -v build &&
 cd       build &&
@@ -2444,17 +2548,131 @@ install -v -m644 doc/com_err.info /usr/share/info                          &&
 install-info --dir-file=/usr/share/info/dir /usr/share/info/com_err.info   &&
 
 cd ../.. &&
-rm -rf e2fsprogs-1.46.1
+rm -rf e2fsprogs-1.46.2
 ```
 
-#### btrfsprogs
+#### Additional filesystem tools
 
+These are listed in dependency order to provide support for `btrfs`, `lvm`, and `raid`. These will also need to be enabled in the kernel if you installed your system on top of these technologies. Included are required libraries for compression and async IO, plus the controllers for software raid, logical volume management, and the `btrfs` filesystem itself.
 
+#### LZO
 
-#### lvm2
+```sh
+tar xzvf /sources/lzo-2.10.tar.gz &&
+cd        lzo-2.10                &&
 
+./configure --prefix=/usr                    \
+            --enable-shared                  \
+            --disable-static                 \
+            --docdir=/usr/share/doc/lzo-2.10 &&
 
+make         &&
+make install &&
+
+cd .. &&
+rm -rf lzo
+```
+
+#### libaio
+
+```sh
+tar xvf /sources/libaio_0.3.112.orig.tar.xz &&
+cd       libaio-0.3.112                     &&
+
+sed -i '/install.*libaio.a/s/^/#/' src/Makefile &&
+
+make         &&
+make install &&
+
+cd .. &&
+rm -rf libaio-0.3.112
+```
 
 #### mdadm
 
+Optionally, `mdadm` has a test suite that be run with the following command:
 
+```sh
+./test --keep-going --logdir=test-logs --save-logs
+```
+
+But this test suite requires that the running kernel supports RAID and also that `mdadm` is not already running, so if you are building LFS on a system already using software RAID, you will not be able to run the tests.
+
+```sh
+tar xvf /sources/mdadm-4.1.tar.xz &&
+cd       mdadm-4.1                &&
+
+sed 's@-Werror@@' -i Makefile &&
+
+make         &&
+make install &&
+
+cd .. &&
+rm -rf mdadm-4.1
+```
+
+#### LVM2
+
+```sh
+tar xzvf /sources/LVM2.2.03.12.tgz &&
+cd        LVM2.2.03.12             &&
+
+SAVEPATH=$PATH                    &&
+PATH=$PATH:/sbin:/usr/sbin        &&
+./configure --prefix=/usr         \
+            --exec-prefix=        \
+            --enable-cmdlib       \
+            --enable-pkgconfig    \
+            --enable-udev_sync    \
+            --with-thin-check=    \
+            --with-thin-dump=     \
+            --with-thin-repair=   \
+            --with-thin-restore=  \
+            --with-cache-check=   \
+            --with-cache-dump=    \
+            --with-cache-repair=  \
+            --with-cache-restore= &&
+
+make           &&
+PATH=$SAVEPATH &&
+unset SAVEPATH &&
+
+make -C tools install_tools_dynamic     &&
+make -C udev  install                   &&
+make -C libdm install                   &&
+rm test/shell/lvconvert-raid-reshape.sh &&
+make S=shell/thin-flags.sh check_local  &&
+
+make install &&
+
+cd .. &&
+rm -rf LVM2.2.03.12
+```
+
+#### btrfs
+
+```sh
+tar xvf /sources/btrfs-progs-v5.12.1.tar.xz &&
+cd       btrfs-progs-v5.12.1                &&
+
+./configure --prefix=/usr \
+            --disable-documentation &&
+
+make       &&
+make fssum &&
+
+pushd tests
+   ./fsck-tests.sh
+   ./mkfs-tests.sh
+   ./cli-tests.sh
+   ./convert-tests.sh
+   ./misc-tests.sh
+   ./fuzz-tests.sh
+popd
+
+make install &&
+
+cd ..                                &&
+umount btrfs-progs-v5.12.1/tests/mnt &&
+rm -rf btrfs-progs-v5.12.1
+```

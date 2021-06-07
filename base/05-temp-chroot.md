@@ -71,11 +71,16 @@ cat > lfs-chroot << EOF
 
 export LFS=/mnt/lfs
 
+mkdir -p $LFS/sources
+mkdir -p $LFS/sources/build_dir
+
 mount -v --bind /dev              $LFS/dev
 mount -v --bind /dev/pts          $LFS/dev/pts
 mount -vt       proc proc         $LFS/proc
 mount -vt       sysfs sysfs       $LFS/sys
 mount -vt       tmpfs tmpfs       $LFS/run
+mount -vt       tmpfs tmpfs       $LFS/sources/build_dir
+mount -vt       tmpfs tmpfs       $LFS/tmp
 mount -vt       efivarfs efivarfs $LFS/sys/firmware/efi/efivars/
 
 chroot "$LFS" /usr/bin/env -i          \

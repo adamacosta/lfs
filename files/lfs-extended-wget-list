@@ -15,7 +15,7 @@ https://ftp.gnu.org/gnu/diffutils/diffutils-3.7.tar.xz
 https://downloads.sourceforge.net/project/e2fsprogs/e2fsprogs/v1.46.2/e2fsprogs-1.46.2.tar.gz
 https://sourceware.org/ftp/elfutils/0.183/elfutils-0.183.tar.bz2
 https://dev.gentoo.org/~blueness/eudev/eudev-3.2.10.tar.gz
-https://prdownloads.sourceforge.net/expat/expat-2.3.0.tar.xz
+https://github.com/libexpat/libexpat/releases/download/R_2_4_1/expat-2.4.1.tar.xz
 https://prdownloads.sourceforge.net/expect/expect5.45.4.tar.gz
 https://astron.com/pub/file/file-5.40.tar.gz
 https://ftp.gnu.org/gnu/findutils/findutils-4.8.0.tar.xz
@@ -43,6 +43,7 @@ https://www.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.49.t
 https://sourceware.org/pub/libffi/libffi-3.3.tar.gz
 https://download.savannah.gnu.org/releases/libpipeline/libpipeline-1.5.3.tar.gz
 https://ftp.gnu.org/gnu/libtool/libtool-2.4.6.tar.xz
+https://sourceforge.net/projects/libuuid/files/libuuid-1.0.3.tar.gz/download
 https://www.kernel.org/pub/linux/kernel/v5.x/linux-5.12.2.tar.xz
 https://ftp.gnu.org/gnu/m4/m4-1.4.18.tar.xz
 https://ftp.gnu.org/gnu/make/make-4.3.tar.gz
@@ -86,3 +87,8 @@ https://www.linuxfromscratch.org/patches/lfs/development/glibc-2.33-fhs-1.patch
 https://www.linuxfromscratch.org/patches/lfs/development/kbd-2.4.0-backspace-1.patch
 https://www.linuxfromscratch.org/patches/lfs/development/sysvinit-2.99-consolidated-1.patch
 https://www.linuxfromscratch.org/patches/lfs/development/systemd-248-upstream_fixes-1.patch
+https://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
+https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/btrfs-progs-v5.12.1.tar.xz
+https://ftp.debian.org/debian/pool/main/liba/libaio/libaio_0.3.112.orig.tar.xz
+https://sourceware.org/ftp/lvm2/LVM2.2.03.12.tgz
+https://www.kernel.org/pub/linux/utils/raid/mdadm/mdadm-4.1.tar.xz
