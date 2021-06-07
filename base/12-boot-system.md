@@ -44,6 +44,8 @@ This can then be customized using the `ncurses` based graphical config editor (r
 LANG=en_US.UTF-8 make menuconfig
 ```
 
+### UEFI Booting
+
 Set the following to ensure support for EFI is enabled:
 
 ```
@@ -59,6 +61,8 @@ File systems --->
 ```
 
 Ensure whichever filesystem(s) you chose to create on your partitions are enabled.
+
+### LVM and RAID
 
 If LVM and/or raid are desired, those will need to be enabled as well:
 
@@ -100,6 +104,8 @@ There will be options for NVMe over Fabric, which allows you expose a disk over 
 
 If you have an `nvidia` video card and wish to use the proprietary drivers, ensure you do not enable the `nouveau` device drivers.
 
+### Running LFS in a VM
+
 In order to run under Microsoft Hyper-V, all of the following options need to be set:
 
 ```
@@ -121,7 +127,43 @@ CONFIG_VSOCKETS: Networking support > Networking options > Virtual Socket protoc
 CONFIG_HYPERV_VSOCKETS: Networking support > Networking options > Hyper-V transport for Virtual Sockets
 ```
 
-Once the final `.config` file has been generated, build the kernel and install modules (provided you enabled module support):
+### Running as a hypervisor
+
+To include support for virtualization in the kernel, include the following options, noting that only one of `CONFIG_KVM_INTEL` or `CONFIG_KVM_AMD` is needed, depending on which processor type you have.
+
+```
+[*] Virtualization:  --->                                             [CONFIG_VIRTUALIZATION]
+  <*/M>   Kernel-based Virtual Machine (KVM) support [CONFIG_KVM]
+  <*/M>     KVM for Intel (and compatible) processors support         [CONFIG_KVM_INTEL]
+  <*/M>     KVM for AMD processors support                            [CONFIG_KVM_AMD]
+
+[*] Networking support  --->                         [CONFIG_NET]
+  Networking options  --->
+    <*/M> 802.1d Ethernet Bridging                   [CONFIG_BRIDGE]
+Device Drivers  --->
+  [*] Network device support  --->                   [CONFIG_NETDEVICES]
+    <*/M>    Universal TUN/TAP device driver support [CONFIG_TUN]
+```
+
+To see if your processor supports virtualization (vmx is Intel, svm is AMD):
+
+```sh
+egrep --color=auto '(vmx|svm)' /proc/cpuinfo
+```
+
+Beware that this will print out the information for every processor core, so if you have a many core processor, you may want to filter to just look at the first one:
+
+```sh
+cat /proc/cpuinfo | grep -A19 'processor.*: 0' | egrep --color=auto '(vmx|svm)'
+```
+
+### Filesystem support
+
+Finally, ensure whichever filesystem(s) you chose to create on your partition(s) are enabled.
+
+### Building
+
+Once the final `.config` file has been generated, build the kernel and install modules (provided you enabled module support), you can perform the build. If you are updating or changing the kernel, you may want to diff the `.config` file with the options saved off from your last kernel build, or even just use the same file if you didn't intend to change anything. Note that if the update is more than a patch, config options may have changed, so be careful blindly applying the same config.
 
 ```sh
 make
@@ -147,7 +189,7 @@ sudo cp -iv System.map /boot/System.map-5.12.9 &&
 sudo cp -iv .config /boot/config-5.12.9
 ```
 
-Finally, install the kernel documentation:
+To install the kernel documentation:
 
 ```sh
 sudo install -d /usr/share/doc/linux-5.12.9 &&
