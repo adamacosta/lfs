@@ -46,7 +46,7 @@ LANG=en_US.UTF-8 make menuconfig
 
 ### UEFI Booting
 
-Set the following to ensure support for EFI is enabled:
+Set the following to ensure support for EFI is enabled if you have a UEFI motherboard or are booting on a UEFI virtual device:
 
 ```
 Firmware Drivers --->
@@ -60,7 +60,29 @@ File systems --->
     <*> EIF Variable filesystem
 ```
 
-Ensure whichever filesystem(s) you chose to create on your partitions are enabled.
+### Microcode
+
+To enable support for loading microcode updates:
+
+#### AMD
+
+```
+General Setup --->
+  [*] Initial RAM filesystem and RAM disk (initramfs/initrd) support [CONFIG_BLK_DEV_INITRD]
+Processor type and features  --->
+  [*] CPU microcode loading support  [CONFIG_MICROCODE]
+  [*]      AMD microcode loading support [CONFIG_MICROCODE_AMD]
+```
+
+#### Intel
+
+```
+General Setup --->
+  [*] Initial RAM filesystem and RAM disk (initramfs/initrd) support [CONFIG_BLK_DEV_INITRD]
+Processor type and features  --->
+  [*] CPU microcode loading support  [CONFIG_MICROCODE]
+  [*]      Intel microcode loading support [CONFIG_MICROCODE_INTEL]
+```
 
 ### LVM and RAID
 
@@ -252,18 +274,18 @@ systemctl enable hv_vss_daemon.service
 
 ## Bootloader configuration
 
-This will be specific to your bootloader, but I am using `systemd-boot` and building from an Arch Linux system, which is the default. All of these commands assume your EFI system partition is mounted to `/boot/efi`. If this is not the case, substitute in your actual ESP.
+### Installation to the EFI system partition
 
-To install the bootloader:
+This will be specific to your bootloader, but I am using `systemd-boot`. To install the bootloader:
 
 ```sh
-bootctl install --esp-path=/boot/efi --boot-path=/boot
+bootctl install
 ```
 
-Now create a configuration for the bootloader.
+Now create a configuration for the bootloader. To see all available options you might want to set, read [Systemd-boot#Loader_configuration](https://wiki.archlinux.org/title/Systemd-boot#Loader_configuration) from the Arch Wiki.
 
 ```sh
-cat > /boot/efi/loader/loader.conf << EOF
+cat > /boot/loader/loader.conf << EOF
 default  lfs.conf
 timeout  5
 console-mode max
@@ -271,7 +293,7 @@ editor   no
 EOF
 ```
 
-For this, the `PARTUUID` is needed to pass to the kernel instead of the `UUID`, which will not yet be available in early userspace.
+For booting without `initrd`, the `PARTUUID` is needed to pass to the kernel instead of the `UUID`, which will not yet be available in early userspace.
 
 ```sh
 ROOT_UUID=$(sudo blkid -s PARTUUID -o value /dev/<root device>)
@@ -292,11 +314,11 @@ It is important to use the PARTUUID here and not the UUID or a label. These can 
 
 For `systemd-boot`, it is also important to not have a timeout of 0 in the `/boot/loader/loader.conf` file, or to make `lfs` the default entry. Otherwise, it will always boot into whatever system is the default entry.
 
-## LVM and RAID
+### LVM and RAID
 
 If your root filesystem is a logical or raid volume, the above will not work. There will be no PARTUUID and the kernel in early userspace will not have the tools necessary to find your root volume. Instead, you will need to create an `initrd` to load before loading the kernel. You can create and use the scripts provided by Linux From Scratch. First, however, you will want to install `cpio` and possibly microcode from your processor vendor.
 
-### cpio
+#### cpio
 
 First, grab the source from [https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2](https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2). From outside the chroot (since LFS will not have network capability):
 
@@ -331,7 +353,7 @@ cd .. &&
 rm -rf cpio-2.13
 ```
 
-### mkinitramfs scripts
+#### mkinitramfs scripts
 
 ```sh
 cat > /usr/bin/mkinitramfs << "EOF"
@@ -714,6 +736,23 @@ initrd  /initrd.img-5.12.9
 options root="UUID=$ROOT_UUID" rw loglevel=7 earlyprintk=vga,keep rootfstype=$ROOT_FSTYPE
 EOF
 ```
+
+If your root filesystem is on LVM, I have not had luck using a UUID and instead use the device path directly:
+
+```sh
+ROOT_FSTYPE=$(blkid -s TYPE -o value /dev/<root device>)
+
+cat > /boot/loader/entries/lfs.conf << EOF
+title   Linux From Scratch
+linux   /vmlinuz-5.12.9-lfs-10.1-systemd
+initrd  /initrd.img-5.12.9
+options root=/dev/mapper/<volGroup>-<volId> rw loglevel=7 earlyprintk=vga,keep rootfstype=$ROOT_FSTYPE
+EOF
+```
+
+If your root filesystem is on raid0, you will also need to add the kernel option `raid0.default_layout=2`.
+
+Feel free to change the kernel options. Maximum loglevel will generate a lot of logging messages, which is useful when first attempting to boot in case you run into problems, but you may want to quiet it down later. Likewise with directing `printk` during boot to the console and retaining those lines.
 
 ## Reboot into LFS
 

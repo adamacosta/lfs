@@ -1668,7 +1668,14 @@ for L in  /usr/share/man/{,*/}man1/vim.1; do
 done
 ln -sv ../vim/vim82/doc /usr/share/doc/vim-8.2.2813 &&
 
-cat > /etc/vimrc << EOF &&
+cd .. &&
+rm -rf vim-8.2.2813
+```
+
+Create the default config file:
+
+```sh
+cat > /etc/vimrc << "EOF"
 " Begin /etc/vimrc
 
 " Ensure defaults are set before customizing settings, not after
@@ -1685,9 +1692,6 @@ endif
 
 " End /etc/vimrc
 EOF
-
-cd .. &&
-rm -rf vim-8.2.2813
 ```
 
 ### gnu-efi
@@ -1703,6 +1707,23 @@ make PREFIX=/usr install &&
 
 cd .. &&
 rm -rf gnu-efi-3.0.12
+```
+
+### efivar
+
+This is also required by `systemd-boot`.
+
+```sh
+tar xvf /sources/efivar-37.tar.bz2 &&
+cd       efivar-37                 &&
+
+patch -Np1 -i /sources/efivar-37-gcc_9-1.patch &&
+
+make CFLAGS="-O2 -Wno-stringop-truncation" &&
+make install LIBDIR=/usr/lib               &&
+
+cd .. &&
+rm -rf efivar-37
 ```
 
 ### PAM
@@ -2675,4 +2696,60 @@ make install &&
 cd ..                                &&
 umount btrfs-progs-v5.12.1/tests/mnt &&
 rm -rf btrfs-progs-v5.12.1
+```
+
+## wireless tools
+
+If the device you are attempting to install Linux From Scratch onto only has network access through WiFi and not through Ethernet, then post-install steps requiring a network connection will not work unless you install tools allowing you to connect to WiFi. There are options such as `wpa_supplicant` available in Beyond Linux From Scratch, but the simplest tool available is `iwd`, which can be obtained from [https://mirrors.edge.kernel.org/pub/linux/network/wireless/](https://mirrors.edge.kernel.org/pub/linux/network/wireless/). To grab the present latest version, as well as the dependency `Embedded Linux Library` (from outside the chroot):
+
+```sh
+wget https://mirrors.edge.kernel.org/pub/linux/libs/ell/ell-0.40.tar.xz -O $LFS/sources/ell-0.40.tar.xz
+wget https://mirrors.edge.kernel.org/pub/linux/network/wireless/iwd-1.14.tar.xz -O $LFS/sources/iwd-1.14.tar.xz
+```
+
+To build `ell`:
+
+```sh
+tar xvf /sources/ell-0.40.tar.xz &&
+cd       ell-0.40                &&
+
+./configure --prefix=/usr &&
+
+make         &&
+make check   &&
+make install &&
+
+cd .. &&
+rm -rf ell-0.40
+```
+
+To build `iwd`:
+
+```sh
+tar xvf /sources/iwd-1.14.tar.xz &&
+cd       iwd-1.14                &&
+
+./configure --prefix=/usr             \
+            --sysconfdir=/etc         \
+            --localstatedir=/var      \
+            --libexecdir=/usr/lib/iwd \
+            --enable-external-ell     \
+            --enable-wired            \
+            --enable-ofono            \
+            --enable-hwsim            \
+            --disable-tools &&
+
+make                                                   &&
+make check                                             &&
+make install                                           &&
+install -Dvm 644 README /usr/share/doc/iwd-1.14/README &&
+
+cd .. &&
+rm -rf iwd-1.14
+```
+
+To enable the service:
+
+```sh
+systemctl enable iwd
 ```
