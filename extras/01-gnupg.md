@@ -1,162 +1,177 @@
 # GnuPG and dependencies
 
-This is going to be critical to use the system for any sort of development and for package upgrades, as it is needed to verify the provenance of any packages being installed.
-
 ## libgpgerror
 
 ```sh
-curl https://www.gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.41.tar.bz2 -o libgpg-error-1.41.tar.bz2
-tar xvf libgpg-error-1.41.tar.bz2
-cd libgpg-error-1.41
+curl https://www.gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.41.tar.bz2 -o /sources/libgpg-error-1.41.tar.bz2 &&
 
-./configure --prefix=/usr
-make -j
-sudo make install
-sudo install -v -m644 -D README /usr/share/doc/libgpg-error-1.41/README
+tar xvf /sources/libgpg-error-1.41.tar.bz2 &&
+cd       libgpg-error-1.41                 &&
 
-cd ..
+./configure --prefix=/usr &&
+
+make                                                                    &&
+sudo make install                                                       &&
+sudo install -v -m644 -D README /usr/share/doc/libgpg-error-1.41/README &&
+
+cd .. &&
 rm -rf libgpg-error-1.41
 ```
 
 ## libassuan
 
 ```sh
-curl https://www.gnupg.org/ftp/gcrypt/libassuan/libassuan-2.5.4.tar.bz2 -o libassuan-2.5.4.tar.bz2
-tar xvf libassuan-2.5.4
-cd libassuan-2.5.4
+curl https://www.gnupg.org/ftp/gcrypt/libassuan/libassuan-2.5.4.tar.bz2 -o /sources/libassuan-2.5.4.tar.bz2 &&
 
-./configure --prefix=/usr
-make -j
+tar xvf /sources/libassuan-2.5.4.tar.bz2 &&
+cd       libassuan-2.5.4                 &&
+
+./configure --prefix=/usr &&
+
+make                                                                   &&
 make -C doc html                                                       &&
 makeinfo --html --no-split -o doc/assuan_nochunks.html doc/assuan.texi &&
-makeinfo --plaintext       -o doc/assuan.txt           doc/assuan.texi
-sudo make install &&
-sudo install -v -dm755   /usr/share/doc/libassuan-2.5.4/html &&
+makeinfo --plaintext       -o doc/assuan.txt           doc/assuan.texi &&
+sudo make install                                                      &&
+sudo install -v -dm755   /usr/share/doc/libassuan-2.5.4/html           &&
 sudo install -v -m644 doc/assuan.html/* \
-                    /usr/share/doc/libassuan-2.5.4/html &&
+                    /usr/share/doc/libassuan-2.5.4/html                &&
 sudo install -v -m644 doc/assuan_nochunks.html \
-                    /usr/share/doc/libassuan-2.5.4      &&
+                    /usr/share/doc/libassuan-2.5.4                     &&
 sudo install -v -m644 doc/assuan.{txt,texi} \
-                    /usr/share/doc/libassuan-2.5.4
+                    /usr/share/doc/libassuan-2.5.4                     &&
 
-cd ..
+cd .. &&
 rm -rf libassuan-2.5.4
 ```
 
 ## libgcrypt
 
 ```sh
-curl https://www.gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.9.2.tar.bz2 -o libgcrypt-1.9.2.tar.bz2
-tar xvf libgcrypt-1.9.2.tar.bz2
-cd libgcrypt-1.9.2
+curl https://www.gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.9.2.tar.bz2 -o /sources/libgcrypt-1.9.2.tar.bz2 &&
 
-./configure --prefix=/usr
-make -j
+tar xvf /sources/libgcrypt-1.9.2.tar.bz2 &&
+cd       libgcrypt-1.9.2                 &&
+
+./configure --prefix=/usr &&
+
+make                                                                   &&
 make -C doc html                                                       &&
 makeinfo --html --no-split -o doc/gcrypt_nochunks.html doc/gcrypt.texi &&
-makeinfo --plaintext       -o doc/gcrypt.txt           doc/gcrypt.texi
-make -j check
-sudo make install &&
-sudo install -v -dm755   /usr/share/doc/libgcrypt-1.9.2 &&
+makeinfo --plaintext       -o doc/gcrypt.txt           doc/gcrypt.texi &&
+make -k check                                                          &&
+sudo make install                                                      &&
+sudo install -v -dm755   /usr/share/doc/libgcrypt-1.9.2                &&
 sudo install -v -m644    README doc/{README.apichanges,fips*,libgcrypt*} \
-                    /usr/share/doc/libgcrypt-1.9.2 &&
+                    /usr/share/doc/libgcrypt-1.9.2                     &&
 
-sudo install -v -dm755   /usr/share/doc/libgcrypt-1.9.2/html &&
+sudo install -v -dm755   /usr/share/doc/libgcrypt-1.9.2/html           &&
 sudo install -v -m644 doc/gcrypt.html/* \
-                    /usr/share/doc/libgcrypt-1.9.2/html &&
+                    /usr/share/doc/libgcrypt-1.9.2/html                &&
 sudo install -v -m644 doc/gcrypt_nochunks.html \
-                    /usr/share/doc/libgcrypt-1.9.2      &&
+                    /usr/share/doc/libgcrypt-1.9.2                     &&
 sudo install -v -m644 doc/gcrypt.{txt,texi} \
-                    /usr/share/doc/libgcrypt-1.9.2
+                    /usr/share/doc/libgcrypt-1.9.2                     &&
 
-cd ..
+cd .. &&
 rm -rf libgcrypt-1.9.2
 ```
 
 ## libksba
 
 ```sh
-curl https://www.gnupg.org/ftp/gcrypt/libksba/libksba-1.5.0.tar.bz2 -o libksba-1.5.0.tar.bz2
-tar xvf libksba-1.5.0.tar.bz2
-cd libksba-1.5.0
+curl https://www.gnupg.org/ftp/gcrypt/libksba/libksba-1.5.0.tar.bz2 -o /sources/libksba-1.5.0.tar.bz2 &&
 
-./configure --prefix=/usr
-make -j
-sudo make install
+tar xvf /sources/libksba-1.5.0.tar.bz2 &&
+cd       libksba-1.5.0                 &&
 
-cd ..
+./configure --prefix=/usr &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
 rm -rf libksba-1.5.0
 ```
 
 ## NPth
 
 ```sh
-curl https://www.gnupg.org/ftp/gcrypt/npth/npth-1.6.tar.bz2 -o npth-1.6.tar.bz2
-tar xvf npth-1.6.tar.bz2
-cd npth-1.6
+curl https://www.gnupg.org/ftp/gcrypt/npth/npth-1.6.tar.bz2 -o /sources/npth-1.6.tar.bz2 &&
 
-./configure --prefix=/usr
-make -j
-sudo make install
+tar xvf /sources/npth-1.6.tar.bz2 &&
+cd       npth-1.6                 &&
 
-cd ..
+./configure --prefix=/usr &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
 rm -rf npth-1.6
 ```
 
 ## pinentry
 
 ```sh
-curl https://www.gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.1.tar.bz2 -o pinentry-1.1.1.tar.bz2
-tar xvf pinentry-1.1.1.tar.bz2
-cd pinentry-1.1.1
+curl https://www.gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.1.tar.bz2 -o /sources/pinentry-1.1.1.tar.bz2 &&
 
-./configure --prefix=/usr --enable-pinentry-tty
-make -j
-sudo make install
+tar xvf /sources/pinentry-1.1.1.tar.bz2 &&
+cd       pinentry-1.1.1                 &&
 
-cd ..
+./configure --prefix=/usr \
+            --enable-pinentry-tty &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
 rm -rf pinentry-1.1.1
 ```
 
 ## GnuPG
 
 ```sh
-curl https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.27.tar.bz2 -o gnupg-2.2.27.tar.bz2
-tar xvf gnupg-2.2.27.tar.bz2
-cd gnupg-2.2.27
+curl https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.27.tar.bz2 -o /sources/gnupg-2.2.27.tar.bz2 &&
+
+tar xvf /sources/gnupg-2.2.27.tar.bz2 &&
+cd       gnupg-2.2.27                 &&
 
 ./configure --prefix=/usr            \
             --localstatedir=/var     \
-            --docdir=/usr/share/doc/gnupg-2.2.27
-make -j
+            --docdir=/usr/share/doc/gnupg-2.2.27 &&
+
+make                                                                 &&
 makeinfo --html --no-split -o doc/gnupg_nochunks.html doc/gnupg.texi &&
 makeinfo --plaintext       -o doc/gnupg.txt           doc/gnupg.texi &&
-make -C doc html
-sudo make install &&
+make -C doc html                                                     &&
+sudo make install                                                    &&
 sudo install -v -m755 -d /usr/share/doc/gnupg-2.2.27/html            &&
 sudo install -v -m644    doc/gnupg_nochunks.html \
-                    /usr/share/doc/gnupg-2.2.27/html/gnupg.html &&
+                    /usr/share/doc/gnupg-2.2.27/html/gnupg.html      &&
 sudo install -v -m644    doc/*.texi doc/gnupg.txt \
-                    /usr/share/doc/gnupg-2.2.27 &&
+                    /usr/share/doc/gnupg-2.2.27                      &&
 sudo install -v -m644    doc/gnupg.html/* \
-                    /usr/share/doc/gnupg-2.2.27/html
+                    /usr/share/doc/gnupg-2.2.27/html                 &&
 
-cd ..
+cd .. &&
 rm -rf gnupg-2.2.27
 ```
 
 ## GPGME
 
 ```sh
-curl https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-1.12.0.tar.bz2 -o gpgme-1.12.0.tar.bz2
-tar xvf gpgme-1.12.0.tar.bz2
-cd gpgme-1.12.0
+curl https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-1.12.0.tar.bz2 -o /sources/gpgme-1.12.0.tar.bz2 &&
 
-./configure --prefix=/usr
-make -j
-make -k check
-sudo make install
+tar xvf /sources/gpgme-1.12.0.tar.bz2 &&
+cd       gpgme-1.12.0                 &&
 
-cd ..
+./configure --prefix=/usr &&
+
+make              &&
+make -k check     &&
+sudo make install &&
+
+cd .. &&
 rm -rf gpgme-1.12.0
 ```

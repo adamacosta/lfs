@@ -637,7 +637,7 @@ passwd root
 ### gcc
 
 ```sh
-tar xvf $LFS/sources/gcc-11.1.0.tar.xz &&
+tar xvf /sources/gcc-11.1.0.tar.xz &&
 cd       gcc-11.1.0                    &&
 
 sed -e '/m64=/s/lib64/lib/' \
@@ -1184,6 +1184,9 @@ for target in depmod insmod lsmod modinfo modprobe rmmod; do
   sudo ln -sfv kmod /usr/bin/$target
 done
 
+cp -iv man/*.8 /usr/share/man/man8/ &&
+cp -iv man/*.5 /usr/share/man/man5/ &&
+
 cd .. &&
 rm -rf kmod-28
 ```
@@ -1347,8 +1350,8 @@ rm -rf meson-0.58.0
 ### coreutils
 
 ```sh
-tar xvf $LFS/sources/coreutils-8.32.tar.xz &&
-cd       coreutils-8.32                    &&
+tar xvf /sources/coreutils-8.32.tar.xz &&
+cd       coreutils-8.32                &&
 
 patch -Np1 -i ../../coreutils-8.32-i18n-1.patch   &&
 sed -i '/test.lock/s/^/#/' gnulib-tests/gnulib.mk &&
@@ -2184,8 +2187,8 @@ rm -rf make-ca-1.7
 ### nettle
 
 ```sh
-tar xzvf /sources/nettle-3.7.1.tar.gz &&
-cd        nettle-3.7.1                &&
+tar xzvf /sources/nettle-3.7.3.tar.gz &&
+cd        nettle-3.7.3                &&
 
 ./configure --prefix=/usr \
             --disable-static &&
@@ -2194,11 +2197,11 @@ make         &&
 make install &&
 
 chmod   -v   755 /usr/lib/lib{hogweed,nettle}.so         &&
-install -v -m755 -d /usr/share/doc/nettle-3.7.1          &&
-install -v -m644 nettle.html /usr/share/doc/nettle-3.7.1 &&
+install -v -m755 -d /usr/share/doc/nettle-3.7.3          &&
+install -v -m644 nettle.html /usr/share/doc/nettle-3.7.3 &&
 
 cd .. &&
-rm -rf nettle-3.7.1
+rm -rf nettle-3.7.3
 ```
 
 ### libunistring
@@ -2221,11 +2224,11 @@ rm -rf libunistring-0.9.10
 ### GnuTLS
 
 ```sh
-tar xvf /sources/gnutls-3.7.0.tar.xz &&
-cd       gnutls-3.7.0                &&
+tar xvf /sources/gnutls-3.7.2.tar.xz &&
+cd       gnutls-3.7.2                &&
 
 ./configure --prefix=/usr                        \
-            --docdir=/usr/share/doc/gnutls-3.7.0 \
+            --docdir=/usr/share/doc/gnutls-3.7.2 \
             --disable-guile                      \
             --with-default-trust-store-pkcs11="pkcs11:" &&
 
@@ -2234,7 +2237,7 @@ make install                             &&
 make -C doc/reference install-data-local &&
 
 cd .. &&
-rm -rf gnutls-3.7.0
+rm -rf gnutls-3.7.2
 ```
 
 ### cURL
@@ -2343,11 +2346,12 @@ The `gnu-efi=true` option is added to build the efi executables installed by `bo
 tar xzvf /sources/systemd-248.tar.gz &&
 cd        systemd-248                &&
 
-patch -Np1 -i ../../systemd-248-upstream_fixes-1.patch                    &&
+patch -Np1 -i /sources/systemd-248-upstream_fixes-1.patch                 &&
 sed -i 's/GROUP="render"/GROUP="video"/' rules.d/50-udev-default.rules.in &&
 
 mkdir -v build &&
 cd       build &&
+
 LANG=en_US.UTF-8                          \
 meson --prefix=/usr                       \
       --sysconfdir=/etc                   \

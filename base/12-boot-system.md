@@ -181,7 +181,20 @@ cat /proc/cpuinfo | grep -A19 'processor.*: 0' | egrep --color=auto '(vmx|svm)'
 
 ### Filesystem support
 
-Finally, ensure whichever filesystem(s) you chose to create on your partition(s) are enabled.
+Ensure whichever filesystem(s) you chose to create on your partition(s) are enabled. The filesystem driver for your root filesystem and for FAT32 to read the ESP should be built-in, but you may want to build modules for other filesystems in order to be able to mount them at runtime.
+
+### WiFi support
+
+To be able to connect to a WiFi network, at minimum, you will need enable the following:
+
+```
+[*] Networking support  --->
+    [*] Wireless  --->
+        <M>   cfg80211 - wireless configuration API
+        <M>   Generic IEEE 802.11 Networking Stack (mac80211)
+```
+
+You will also need the device drivers for your WiFi card, but which specific driver(s) you need entirely depends on your WiFi card. You may also need firmware. One important detail to note is that, if you need firmware, then you need to compile the drivers as modules, not built-in.
 
 ### Building
 

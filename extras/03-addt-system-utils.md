@@ -93,12 +93,14 @@ rm -rf sendmail-8.16.1
 ## SQLite
 
 ```sh
-curl https://sqlite.org/2021/sqlite-autoconf-3340100.tar.gz -o sqlite-autoconf-3340100.tar.gz &&
-curl https://sqlite.org/2021/sqlite-doc-3340100.zip -o sqlite-doc-3340100.zip                 &&
-tar  xzvf sqlite-autoconf-3340100.tar.gz                                                      &&
-cd   sqlite-autoconf-3340100                                                                  &&
+curl https://sqlite.org/2021/sqlite-autoconf-3340100.tar.gz -o /sources/sqlite-autoconf-3340100.tar.gz &&
+curl https://sqlite.org/2021/sqlite-doc-3340100.zip -o /sources/sqlite-doc-3340100.zip &&
 
-unzip -q ../sqlite-doc-3340100.zip &&
+tar xzvf /sources/sqlite-autoconf-3340100.tar.gz &&
+cd        sqlite-autoconf-3340100                &&
+
+unzip -q /sources/sqlite-doc-3340100.zip &&
+
 ./configure --prefix=/usr     \
             --disable-static  \
             --enable-fts5     \
@@ -111,12 +113,12 @@ unzip -q ../sqlite-doc-3340100.zip &&
             -DSQLITE_SECURE_DELETE=1          \
             -DSQLITE_ENABLE_FTS3_TOKENIZER=1" &&
 
-make
-sudo make install
-sudo install -v -m755 -d /usr/share/doc/sqlite-3.34.1 &&
-sudo cp -v -R sqlite-doc-3340100/* /usr/share/doc/sqlite-3.34.1
+make                                                            &&
+sudo make install                                               &&
+sudo install -v -m755 -d /usr/share/doc/sqlite-3.34.1           &&
+sudo cp -v -R sqlite-doc-3340100/* /usr/share/doc/sqlite-3.34.1 &&
 
-cd ..
+cd .. &&
 rm -rf sqlite-autoconf-3340100
 ```
 
@@ -125,45 +127,67 @@ At this point, you may wish to rebuild `Python` to enable the optional loadable 
 ## Aspell
 
 ```sh
-curl https://ftp.gnu.org/gnu/aspell/aspell-0.60.8.tar.gz -o aspell-0.60.8.tar.gz
-tar xzvf aspell-0.60.8.tar.gz
-cd aspell-0.60.8
+curl https://ftp.gnu.org/gnu/aspell/aspell-0.60.8.tar.gz -o /sources/aspell-0.60.8.tar.gz &&
 
-./configure --prefix=/usr
-make
-sudo make install
-sudo ln -svfn aspell-0.60 /usr/lib/aspell &&
+tar xzvf /sources/aspell-0.60.8.tar.gz &&
+cd        aspell-0.60.8                &&
+
+./configure --prefix=/usr &&
+
+make                                                                     &&
+sudo make install                                                        &&
+sudo ln -svfn aspell-0.60 /usr/lib/aspell                                &&
 sudo install -v -m755 -d /usr/share/doc/aspell-0.60.8/aspell{,-dev}.html &&
 sudo install -v -m644 manual/aspell.html/* \
-    /usr/share/doc/aspell-0.60.8/aspell.html &&
+    /usr/share/doc/aspell-0.60.8/aspell.html                             &&
 sudo install -v -m644 manual/aspell-dev.html/* \
-    /usr/share/doc/aspell-0.60.8/aspell-dev.html &&
-sudo install -v -m 755 scripts/ispell /usr/bin/ &&
-sudo install -v -m 755 scripts/spell /usr/bin/
+    /usr/share/doc/aspell-0.60.8/aspell-dev.html                         &&
+sudo install -v -m 755 scripts/ispell /usr/bin/                          &&
+sudo install -v -m 755 scripts/spell /usr/bin/                           &&
 
-cd ..
+cd .. &&
 rm -rf aspell-0.60.8
 ```
 
 Now install a dictionary. Note that I am choosing English because I am an American English speaker, but you can go to the GNU Aspell ftp server and find a different dictionary if you prefer, or even install many.
 
 ```sh
-curl https://ftp.gnu.org/gnu/aspell/dict/en/aspell6-en-2020.12.07-0.tar.bz2 -o aspell6-en-2020.12.07-0.tar.bz2
-tar xvf aspell6-en-2020.12.07.0.tar.bz2
-cd aspell6-en-2020.12.07
+curl https://ftp.gnu.org/gnu/aspell/dict/en/aspell6-en-2020.12.07-0.tar.bz2 -o /sources/aspell6-en-2020.12.07-0.tar.bz2 &&
 
-./configure
-make
-sudo make install
+tar xvf /sources/aspell6-en-2020.12.07-0.tar.bz2 &&
+cd       aspell6-en-2020.12.07-0                 &&
 
-cd ..
-rm -rf aspell6-2020.12.07
+./configure &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf aspell6-2020.12.07-0
 ```
 
 You can also dump the dictionary to a text file if you wish:
 
 ```sh
 sudo sh -c 'aspell -d en dump master | aspell -l en expand >> /usr/share/dict/words'
+```
+
+## enchant
+
+```sh
+curl https://github.com/AbiWord/enchant/releases/download/v2.2.15/enchant-2.2.15.tar.gz -o /sources/enchant-2.2.15.tar.gz &&
+
+tar xzvf /sources/enchant-2.2.15.tar.gz &&
+cd        enchant-2.2.15                &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf enchant-2.2.15
 ```
 
 ## mutt
@@ -224,15 +248,18 @@ rm -rf at-3.2.1
 ## parallel
 
 ```sh
-curl https://ftp.gnu.org/gnu/parallel/parallel-20210522.tar.bz2 -o parallel-20210522.tar.bz2
-tar xvf parallel-20210522.tar.bz2
-cd parallel-20210522
+curl https://ftp.gnu.org/gnu/parallel/parallel-20210522.tar.bz2 -o /sources/parallel-20210522.tar.bz2 &&
 
-./configure --prefix=/usr
-make
-sudo make install
+tar xvf /sources/parallel-20210522.tar.bz2 &&
+cd       parallel-20210522                 &&
 
-cd ..
+./configure --prefix=/usr \
+            --docdir=/usr/share/doc/parallel-20210522 &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
 rm -rf parallel-20210522
 ```
 
@@ -289,5 +316,303 @@ rm -rf fcron-3.2.1
 ## PCRE2
 
 ```sh
+curl https://ftp.pcre.org/pub/pcre/pcre2-10.37.tar.bz2 -o /sources/pcre2-10.37.tar.bz2 &&
 
+tar xvf /sources/pcre2-10.37.tar.bz2 &&
+cd       pcre2-10.37                 &&
+
+./configure --prefix=/usr                       \
+            --docdir=/usr/share/doc/pcre2-10.37 \
+            --enable-unicode                    \
+            --enable-jit                        \
+            --enable-pcre2-16                   \
+            --enable-pcre2-32                   \
+            --enable-pcre2grep-libz             \
+            --enable-pcre2grep-libbz2           \
+            --enable-pcre2test-libreadline      \
+            --disable-static                    &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf pcre2-10.37
+```
+
+## pciutils
+
+```sh
+curl https://www.kernel.org/pub/software/utils/pciutils/pciutils-3.7.0.tar.xz -o /sources/pciutils-3.7.0.tar.xz &&
+
+tar xvf /sources/pciutils-3.7.0.tar.xz &&
+cd       pciutils-3.7.0                &&
+
+make PREFIX=/usr                \
+     SHAREDIR=/usr/share/hwdata \
+     SHARED=yes &&
+
+sudo make PREFIX=/usr                \
+          SHAREDIR=/usr/share/hwdata \
+          SHARED=yes                 \
+          install install-lib &&
+
+sudo chmod -v 755 /usr/lib/libpci.so &&
+
+cd .. &&
+rm -rf pciutils-3.7.0
+```
+
+## libusb
+
+```sh
+curl https://github.com/libusb/libusb/releases/download/v1.0.24/libusb-1.0.24.tar.bz2 -o /sources/libusb-1.0.24.tar.bz2 &&
+
+tar xvf /sources/libusb-1.0.24.tar.bz2 &&
+cd       libusb-1.0.24                 &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libusb-1.0.24
+```
+
+## usbutils
+
+```sh
+curl https://www.kernel.org/pub/linux/utils/usb/usbutils/usbutils-013.tar.xz -o /sources/usbutils-013.tar.xz &&
+
+tar xvf /sources/usbutils-013.tar.xz &&
+cd       usbutils-013                &&
+
+./autogen.sh --prefix=/usr \
+            --datadir=/usr/share/hwdata &&
+
+make                                                                    &&
+sudo make install                                                       &&
+sudo install -dm755 /usr/share/hwdata/                                  &&
+sudo wget http://www.linux-usb.org/usb.ids -O /usr/share/hwdata/usb.ids &&
+
+cd .. &&
+rm -rf usbutils-013
+```
+
+### Configuring usbutils
+
+Create a timed service to update the ids weekly:
+
+```sh
+sudo su -
+cat > /usr/lib/systemd/system/update-usbids.service << "EOF" &&
+[Unit]
+Description=Update usb.ids file
+Documentation=man:lsusb(8)
+DefaultDependencies=no
+After=local-fs.target network-online.target
+Before=shutdown.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/wget http://www.linux-usb.org/usb.ids -O /usr/share/hwdata/usb.ids
+EOF
+cat > /usr/lib/systemd/system/update-usbids.timer << "EOF" &&
+[Unit]
+Description=Update usb.ids file weekly
+
+[Timer]
+OnCalendar=Sun 03:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+systemctl enable update-usbids.timer
+exit
+```
+
+## libburn
+
+```sh
+curl https://files.libburnia-project.org/releases/libburn-1.5.4.tar.gz -o /sources/libburn-1.5.4.tar.gz &&
+
+tar xzvf /sources/libburn-1.5.4.tar.gz &&
+cd        libburn-1.5.4                &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libburn-1.5.4
+```
+
+## libisofs
+
+```sh
+curl https://files.libburnia-project.org/releases/libisofs-1.5.4.tar.gz -o /sources/libisofs-1.5.4.tar.gz &&
+
+tar xzvf /sources/libisofs-1.5.4.tar.gz &&
+cd        libisofs-1.5.4                &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libisofs-1.5.4
+```
+
+## libisoburn
+
+```sh
+curl https://files.libburnia-project.org/releases/libisoburn-1.5.4.tar.gz -o /sources/libisoburn-1.5.4.tar.gz &&
+
+tar xzvf /sources/libisoburn-1.5.4.tar.gz &&
+cd        libisoburn-1.5.4                &&
+
+./configure --prefix=/usr              \
+            --disable-static           \
+            --enable-pkg-check-modules &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libisoburn-1.5.4
+```
+
+## parted
+
+Use the `--disable-device-mapper` flag to `configure` if you did not install `LVM2`.
+
+```sh
+curl https://ftp.gnu.org/gnu/parted/parted-3.4.tar.xz -o /sources/parted-3.4.tar.xz &&
+
+tar xvf /sources/parted-3.4.tar.xz &&
+cd       parted-3.4                &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make                                                   &&
+make -C doc html                                       &&
+makeinfo --html      -o doc/html       doc/parted.texi &&
+makeinfo --plaintext -o doc/parted.txt doc/parted.texi &&
+sudo make -k check &&
+sudo make install  &&
+
+sudo install -v -m755 -d /usr/share/doc/parted-3.4/html &&
+sudo install -v -m644    doc/html/* \
+                        /usr/share/doc/parted-3.4/html  &&
+sudo install -v -m644    doc/{FAT,API,parted.{txt,html}} \
+                        /usr/share/doc/parted-3.4       &&
+
+cd .. &&
+sudo rm -rf parted-3.4
+```
+
+## cpufrequtils
+
+```sh
+curl https://mirrors.edge.kernel.org/pub/linux/utils/kernel/cpufreq/cpufrequtils-008.tar.xz -o /sources/cpufrequtils-008.tar.xz &&
+
+tar xvf /sources/cpufrequtils-008.tar.xz &&
+cd       cpufrequtils-008                &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf cpufrequtils-008
+```
+
+## sysstat
+
+```sh
+curl http://sebastien.godard.pagesperso-orange.fr/sysstat-12.5.4.tar.xz -o /sources/sysstat-12.5.4.tar.xz &&
+
+tar xvf /sources/sysstat-12.5.4.tar.xz &&
+cd       sysstat-12.5.4                &&
+
+sa_lib_dir=/usr/lib/sa          \
+sa_dir=/var/log/sa              \
+conf_dir=/etc/sysconfig         \
+./configure --prefix=/usr       \
+            --disable-file-attr \
+            --docdir=/usr/share/doc/sysstat-12.5 &&
+
+make              &&
+sudo make install &&
+
+sudo install -v -m644 sysstat.service /usr/lib/systemd/system/sysstat.service &&
+sudo sed -i "/^Also=/d" /usr/lib/systemd/system/sysstat.service               &&
+
+cd .. &&
+rm -rf sysstat-12.5.4
+```
+
+## libtirpc
+
+```sh
+curl https://downloads.sourceforge.net/libtirpc/libtirpc-1.3.2.tar.bz2 -o /sources/libtirpc-1.3.2.tar.bz2 &&
+
+tar xvf /sources/libtirpc-1.3.2.tar.bz2 &&
+cd       libtirpc-1.3.2                 &&
+
+./configure --prefix=/usr     \
+            --sysconfdir=/etc \
+            --disable-static  \
+            --disable-gssapi &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libtirpc-1.3.2
+```
+
+## lsof
+
+```sh
+curl https://www.mirrorservice.org/sites/lsof.itap.purdue.edu/pub/tools/unix/lsof/lsof_4.91.tar.gz -o /sources/lsof_4.91.tar.gz &&
+
+tar xzvf /sources/lsof_4.91.tar.gz &&
+cd        lsof_4.91                &&
+
+tar -xf lsof_4.91_src.tar  &&
+cd lsof_4.91_src           &&
+./Configure -n linux       &&
+
+make CFGL="-L./lib -ltirpc" &&
+
+sudo install -v -m0755 -o root -g root lsof /usr/bin &&
+sudo install -v lsof.8 /usr/share/man/man8           &&
+
+cd .. &&
+rm -rf lsof_4.91
+```
+
+## bubblewrap
+
+```sh
+curl https://github.com/projectatomic/bubblewrap/releases/download/v0.4.1/bubblewrap-0.4.1.tar.xz -o /sources/bubblewrap-0.4.1.tar.xz &&
+
+tar xvf /sources/bubblewrap-0.4.1.tar.xz &&
+cd       bubblewrap-0.4.1                &&
+
+./configure --prefix=/usr &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf bubblewrap-0.4.1
 ```

@@ -1,32 +1,38 @@
 # Structured data and text processing utilities
 
-## jq
-
-First, install the `oniguruma` regex library this depends on:
+## oniguruma
 
 ```sh
-curl -L https://github.com/kkos/oniguruma/releases/download/v6.9.7.1/onig-6.9.7.1.tar.gz -o onig-6.9.7.1.tar.gz
-tar xzvf onig-6.9.7.1.tar.gz
-cd onig-6.9.7.1
+curl https://github.com/kkos/oniguruma/releases/download/v6.9.7.1/onig-6.9.7.1.tar.gz -o /sources/onig-6.9.7.1.tar.gz &&
 
-./configure --prefix=/usr
-make -j
-sudo make install
+tar xzvf /sources/onig-6.9.7.1.tar.gz &&
+cd        onig-6.9.7                  &&
 
-cd ..
-rm -rf onig-6.9.7.1
+./configure --prefix=/usr &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf onig-6.9.7
 ```
 
+## jq
+
 ```sh
-curl -L https://github.com/stedolan/jq/releases/download/jq-1.6/jq-1.6.tar.gz -o jq-1.6.tar.gz
-tar zavf jq-1.6.tar.gz
-cd jq-1.6
+curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-1.6.tar.gz -o /sources/jq-1.6.tar.gz &&
 
-./configure --prefix=/usr
-make -j
-sudo make install
+tar xzvf /sources/jq-1.6.tar.gz &&
+cd        jq-1.6                &&
 
-cd ..
+./configure --prefix=/usr \
+            --disable-static &&
+
+make                                               &&
+sudo make install                                  &&
+sudo mv -v /usr/share/doc/jq /usr/share/doc/jq-1.6 &&
+
+cd .. &&
 rm -rf jq-1.6
 ```
 
@@ -42,117 +48,56 @@ sudo chmod +x /usr/bin/yq
 If you opted to build and install the `go` compiler, you can build `yq` from source. Beware that, though there is a `Makefile`, you cannot run `make` and expect it to work, as this `Makefile` assumes it is being run from a `git` repo and also requires `docker`, which you may or may not have at this point. `go` has a fairly simple toolchain, so we'll just do it the hard way.
 
 ```sh
-curl https://github.com/mikefarah/yq/archive/refs/tags/v4.9.3.tar.gz -o yq-4.9.3.tar.gz
-tar xzvf yq-4.9.3.tar.gz
-cd yq-4.9.3
+curl https://github.com/mikefarah/yq/archive/refs/tags/v4.9.3.tar.gz -o /sources/yq-4.9.3.tar.gz &&
 
-mkdir vendor
-go mod vendor
-GOPATH=/sources/yq-4.9.3/vendor go build
-sudo install -vm755 yq /usr/bin
+tar xzvf /sources/yq-4.9.3.tar.gz &&
+cd        yq-4.9.3                &&
 
-cd ..
+mkdir vendor  &&
+go mod vendor &&
+
+GOPATH=/sources/yq-4.9.3/vendor go build &&
+sudo install -vm755 yq /usr/bin          &&
+
+cd .. &&
 rm -rf yq-4.9.3
 ```
 
 Beware that if you don't explicitly set `GOPATH`, it defaults to `~/go` and the installs all of `yq`'s dependencies there. This is likely not what you want, given all `go` executables are statically linked, so you will simply be polluting your home directory with redundant packages. It can be handy, however, if you're actually intended to use `go` as a developer, to keep packages in your home directory as your own projects may link against them without needing to download them separately each time.
 
-## icu
-
-```sh
-curl -L http://github.com/unicode-org/icu/releases/download/release-68-2/icu4c-68_2-src.tgz -o icu4c-68_2-src.tgz
-tar xzvf icu4c-68_2-src.tgz
-cd icu/source
-
-./configure --prefix=/usr
-make -j
-sudo make install
-
-cd ..
-rm -rf icu
-```
-
-## libxml2
-
-```sh
-curl http://xmlsoft.org/sources/libxml2-2.9.10.tar.gz -o libxml2-2.9.10.tar.gz
-curl -L http://www.linuxfromscratch.org/patches/blfs/10.1/libxml2-2.9.10-security_fixes-1.patch -o libxml2-2.9.10-security_fixes-1.patch
-tar xzvf libxml2-2.9.10.tar.gz
-
-patch -p1 -i ../libxml2-2.9.10-security_fixes-1.patch
-sed -i '/if Py/{s/Py/(Py/;s/)/))/}' python/{types.c,libxml.c}
-sed -i 's/test.test/#&/' python/tests/tstLastError.py
-sed -i 's/ TRUE/ true/' encoding.c
-./configure --prefix=/usr    \
-            --disable-static \
-            --with-history   \
-            --with-python=/usr/bin/python3
-make -j
-sudo make install
-
-cd ..
-rm -rf libxml2-2.9.10
-```
-
-## Zip
-
-```sh
-curl https://downloads.sourceforge.net/infozip/zip30.tar.gz -o zip30.tar.gz
-tar xzvf zip30.tar.gz
-cd zip30
-
-make -f unix/Makefile generic_gcc
-sudo make prefix=/usr MANDIR=/usr/share/man/man1 -f unix/Makefile install
-
-cd ..
-rm -rf zip30
-```
-
-## Unzip
-
-```sh
-curl https://downloads.sourceforge.net/infozip/unzip60.tar.gz -o unzip60.tar.gz
-curl http://www.linuxfromscratch.org/patches/blfs/10.1/unzip-6.0-consolidated_fixes-1.patch -o unzip-6.0-consolidated_fixes-1.patch
-tar xzvf unzip60.tar.gz
-cd unzip60
-
-patch -Np1 -i ../unzip-6.0-consolidated_fixes-1.patch
-make -f unix/Makefile generic
-sudo make prefix=/usr MANDIR=/usr/share/man/man1 \
- -f unix/Makefile install
-
-cd ..
-rm -rf unzip60
-```
-
 ## sgml
 
 ```sh
-curl https://sourceware.org/ftp/docbook-tools/new-trials/SOURCES/sgml-common-0.6.3.tgz -o sgml-common-0.6.3.tgz
-curl http://www.linuxfromscratch.org/patches/blfs/10.1/sgml-common-0.6.3-manpage-1.patch -o sgml-common-0.6.3-manpage-1.patch
-tar xzvf sgml-common-0.6.3.tgz
-cd sgml-common-0.6.3
+curl https://sourceware.org/ftp/docbook-tools/new-trials/SOURCES/sgml-common-0.6.3.tgz -o /sources/sgml-common-0.6.3.tgz &&
+curl http://www.linuxfromscratch.org/patches/blfs/10.1/sgml-common-0.6.3-manpage-1.patch -o /sources/sgml-common-0.6.3-manpage-1.patch &&
 
-patch -Np1 -i ../sgml-common-0.6.3-manpage-1.patch &&
-autoreconf -f -i
-./configure --prefix=/usr --sysconfdir=/etc
-make
-sudo make docdir=/usr/share/doc install &&
+tar xzvf /sources/sgml-common-0.6.3.tgz &&
+cd        sgml-common-0.6.3             &&
+
+patch -Np1 -i /sources/sgml-common-0.6.3-manpage-1.patch &&
+
+autoreconf -f -i              &&
+./configure --prefix=/usr \
+            --sysconfdir=/etc &&
+
+make                                                    &&
+sudo make docdir=/usr/share/doc install                 &&
 sudo install-catalog --add /etc/sgml/sgml-ent.cat \
     /usr/share/sgml/sgml-iso-entities-8879.1986/catalog &&
 sudo install-catalog --add /etc/sgml/sgml-docbook.cat \
-    /etc/sgml/sgml-ent.cat
+    /etc/sgml/sgml-ent.cat                              &&
 
-cd ..
+cd .. &&
 rm -rf sgml-common-0.6.3
 ```
 
 ## docbook-xml
 
 ```sh
-curl http://www.docbook.org/xml/4.5/docbook-xml-4.5.zip -o docbook-xml-4.5.zip
-unzip docbook-xml-4.5.zip -d docbook-xml-4.5
-cd docbook-xml-4.5
+curl http://www.docbook.org/xml/4.5/docbook-xml-4.5.zip -o /sources/docbook-xml-4.5.zip &&
+
+unzip /sources/docbook-xml-4.5.zip -d docbook-xml-4.5 &&
+cd     docbook-xml-4.5
 ```
 
 Build the DTD catalog:
@@ -272,19 +217,21 @@ done
 Clean up:
 
 ```sh
-cd ..
-rm -rf docbook-xml-4.5
+cd .. &&
+sudo rm -rf docbook-xml-4.5
 ```
 
 ## docbook-xslt
 
 ```sh
-curl https://github.com/docbook/xslt10-stylesheets/releases/download/release/1.79.2/docbook-xsl-nons-1.79.2.tar.bz2 -o docbook-xsl-nons-1.79.2.tar.bz2
-curl http://www.linuxfromscratch.org/patches/blfs/10.1/docbook-xsl-nons-1.79.2-stack_fix-1.patch -o docbook-xsl-nons-1.79.2-stack_fix-1.patch
-tar xvf docbook-xsl-nons-1.79.2.tar.bz2
-cd docbook-xsl-nons-1.79.2
+curl https://github.com/docbook/xslt10-stylesheets/releases/download/release/1.79.2/docbook-xsl-nons-1.79.2.tar.bz2 -o /sources/docbook-xsl-nons-1.79.2.tar.bz2 &&
+curl http://www.linuxfromscratch.org/patches/blfs/10.1/docbook-xsl-nons-1.79.2-stack_fix-1.patch -o /sources/docbook-xsl-nons-1.79.2-stack_fix-1.patch &&
 
-patch -Np1 -i ../docbook-xsl-nons-1.79.2-stack_fix-1.patch
+tar xvf /sources/docbook-xsl-nons-1.79.2.tar.bz2 &&
+cd       docbook-xsl-nons-1.79.2                 &&
+
+patch -Np1 -i /sources/docbook-xsl-nons-1.79.2-stack_fix-1.patch &&
+
 sudo install -v -m755 -d /usr/share/xml/docbook/xsl-stylesheets-nons-1.79.2 &&
 sudo cp -v -R VERSION assembly common eclipse epub epub3 extensions fo        \
          highlighting html htmlhelp images javahelp lib manpages params  \
@@ -334,90 +281,77 @@ sudo xmlcatalog --noout --add "rewriteURI" \
 ## libxslt
 
 ```sh
-curl http://xmlsoft.org/sources/libxslt-1.1.34.tar.gz -o libxslt-1.1.34.tar.gz
-tar xzvf libxslt-1.1.34.tar.gz
-cd libxslt-1.1.34
+curl http://xmlsoft.org/sources/libxslt-1.1.34.tar.gz -o /sources/libxslt-1.1.34.tar.gz &&
+
+tar xzvf /sources/libxslt-1.1.34.tar.gz &&
+cd        libxslt-1.1.34                &&
 
 sed -i s/3000/5000/ libxslt/transform.c doc/xsltproc.{1,xml} &&
-./configure --prefix=/usr --disable-static --without-python
-make
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --without-python &&
+make &&
+
 sed -e 's@http://cdn.docbook.org/release/xsl@https://cdn.docbook.org/release/xsl-nons@' \
-    -e 's@\$Date\$@31 October 2019@' -i doc/xsltproc.xml &&
-xsltproc/xsltproc --nonet doc/xsltproc.xml -o doc/xsltproc.1
-sudo make install
+    -e 's@\$Date\$@31 October 2019@' -i doc/xsltproc.xml     &&
+xsltproc/xsltproc --nonet doc/xsltproc.xml -o doc/xsltproc.1 &&
+sudo make install                                            &&
 
-cd ..
+cd .. &&
 rm -rf libxslt-1.1.34
-```
-
-## GLib
-
-```sh
-curl https://download.gnome.org/sources/glib/2.66/glib-2.66.7.tar.xz -o glib-2.66.7.tar.xz
-curl http://www.linuxfromscratch.org/patches/blfs/10.1/glib-2.66.7-skip_warnings-1.patch -o glib-2.66.7-skip_warnings-1.patch
-tar xvf glib-2.66.7.tar.xz
-cd glib-2.66.7
-
-patch -Np1 -i ../glib-2.66.7-skip_warnings-1.patch
-mkdir build &&
-cd    build &&
-meson --prefix=/usr      \
-      -Dman=true         \
-      -Dselinux=disabled \
-      ..
-ninja
-sudo ninja install &&
-sudo mkdir -p /usr/share/doc/glib-2.66.7 &&
-sudo cp -r ../docs/reference/{NEWS,gio,glib,gobject} /usr/share/doc/glib-2.66.7
-
-cd ..
-rm -rf glib-2.66.7
 ```
 
 ## itstool
 
 ```sh
-curl http://files.itstool.org/itstool/itstool-2.0.6.tar.bz2 -o itstool-2.0.6.tar.bz2
-tar xvf itstool-2.0.6.tar.bz2
-cd itstool-2.0.6
+curl http://files.itstool.org/itstool/itstool-2.0.6.tar.bz2 -o /sources/itstool-2.0.6.tar.bz2 &&
 
-PYTHON=/usr/bin/python3 ./configure --prefix=/usr
-make
-sudo make install
+tar xvf /sources/itstool-2.0.6.tar.bz2 &&
+cd       itstool-2.0.6                 &&
 
-cd ..
+./configure --prefix=/usr &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
 rm -rf itstool-2.0.6
 ```
 
 ## xmlto
 
 ```sh
-curl https://releases.pagure.org/xmlto/xmlto-0.0.28.tar.bz2 -o xmlto-0.0.28.tar.bz2
-tar xvf xmlto-0.0.28.tar.bz2
-cd xmlto-0.0.28
+curl https://releases.pagure.org/xmlto/xmlto-0.0.28.tar.bz2 -o /sources/xmlto-0.0.28.tar.bz2 &&
 
-LINKS="/usr/bin/links" ./configure --prefix=/usr
-make
-sudo make install
+tar xvf /sources/xmlto-0.0.28.tar.bz2 &&
+cd       xmlto-0.0.28                 &&
 
-cd ..
+LINKS="/usr/bin/links" ./configure --prefix=/usr &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
 rm -rf xmlto-0.0.28
 ```
 
 ## shared-mime-info
 
 ```sh
-curl https://gitlab.freedesktop.org/xdg/shared-mime-info/uploads/0ee50652091363ab0d17e335e5e74fbe/shared-mime-info-2.1.tar.xz -o shared-mime-info-2.1.tar.xz
-tar xvf shared-mime-info-2.1.tar.xz
-cd shared-mime-info-2.1
+curl https://gitlab.freedesktop.org/xdg/shared-mime-info/uploads/0ee50652091363ab0d17e335e5e74fbe/shared-mime-info-2.1.tar.xz -o /sources/shared-mime-info-2.1.tar.xz &&
+
+tar xvf /sources/shared-mime-info-2.1.tar.xz &&
+cd       shared-mime-info-2.1                &&
 
 mkdir build &&
 cd    build &&
-meson --prefix=/usr -Dupdate-mimedb=true ..
-ninja
 
-sudo ninja install
+meson --prefix=/usr -Dupdate-mimedb=true .. &&
 
-cd ../..
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
 rm -rf shared-mime-info-2.1
 ```

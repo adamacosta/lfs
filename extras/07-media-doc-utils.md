@@ -4,7 +4,7 @@ There is no clear dependency ordering between the various libraries and tools pr
 
 If you wish to build `pandoc`, it requires a Haskell compiler, and `mdbook` requires `Rust`, as does `librsvg`. The recommended build order is to build everything else first, in order to have full-fledged documentation generators for `GDB` and the various other compilers, debuggers, and programming standard libraries in the next section, then come back to build `pandoc` and `mdbook`.
 
-Many libraries here may also require `CMake` to generate the `Makefile`, so you may want to head over the devtools section on build system and install `CMake` first, then come back.
+Many libraries here may also require `CMake` to generate the `Makefile`, so you may want to head over the devtools section on build systems and install `CMake` first, then come back.
 
 ## Fonts and typesetting
 
@@ -18,132 +18,108 @@ You may wish to install `brotli` first, which provides implementations of variou
 
 This is not strictly a dependency of `FreeType` itself, but `HarfBuzz` may not behave as expected if it is not present. Note that `Graphite` also has circular dependencies on `FreeType` and `HarfBuzz`, so though it will build without them, you will also want to rebuild after.
 
-Fetch:
-
 ```sh
-curl https://github.com/silnrsi/graphite/releases/download/1.3.14/graphite2-1.3.14.tgz -o graphite2-1.3.14.tgz &&
-tar xzvf graphite2-1.3.14.tgz
-```
+curl https://github.com/silnrsi/graphite/releases/download/1.3.14/graphite2-1.3.14.tgz -o /sources/graphite2-1.3.14.tgz &&
 
-Build:
+tar xzvf /sources/graphite2-1.3.14.tgz &&
+cd        graphite2-1.3.14             &&
 
-```sh
-cd graphite2-1.3.14
 sed -i '/cmptest/d' tests/CMakeLists.txt &&
+
 mkdir build &&
 cd    build &&
-cmake -DCMAKE_INSTALL_PREFIX=/usr ..
-make
-```
 
-Install:
+cmake -DCMAKE_INSTALL_PREFIX=/usr .. &&
 
-```sh
-sudo make install
+make              &&
+sudo make install &&
+
+cd ../.. &&
+rm -rf graphite2-1.3.14
 ```
 
 #### brotli
 
-Fetch:
-
 ```sh
-curl https://github.com/google/brotli/archive/v1.0.9/brotli-1.0.9.tar.gz -o brotli-1.0.9.tar.gz &&
-tar xzvf brotli-1.0.9.tar.gz
-```
+curl https://github.com/google/brotli/archive/v1.0.9/brotli-1.0.9.tar.gz -o /sources/brotli-1.0.9.tar.gz &&
 
-Build:
+tar xzvf /sources/brotli-1.0.9.tar.gz &&
+cd        brotli-1.0.9                &&
 
-```sh
-sed -i 's@-R..libdir.@@' scripts/*.pc.in
+sed -i 's@-R..libdir.@@' scripts/*.pc.in &&
+
 mkdir out &&
 cd    out &&
 
 cmake -DCMAKE_INSTALL_PREFIX=/usr \
       -DCMAKE_BUILD_TYPE=Release  \
-      ..
-make
-```
+      .. &&
 
-Test:
-
-```sh
-make test
-```
-
-To build optional Python bindings:
-
-```sh
-pushd ..              &&
-python setup.py build &&
-popd
-```
-
-Install:
-
-```sh
-sudo make install
-```
-
-Install the optional Python bindings:
-
-```sh
+make                                      &&
+make test                                 &&
+pushd ..                                  &&
+python setup.py build                     &&
+popd                                      &&
+sudo make install                         &&
 pushd ..                                  &&
 sudo python setup.py install --optimize=1 &&
-popd
+popd                                      &&
+
+cd ../.. &&
+sudo rm -rf brotli-1.0.9
 ```
 
 #### FreeType
 
-Fetch:
-
 ```sh
-curl https://downloads.sourceforge.net/freetype/freetype-2.10.4.tar.xz -o freetype-2.10.4.tar.xz &&
-curl https://downloads.sourceforge.net/freetype/freetype-doc-2.10.4.tar.xz -o freetype-doc-2.10.4.tar.xz &&
-tar xvf freetype-2.10.4.tar.xz &&
-tar xvf freetype-doc-2.10.4.tar.xz --strip-components=2 -C freetype-2.10.4/docs
-```
+curl https://downloads.sourceforge.net/freetype/freetype-2.10.4.tar.xz -o /sources/freetype-2.10.4.tar.xz &&
+curl https://downloads.sourceforge.net/freetype/freetype-doc-2.10.4.tar.xz -o /sources/freetype-doc-2.10.4.tar.xz &&
 
-Build:
+tar xvf /sources/freetype-2.10.4.tar.xz &&
+tar xvf /sources/freetype-doc-2.10.4.tar.xz \
+    --strip-components=2 \
+    -C freetype-2.10.4/docs             &&
+cd freetype-2.10.4                      &&
 
-```sh
+
 sed -ri "s:.*(AUX_MODULES.*valid):\1:" modules.cfg &&
 sed -r "s:.*(#.*SUBPIXEL_RENDERING) .*:\1:" \
-    -i include/freetype/config/ftoption.h  &&
-./configure --prefix=/usr --enable-freetype-config --disable-static
-make
-```
+    -i include/freetype/config/ftoption.h          &&
 
-Install:
+./configure --prefix=/usr            \
+            --enable-freetype-config \
+            --disable-static &&
 
-```sh
-sudo make install                                       &&
-sudo install -v -m755 -d /usr/share/doc/freetype-2.10.4 &&
-sudo cp -v -R docs/*     /usr/share/doc/freetype-2.10.4 &&
-sudo rm -v /usr/share/doc/freetype-2.10.4/freetype-config.1
+make                                                        &&
+sudo make install                                           &&
+sudo install -v -m755 -d /usr/share/doc/freetype-2.10.4     &&
+sudo cp -v -R docs/*     /usr/share/doc/freetype-2.10.4     &&
+sudo rm -v /usr/share/doc/freetype-2.10.4/freetype-config.1 &&
+
+cd .. &&
+rm -rf freetype-2.10.4
 ```
 
 #### HarfBuzz
 
-Fetch:
-
 ```sh
-curl https://github.com/harfbuzz/harfbuzz/releases/download/2.7.4/harfbuzz-2.7.4.tar.xz -o harfbuzz-2.7.4.tar.xz &&
-tar xvf harfbuzz-2.7.4.tar.xz
-```
+curl https://github.com/harfbuzz/harfbuzz/releases/download/2.8.1/harfbuzz-2.8.1.tar.xz -o /sources/harfbuzz-2.8.1.tar.xz &&
 
-Build:
+tar xvf /sources/harfbuzz-2.8.1.tar.xz &&
+cd      harfbuzz-2.8.1                 &&
 
-```sh
 mkdir build &&
 cd    build &&
-meson --prefix=/usr -Dgraphite=enabled -Dbenchmark=disabled
-ninja
-```
 
-Install:
+meson --prefix=/usr \
+      -Dgraphite=enabled \
+      -Dbenchmark=disabled &&
 
-```sh
-sudo ninja install
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf harfbuzz-2.8.1
 ```
 
 After `HarfBuzz` is installed, you should now rebuild and reinstall `Graphite2` and `FreeType`.
@@ -155,1077 +131,654 @@ After `HarfBuzz` is installed, you should now rebuild and reinstall `Graphite2` 
 Fetch:
 
 ```sh
-curl https://downloads.sourceforge.net/libpng/libpng-1.6.37.tar.xz -o libpng-1.6.37.tar.xz &&
-curl https://downloads.sourceforge.net/sourceforge/libpng-apng/libpng-1.6.37-apng.patch.gz -o libpng-1.6.37-apng.patch.gz &&
-tar xvf libpng-1.6.37.tar.xz &&
-gzip -d libpng-1.6.37-apng.patch.gz
-```
+curl https://downloads.sourceforge.net/libpng/libpng-1.6.37.tar.xz -o /sources/libpng-1.6.37.tar.xz &&
+curl https://downloads.sourceforge.net/sourceforge/libpng-apng/libpng-1.6.37-apng.patch.gz -o /sources/libpng-1.6.37-apng.patch.gz &&
 
-Build:
+tar xvf /sources/libpng-1.6.37.tar.xz         &&
+gzip -d /sources/libpng-1.6.37-apng.patch.gz  &&
+cd       libpng-1.6.37                        &&
 
-```sh
-cat ../libpng-1.6.37-apng.patch | patch -p1
-./configure --prefix=/usr --disable-static
-make
-```
+cat /sources/libpng-1.6.37-apng.patch | patch -p1
 
-Test:
+./configure --prefix=/usr \
+            --disable-static &&
 
-```sh
-make check
-```
+make                                                             &&
+make -k check                                                    &&
+sudo make install                                                &&
+sudo install -vdm755 /usr/share/doc/libpng-1.6.37                &&
+sudo cp -v README libpng-manual.txt /usr/share/doc/libpng-1.6.37 &&
 
-Install:
-
-```sh
-sudo make install &&
-sudo install -vdm755 /usr/share/doc/libpng-1.6.37 &&
-sudo cp -v README libpng-manual.txt /usr/share/doc/libpng-1.6.37
+cd .. &
+rm -rf libpng-1.6.37
 ```
 
 ### OpenJPEG
 
-Fetch:
-
 ```sh
-curl https://github.com/uclouvain/openjpeg/archive/v2.4.0/openjpeg-2.4.0.tar.gz -o openjpeg-2.4.0.tar.gz &&
-tar xzvf openjpeg-2.4.0.tar.gz
-```
+curl https://github.com/uclouvain/openjpeg/archive/v2.4.0/openjpeg-2.4.0.tar.gz -o /sources/openjpeg-2.4.0.tar.gz &&
 
-Build:
-
-```sh
-cd openjpeg-2.4.0
+tar xzvf /sources/openjpeg-2.4.0.tar.gz &&
+cd        openjpeg-2.4.0                &&
 
 mkdir -v build &&
 cd       build &&
+
 cmake -DCMAKE_BUILD_TYPE=Release \
       -DCMAKE_INSTALL_PREFIX=/usr \
-      -DBUILD_STATIC_LIBS=OFF ..
-make
-```
+      -DBUILD_STATIC_LIBS=OFF .. &&
 
-Install:
-
-```sh
+make              &&
 sudo make install &&
-pushd ../doc &&
+pushd ../doc      &&
     for man in man/man?/* ; do
         sudo install -v -D -m 644 $man /usr/share/$man
     done
-popd
+popd              &&
+
+cd ../.. &&
+rm -rf openjpeg-2.4.0
 ```
 
 ### libjpeg-turbo
 
-Fetch:
-
 ```sh
-curl https://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-2.0.6.tar.gz -o libjpeg-turbo-2.0.6.tar.gz &&
-tar xzvf libjpeg-turbo-2.0.6.tar.gz
-```
+curl https://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-2.0.6.tar.gz -o /sources/libjpeg-turbo-2.0.6.tar.gz &&
 
-Build:
+tar xzvf /sources/libjpeg-turbo-2.0.6.tar.gz &&
+cd        libjpeg-turbo-2.0.6                &&
 
-```sh
 mkdir build &&
 cd    build &&
+
 cmake -DCMAKE_INSTALL_PREFIX=/usr \
       -DCMAKE_BUILD_TYPE=RELEASE  \
       -DENABLE_STATIC=FALSE       \
       -DCMAKE_INSTALL_DOCDIR=/usr/share/doc/libjpeg-turbo-2.0.6 \
       -DCMAKE_INSTALL_DEFAULT_LIBDIR=lib  \
-      ..
-make
-```
+      .. &&
 
-Test:
+make              &&
+make test         &&
+sudo make install &&
 
-```sh
-make test
-```
-
-Install:
-
-```sh
-sudo make install
+cd ../.. &&
+rm -rf libjpeg-turbo-2.0.6
 ```
 
 ### libTIFF
 
-Fetch:
-
 ```sh
-curl http://download.osgeo.org/libtiff/tiff-4.2.0.tar.gz -o tiff-4.2.0.tar.gz &&
-tar xzvf tiff-4.2.0.tar.gz
-```
+curl http://download.osgeo.org/libtiff/tiff-4.2.0.tar.gz -o /sources/tiff-4.2.0.tar.gz &&
 
-Build:
-
-```sh
-cd tiff-4.2.0
+tar xzvf /sources/tiff-4.2.0.tar.gz &&
+cd        tiff-4.2.0                &&
 
 mkdir -p libtiff-build &&
 cd       libtiff-build &&
+
 cmake -DCMAKE_INSTALL_DOCDIR=/usr/share/doc/libtiff-4.2.0 \
-      -DCMAKE_INSTALL_PREFIX=/usr -G Ninja ..
-ninja
-```
+      -DCMAKE_INSTALL_PREFIX=/usr -G Ninja .. &&
 
-Install:
+ninja              &&
+sudo ninja install &&
 
-```sh
-sudo ninja install
+cd ../.. &&
+rm -rf tiff-4.2.0
 ```
 
 ### gdk-pixbuf
 
 Pixel buffer library divested from GTK+.
 
-Fetch:
-
 ```sh
-curl https://download.gnome.org/sources/gdk-pixbuf/2.42/gdk-pixbuf-2.42.2.tar.xz -o gdk-pixbuf-2.42.2.tar.xz &&
-tar xvf gdk-pixbuf-2.42.2.tar.xz
-```
+curl https://download.gnome.org/sources/gdk-pixbuf/2.42/gdk-pixbuf-2.42.6.tar.xz -o /sources/gdk-pixbuf-2.42.6.tar.xz &&
 
-Build:
-
-```sh
-cd gdk-pixbuf-2.42.2
+tar xvf /sources/gdk-pixbuf-2.42.6.tar.xz &&
+cd       gdk-pixbuf-2.42.6                &&
 
 mkdir build &&
 cd build    &&
-meson --prefix=/usr ..
-ninja
-```
 
-Test:
+meson --prefix=/usr .. &&
 
-```sh
-ninja test
-```
+ninja              &&
+ninja test         &&
+sudo ninja install &&
 
-Install
-
-```sh
-sudo ninja install
+cd ../.. &&
+rm -rf gdk-pixbuf-2.42.6
 ```
 
 ### Pixman
 
 Libraries for low-level pixel manipulation.
 
-Fetch:
-
 ```sh
-curl https://www.cairographics.org/releases/pixman-0.40.0.tar.gz -o pixman-0.40.0.tar.xz &&
-tar xvf pixman-0.40.0.tar.gz
-```
+curl https://www.cairographics.org/releases/pixman-0.40.0.tar.gz -o /sources/pixman-0.40.0.tar.xz &&
 
-Build:
-
-```sh
-cd pixman-0.40.0
+tar xvf /sources/pixman-0.40.0.tar.xz &&
+cd       pixman-0.40.0                &&
 
 mkdir build &&
 cd    build &&
-meson --prefix=/usr
-ninja
+
+meson --prefix=/usr &&
+
+ninja              &&
+ninja test         &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf pixman-0.40.0
 ```
 
-Test:
+## FontConfig
 
 ```sh
-ninja test
+curl https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.1.tar.bz2 -o /sources/fontconfig-2.13.1.tar.bz2 &&
+
+tar xvf /sources/fontconfig-2.13.1.tar.bz2 &&
+cd       fontconfig-2.13.1                 &&
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-docs       \
+            --docdir=/usr/share/doc/fontconfig-2.13.1 &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf fontconfig-2.13.1
 ```
 
-Install:
-
-```sh
-sudo ninja install
-```
-
-### Cairo
+## Cairo
 
 2d graphics library.
 
-Fetch:
-
 ```sh
-curl http://anduin.linuxfromscratch.org/BLFS/cairo/cairo-1.17.2+f93fc72c03e.tar.xz -o cairo-1.17.2+f93fc72c03e.tar.xz &&
-tar xvf cairo-1.17.2+f93fc72c03e.tar.xz
-```
+curl https://www.cairographics.org/snapshots/cairo-1.17.4.tar.xz -o /sources/cairo-1.17.4.tar.xz &&
 
-Build:
+tar xvf /sources/cairo-1.17.4.tar.xz &&
+cd       cairo-1.17.4                &&
 
-```sh
-cd cairo-1.17.2+f93fc72c03e
-
-autoreconf -fv &&
+autoreconf -fv           &&
 ./configure --prefix=/usr    \
             --disable-static \
-            --enable-tee
-make
+            --enable-tee &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf cairo-1.17.4
 ```
 
-Install:
+## FriBidi
+
+Unicode Bidirectional Algorithm for bidirectional alphabet rendering.
 
 ```sh
-sudo make install
+curl https://github.com/fribidi/fribidi/releases/download/v1.0.9/fribidi-1.0.9.tar.xz -o /sources/fribidi-1.0.9.tar.xz &&
+
+tar xvf /sources/fribidi-1.0.9.tar.xz &&
+cd       fribidi-1.0.9                &&
+
+mkdir build &&
+cd    build &&
+
+meson --prefix=/usr .. &&
+
+ninja
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf fribidi-1.0.9
 ```
 
-### Pango
+## Pango
 
 Text rendering and internationalization.
 
-Fetch:
-
 ```sh
-curl https://download.gnome.org/sources/pango/1.48/pango-1.48.2.tar.xz -o pango-1.48.2.tar.xz &&
-tar xvf pango-1.48.2.tar.xz
-```
+curl https://download.gnome.org/sources/pango/1.48/pango-1.48.5.tar.xz -o /sources/pango-1.48.5.tar.xz &&
 
-Build:
-
-```sh
-cd pango-1.48.2
+tar xvf /sources/pango-1.48.5.tar.xz &&
+cd       pango-1.48.5                &&
 
 mkdir build &&
 cd    build &&
-meson --prefix=/usr ..
-ninja
+
+meson --prefix=/usr .. &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf pango-1.48.5
 ```
 
-Install:
-
-```sh
-sudo ninja install
-```
-
-### GObject introspection
+## GObject introspection
 
 Inspect object APIs.
 
-Fetch:
-
 ```sh
-curl https://download.gnome.org/sources/gobject-introspection/1.66/gobject-introspection-1.66.1.tar.xz -o gobject-introspection-1.66.1.tar.xz &&
-tar xvf gobject-introspection-1.66.1.tar.xz
-```
+curl https://download.gnome.org/sources/gobject-introspection/1.68/gobject-introspection-1.68.0.tar.xz -o /sources/gobject-introspection-1.68.0.tar.xz &&
 
-Build:
-
-```sh
-cd gobject-introspection-1.66.1
+tar xvf /sources/gobject-introspection-1.68.0.tar.xz &&
+cd       gobject-introspection-1.68.0                &&
 
 mkdir build &&
 cd    build &&
-meson --prefix=/usr ..
-ninja
+
+meson --prefix=/usr .. &&
+
+ninja &&
+
+python -m venv testenv   &&
+. ./testenv/bin/activate &&
+pip install markdown     &&
+
+ninja test -k0 &&
+
+deactivate &&
+
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf gobject-introspection-1.68.0
 ```
 
-Test:
-
-This requires the `Python` `markdown` package, which can be installed temporarily into a virtual environment.
+## SDL
 
 ```sh
-python -m venv testenv
-. ./testenv/bin/activate
-pip install markdown
+curl https://www.libsdl.org/release/SDL2-2.0.14.tar.gz -o /sources/SDL2-2.0.14.tar.gz &&
 
-ninja test -k0
+tar xzvf /sources/SDL2-2.0.14.tar.gz &&
+cd        SDL2-2.0.14                &&
 
-deactivate
+./configure --prefix=/usr &&
+
+make &&
+
+pushd docs &&
+  doxygen  &&
+popd       &&
+
+sudo make install              &&
+sudo rm -v /usr/lib/libSDL2*.a &&
+
+sudo install -v -m755 -d        /usr/share/doc/SDL2-2.0.14/html &&
+sudo cp -Rv  docs/output/html/* /usr/share/doc/SDL2-2.0.14/html &&
+
+cd .. &&
+rm -rf SDL2-2.0.14
 ```
 
-Install:
+## libwebp
 
 ```sh
-sudo ninja install
+curl http://downloads.webmproject.org/releases/webp/libwebp-1.2.0.tar.gz -o /sources/libwebp-1.2.0.tar.gz &&
+
+tar xzvf /sources/libwebp-1.2.0.tar.gz &&
+cd        libwebp-1.2.0                &&
+
+./configure --prefix=/usr           \
+            --enable-libwebpmux     \
+            --enable-libwebpdemux   \
+            --enable-libwebpdecoder \
+            --enable-libwebpextras  \
+            --enable-swap-16bit-csp \
+            --disable-static        &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libwebp-1.2.0
 ```
 
-### Vala
-
-Scripting language for GNOME.
-
-Fetch:
+## woff
 
 ```sh
-curl https://download.gnome.org/sources/vala/0.50/vala-0.50.3.tar.xz -o vala-0.59.3.tar.xz &&
-tar xvf vala-0.59.3.tar.xz
-```
+curl https://github.com/google/woff2/archive/v1.0.2/woff2-1.0.2.tar.gz -o /sources/woff2-1.0.2.tar.gz &&
 
-Build:
+tar xzvf /sources/woff2-1.0.2.tar.gz &&
+cd        woff2-1.0.2                &&
 
-Requires `--disable-valadoc` if `GraphViz` is not installed.
+mkdir out &&
+cd    out &&
 
-```sh
-cd vala-0.59.3
+cmake -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_BUILD_TYPE=Release .. &&
 
-./configure --prefix=/usr
-make
-```
+make              &&
+sudo make install &&
 
-Install:
-
-```sh
-sudo make install
-```
-
-### librsvg
-
-SVG library and toolset. For Hacker News street cred, written in Rust.
-
-Fetch:
-
-```sh
-curl https://download.gnome.org/sources/librsvg/2.50/librsvg-2.50.3.tar.xz -o librsvg-2.50.3.tar.xz &&
-tar xvf librsvg-2.50.3.tar.xz
-```
-
-Build:
-
-```sh
-cd librsvg-2.50.3
-
-./configure --prefix=/usr    \
-            --enable-vala    \
-            --disable-static \
-            --docdir=/usr/share/doc/librsvg-2.50.3
-make
-```
-
-This may fail the first time due to circular dependencies in the graph between this and `gdk-pixbuf`, which may need to be rebuilt first.
-
-Test:
-
-```sh
-make check
-```
-
-Install:
-
-```sh
-sudo make install
+cd ../.. &&
+rm -rf woff2-1.0.2
 ```
 
 ## Poppler
 
 PDF rendering library.
 
-Fetch:
-
-```sh
-curl https://poppler.freedesktop.org/poppler-21.05.0.tar.xz -o poppler-21.05.0.tar.xz &&
-tar xvf poppler-21.05.0.tar.xz
-```
-
-Build:
-
 `clang` is optional but required for the fuzzing and address sanitizers to work, which may help prevent security issues.
 
 ```sh
-cd poppler-21.05.0
+curl https://poppler.freedesktop.org/poppler-21.05.0.tar.xz -o /sources/poppler-21.05.0.tar.xz &&
+
+tar xvf /sources/poppler-21.05.0.tar.xz &&
+cd       poppler-21.05.0                &&
 
 mkdir -v build &&
 cd       build &&
+
 cmake -DCMAKE_INSTALL_PREFIX=/usr                      \
       -DCMAKE_BUILD_TYPE=release                       \
       -DBUILD_GTK_TESTS=OFF                            \
       -DECM_ENABLE_SANITIZERS='address;leak;undefined' \
       -DCMAKE_CXX_COMPILER=clang++                     \
-      ..
-make
-```
+      .. &&
 
-Install:
+make              &&
+sudo make install &&
 
-```sh
-sudo make install
+cd ../.. &&
+rm -rf poppler-21.05.0
 ```
 
 ## GraphViz
 
-Fetch:
-
 ```sh
-curl https://www2.graphviz.org/Packages/stable/portable_source/graphviz-2.44.1.tar.gz -o graphviz-2.44.1.tar.gz &&
-tar xzvf graphviz-2.44.1.tar.gz
-```
+curl https://www2.graphviz.org/Packages/stable/portable_source/graphviz-2.44.1.tar.gz -o /sources/graphviz-2.44.1.tar.gz &&
 
-Build:
-
-```sh
-cd graphviz-2.44.1
+tar xzvf /sources/graphviz-2.44.1.tar.gz &&
+cd        graphviz-2.44.1                &&
 
 sed -i '/LIBPOSTFIX="64"/s/64//' configure.ac &&
 autoreconf                                    &&
 ./configure --prefix=/usr \
             --disable-php \
-            PS2PDF=true
-make
-```
+            PS2PDF=true                       &&
 
-Install:
-
-```sh
-sudo make install
-```
-
-## FFmpeg and deps
-
-`FFmpeg` has many optional features. If you wish to use it for full-fledged audio and video editing and transcoding, it will need these.
-
-### FreeType2
-
-Allow rendering of certain fonts.
-
-Fetch:
-
-```sh
-curl https://downloads.sourceforge.net/freetype/freetype-2.10.4.tar.xz -o freetype-2.10.4.tar.xz &&
-tar xvf freetype-2.10.4.tar.xz
-```
-
-Build:
-
-```sh
-
-```
-
-### FontConfig
-
-Fetch:
-
-```sh
-curl https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.1.tar.bz2 -o fontconfig-2.13.1.tar.bz2 &&
-tar xvf fontconfig-2.13.1.tar.bz2
-```
-
-Build:
-
-```sh
-cd fontconfig-2.13.1
-
-./configure --prefix=/usr        \
-            --sysconfdir=/etc    \
-            --localstatedir=/var \
-            --disable-docs       \
-            --docdir=/usr/share/doc/fontconfig-2.13.1
-make
-```
-
-Install:
-
-```sh
-sudo make install
-```
-
-### LAME
-
-Fetch:
-
-```sh
-curl https://downloads.sourceforge.net/lame/lame-3.100.tar.gz -o lame-3.100.tar.gz &&
-tar xzvf lame-3.100.tar.gz
-```
-
-Build:
-
-```sh
-cd lame-3.100
-
-./configure --prefix=/usr --enable-mp3rtp --disable-static
-make
-```
-
-Install:
-
-```sh
-sudo make pkghtmldir=/usr/share/doc/lame-3.100 install
-```
-
-### libogg
-
-Fetch:
-
-```sh
-curl https://downloads.xiph.org/releases/ogg/libogg-1.3.4.tar.xz -o libogg-1.3.4.tar.xz &&
-tar xvf libogg-1.3.4.tar.xz
-```
-
-Build:
-
-```sh
-cd libogg-1.3.4
-
-./configure --prefix=/usr    \
-            --disable-static \
-            --docdir=/usr/share/doc/libogg-1.3.4
-make
-```
-
-Install:
-
-```sh
-sudo make install
-```
-
-### libvorgis
-
-Fetch:
-
-```sh
-curl https://downloads.xiph.org/releases/vorbis/libvorbis-1.3.7.tar.xz -o libvorbis-1.3.7.tar.xz &&
-tar xvf libvorbis-1.3.7.tar.xz
-```
-
-Build:
-
-```sh
-cd libvorbis-1.3.7
-
-./configure --prefix=/usr --disable-static
-make
-```
-
-Install:
-
-```sh
+make              &&
 sudo make install &&
-sudo install -v -m644 doc/Vorbis* /usr/share/doc/libvorbis-1.3.7
-```
 
-### libtheora
-
-Fetch:
-
-```sh
-curl https://downloads.xiph.org/releases/theora/libtheora-1.1.1.tar.xz -0 libtheora-1.1.1.tar.xz &&
-tar xvf libtheora-1.1.1.tar.xz
-```
-
-Build:
-
-```sh
-cd libtheora-1.1.1
-
-sed -i 's/png_\(sizeof\)/\1/g' examples/png2theora.c &&
-./configure --prefix=/usr --disable-static
-make
-```
-
-Install:
-
-```sh
-sudo make install
-```
-
-### fdk-aac
-
-Franhaufer implementation of Advanced Audio Encoding.
-
-Fetch:
-
-```sh
-curl https://downloads.sourceforge.net/opencore-amr/fdk-aac-2.0.1.tar.gz -o fdk-aac-2.0.1.tar.gz &&
-tar xzvf fdk-aac-2.0.1.tar.gz
-```
-
-Build:
-
-```sh
-cd fdk-aac-2.0.1
-
-./configure --prefix=/usr --disable-static
-make
-```
-
-Install:
-
-```sh
-sudo make install
-```
-
-### Opus
-
-Loss audio encoding.
-
-Fetch:
-
-```sh
-curl https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz -o opus-1.3.1.tar.gz &&
-tar xzvf opus-1.3.1.tar.gz
-```
-
-Build:
-
-```sh
-cd opus-1.3.1
-
-./configure --prefix=/usr    \
-            --disable-static \
-            --docdir=/usr/share/doc/opus-1.3.1
-make
-```
-
-Test:
-
-```sh
-make check
-```
-
-Install:
-
-```sh
-sudo make install
-```
-
-### FriBidi
-
-Unicode Bidirectional Algorithm for bidirectional alphabet rendering.
-
-Fetch:
-
-```sh
-curl https://github.com/fribidi/fribidi/releases/download/v1.0.9/fribidi-1.0.9.tar.xz -o fribidi-1.0.9.tar.xz &&
-tar xvf fribidi-1.0.9.tar.xz
-```
-
-Build:
-
-```sh
-cd fribidi-1.0.9
-
-mkdir build &&
-cd    build &&
-meson --prefix=/usr ..
-ninja
-```
-
-Install:
-
-```sh
-sudo ninja install
-```
-
-### nasm
-
-The Netwide Assembler. Required by `libass`.
-
-Fetch:
-
-```sh
-curl http://www.nasm.us/pub/nasm/releasebuilds/2.15.05/nasm-2.15.05.tar.xz -o nasm-2.15.05.tar.xz &&
-curl http://www.nasm.us/pub/nasm/releasebuilds/2.15.05/nasm-2.15.05-xdoc.tar.xz -o nasm-2.15.05-xdoc.tar.xz &&
-tar xvf nasm-2.15.05.tar.xz &&
-tar xvf nasm-2.15.05-xdoc.tar.xz --strip-components=1
-```
-
-Build:
-
-```sh
-cd nasm-2.15.05
-
-./configure --prefix=/usr
-make
-```
-
-Install:
-
-```sh
-sudo make install &&
-sudo install -m755 -d     /usr/share/doc/nasm-2.15.05/ &&
-sudo cp -v doc/*.{txt,ps} /usr/share/doc/nasm-2.15.05
-```
-
-### yasm
-
-Although listed as optional on the BLFS page, `FFmpeg` strongly recommends the `yasm` assembler for x86_64 architectures.
-
-Fetch:
-
-
-```sh
-curl http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz -o yasm-1.3.0.tar.gz && tar xzvf yasm-1.3.0.tar.gz
-```
-
-Build:
-
-```sh
-cd yasm-1.3.0
-
-sed -i 's#) ytasm.*#)#' Makefile.in &&
-./configure --prefix=/usr
-make
-```
-
-Install:
-
-```sh
-sudo make install
-```
-
-Fetch:
-
-```sh
-curl http://ffmpeg.org/releases/ffmpeg-4.3.2.tar.xz -o ffmpeg-4.3.2.tar.xz &&
-tar xvf ffmpeg-4.3.2.tar.xz
-```
-
-### libass
-
-Advanced Substation Alpha/Substation Alpha subtitle formatting.
-
-Fetch:
-
-```sh
-curl https://github.com/libass/libass/releases/download/0.15.0/libass-0.15.0.tar.xz -o libass-0.15.0.tar.xz &&
-tar xvf libass-0.15.0.tar.xz
-```
-
-Build:
-
-```sh
-cd libass-0.15.0
-
-./configure --prefix=/usr --disable-static
-make
-```
-
-Install:
-
-```sh
-sudo make install
-```
-
-### x264
-
-H.264 MPEG-4 video codec.
-
-Fetch:
-
-```sh
-curl http://anduin.linuxfromscratch.org/BLFS/x264/x264-20210211.tar.xz -o x264-20210211.tar.xz &&
-tar xvf x264-20210211.tar.xz
-```
-
-Build:
-
-```sh
-cd x264-20210211
-
-./configure --prefix=/usr   \
-            --enable-shared \
-            --disable-cli
-make
-```
-
-Install:
-
-```sh
-sudo make install
-```
-
-### x265
-
-H.265 HEVC video codec.
-
-Fetch:
-
-```sh
-curl http://anduin.linuxfromscratch.org/BLFS/x265/x265_3.4.tar.gz -o x265_3.4.tar.gz &&
-tar xzvf x265_3.4.tar.gz
-```
-
-Build:
-
-```sh
-cd x265_3.4
-
-mkdir bld &&
-cd    bld &&
-cmake -DCMAKE_INSTALL_PREFIX=/usr ../source
-make
-```
-
-Install:
-
-```sh
-sudo make install &&
-sudo rm -vf /usr/lib/libx265.a
-```
-
-### libvpx
-
-HTML5 video encoding.
-
-Fetch:
-
-```sh
-curl https://github.com/webmproject/libvpx/archive/v1.9.0/libvpx-1.9.0.tar.gz -o libvpx-1.9.0.tar.gz &&
-tar xzvf libvpx-1.9.0.tar.gz
-```
-
-Build:
-
-```sh
-cd libvpx-1.9.0
-
-sed -i 's/cp -p/cp/' build/make/Makefile &&
-mkdir libvpx-build            &&
-cd    libvpx-build            &&
-../configure --prefix=/usr    \
-             --enable-shared  \
-             --disable-static
-make
-```
-
-Install:
-
-```sh
-sudo make install
-```
-
-### FFmpeg
-
-A huge suite of CLI tools for manipulating audio and video files. If you wish to build the documentation, skip ahead and install `GhostScript` and `Doxygen` first.
-
-Build:
-
-```sh
-cd ffmpeg-4.3.2
-sed -i 's/-lflite"/-lflite -lasound"/' configure &&
-./configure --prefix=/usr        \
-            --enable-gpl         \
-            --enable-version3    \
-            --enable-nonfree     \
-            --disable-static     \
-            --enable-shared      \
-            --disable-debug      \
-            --enable-swresample  \
-            --enable-libass      \
-            --enable-libfdk-aac  \
-            --enable-libfreetype \
-            --enable-libmp3lame  \
-            --enable-libopus     \
-            --enable-libtheora   \
-            --enable-libvorbis   \
-            --enable-libvpx      \
-            --enable-libx264     \
-            --enable-libx265     \
-            --enable-openssl     \
-            --docdir=/usr/share/doc/ffmpeg-4.3.2
-make &&
-gcc tools/qt-faststart.c -o tools/qt-faststart
-```
-
-Build the documentation (if doxygen is installed):
-
-```sh
-doxygen doc/Doxyfile
-```
-
-Install:
-
-```sh
-sudo make install &&
-sudo install -v -m755    tools/qt-faststart /usr/bin           &&
-sudo install -v -m755 -d           /usr/share/doc/ffmpeg-4.3.2 &&
-sudo install -v -m644    doc/*.txt /usr/share/doc/ffmpeg-4.3.2
-```
-
-Install doxygen-generated docs:
-
-```sh
-sudo install -v -m755 -d /usr/share/doc/ffmpeg-4.3.2/api                    &&
-sudo cp -vr doc/doxy/html/* /usr/share/doc/ffmpeg-4.3.2/api                 &&
-find /usr/share/doc/ffmpeg-4.3.2/api -type f -exec sudo chmod -c 0644 {} \; &&
-find /usr/share/doc/ffmpeg-4.3.2/api -type d -exec sudo chmod -c 0755 {} \;
+cd .. &&
+rm -rf graphviz-2.44.1
 ```
 
 ## ImageMagick
 
-Fetch:
-
 ```sh
-curl https://download.imagemagick.org/ImageMagick/download/releases/ImageMagick-7.0.11-13.tar.gz -o ImageMagick-7.0.11-13.tar.gz &&
-tar xzvf ImageMagick-7.0.11-13.tar.gz
-```
+curl https://download.imagemagick.org/ImageMagick/download/releases/ImageMagick-7.0.11-13.tar.gz -o /sources/ImageMagick-7.0.11-13.tar.gz &&
 
-Build:
-
-```sh
-cd ImageMagick-7.0.11-13
+tar xzvf /sources/ImageMagick-7.0.11-13.tar.gz &&
+cd        ImageMagick-7.0.11-13                &&
 
 ./configure --prefix=/usr     \
             --sysconfdir=/etc \
             --enable-hdri     \
             --with-modules    \
             --with-perl       \
-            --disable-static
-make
-```
+            --disable-static &&
 
-Test:
+make                                                                   &&
+make -k check                                                          &&
+sudo make DOCUMENTATION_PATH=/usr/share/doc/imagemagick-7.0.11 install &&
 
-```sh
-make check
-```
-
-Install:
-
-```sh
-sudo make DOCUMENTATION_PATH=/usr/share/doc/imagemagick-7.0.11 install
+cd .. &&
+sudo rm -rf ImageMagick-7.0.11-13
 ```
 
 ## Documentation generation tools
 
-## Sphinx
-
-`sphinx-build` is a Python console script and can be installed by `pip`:
-
-```sh
-pip install sphinx
-```
-
-To install globally for your user only:
-
-```sh
-pip install --user sphinx
-```
-
-## GhostScript
+### GhostScript
 
 Libraries for rendering postscript.
 
-Fetch:
+We remove vendored libraries since we have newer versions of these already installed.
 
 ```sh
-curl https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9533/ghostscript-9.53.3.tar.xz -o ghostscript-9.53.3.tar.xz &&
-curl http://www.linuxfromscratch.org/patches/blfs/10.1/ghostscript-9.53.3-freetype_fix-1.patch -o ghostscript-9.53.3-freetype_fix-1.patch &&
-curl https://downloads.sourceforge.net/gs-fonts/ghostscript-fonts-std-8.11.tar.gz -o ghostscript-fonts-std-8.11.tar.gz &&
-curl https://downloads.sourceforge.net/gs-fonts/gnu-gs-fonts-other-6.0.tar.gz -o gnu-gs-fonts-other-6.0.tar.gz &&
-tar xvf ghostscript-9.53.3.tar.xz
-```
+curl https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9533/ghostscript-9.53.3.tar.xz -o /sources/ghostscript-9.53.3.tar.xz &&
+curl http://www.linuxfromscratch.org/patches/blfs/10.1/ghostscript-9.53.3-freetype_fix-1.patch -o /sources/ghostscript-9.53.3-freetype_fix-1.patch &&
+curl https://downloads.sourceforge.net/gs-fonts/ghostscript-fonts-std-8.11.tar.gz -o /sources/ghostscript-fonts-std-8.11.tar.gz &&
+curl https://downloads.sourceforge.net/gs-fonts/gnu-gs-fonts-other-6.0.tar.gz -o /sources/gnu-gs-fonts-other-6.0.tar.gz &&
 
-Build (we remove vendored libraries since we have newer versions of these already installed):
+tar xvf /sources/ghostscript-9.53.3.tar.xz &&
+cd       ghostscript-9.53.3                &&
 
-```sh
-cd ghostscript-9.53.3
+rm -rf freetype jpeg libpng openjpeg zlib                      &&
+patch -Np1 -i /sources/ghostscript-9.53.3-freetype_fix-1.patch &&
 
-rm -rf freetype jpeg libpng openjpeg zlib
-patch -Np1 -i ../ghostscript-9.53.3-freetype_fix-1.patch
 ./configure --prefix=/usr           \
             --disable-compile-inits \
             --enable-dynamic        \
-            --with-system-libtiff
-make && make so
-```
+            --with-system-libtiff &&
 
-Install:
-
-```sh
-sudo make install   &&
-sudo make soinstall &&
+make                                                                            &&
+make so                                                                         &&
+sudo make install                                                               &&
+sudo make soinstall                                                             &&
 sudo install -v -m644 base/*.h /usr/include/ghostscript                         &&
 sudo ln -sfvn ghostscript /usr/include/ps                                       &&
 sudo mv -v /usr/share/doc/ghostscript/9.53.3 /usr/share/doc/ghostscript-9.53.3  &&
 sudo rm -rfv /usr/share/doc/ghostscript                                         &&
-sudo cp -r examples/ /usr/share/ghostscript/9.53.3/
+sudo cp -r examples/ /usr/share/ghostscript/9.53.3/                             &&
+
+sudo tar -xvf /sources/ghostscript-fonts-std-8.11.tar.gz -C /usr/share/ghostscript --no-same-owner                            &&
+sudo tar -xvf /sources/gnu-gs-fonts-other-6.0.tar.gz     -C /usr/share/ghostscript --no-same-owner                            &&
+sudo fc-cache -v /usr/share/ghostscript/fonts/ &&
+
+cd .. &&
+rm -rf ghostscript-9.53.3
 ```
 
-Install fonts:
+### asciidoc
 
 ```sh
-sudo tar -xvf ../ghostscript-fonts-std-8.11.tar.gz -C /usr/share/ghostscript --no-same-owner &&
-sudo tar -xvf ../gnu-gs-fonts-other-6.0.tar.gz     -C /usr/share/ghostscript --no-same-owner &&
-sudo fc-cache -v /usr/share/ghostscript/fonts/
-```
+curl https://github.com/asciidoc/asciidoc-py3/releases/download/9.1.0/asciidoc-9.1.0.tar.gz -o /sources/asciidoc-9.1.0.tar.gz &&
 
-## asciidoc
-
-Fetch:
-
-```sh
-curl https://github.com/asciidoc/asciidoc-py3/releases/download/9.1.0/asciidoc-9.1.0.tar.gz -o asciidoc-9.1.0.tar.gz &&
-tar xzvf asciidoc-9.1.0.tar.gz
-```
-
-Build:
-
-```sh
-cd asciidoc-9.1.0
+tar xzvf /sources/asciidoc-9.1.0.tar.gz &&
+cd        asciidoc-9.1.0                &&
 
 sed -i 's:doc/testasciidoc.1::' Makefile.in &&
-rm doc/testasciidoc.1.txt
+rm doc/testasciidoc.1.txt                   &&
+
 ./configure --prefix=/usr     \
             --sysconfdir=/etc \
-            --docdir=/usr/share/doc/asciidoc-9.1.0
-make
-```
+            --docdir=/usr/share/doc/asciidoc-9.1.0 &&
 
-Install:
-
-```sh
+make              &&
 sudo make install &&
-sudo make docs
+sudo make docs    &&
+
+cd .. &&
+rm -rf asciidoc-9.1.0
 ```
 
-## TeX Live
+### Doxygen
 
 ```sh
+curl http://doxygen.nl/files/doxygen-1.9.1.src.tar.gz -o /sources/doxygen-1.9.1.src.tar.gz &&
 
-```
+tar xzvf /sources/doxygen-1.9.1.src.tar.gz &&
+cd        doxygen-1.9.1                    &&
 
-## Doxygen
-
-Fetch:
-
-```sh
-curl http://doxygen.nl/files/doxygen-1.9.1.src.tar.gz -o doxygen-1.9.1.src.tar.gz &&
-tar xzvf doxygen-1.9.1.src.tar.gz
-```
-
-Build:
-
-```sh
-cd doxygen-1.9.1
+rm src/._xmlgen.cpp &&
 
 mkdir -v build &&
 cd       build &&
+
 cmake -G "Unix Makefiles"         \
       -DCMAKE_BUILD_TYPE=Release  \
       -DCMAKE_INSTALL_PREFIX=/usr \
-      -Wno-dev ..
-make
+      -Wno-dev .. &&
+
+make                                               &&
+make tests                                         &&
+sudo make install                                  &&
+sudo install -vm644 ../doc/*.1 /usr/share/man/man1 &&
+
+cd ../.. &&
+rm -rf doxygen-1.9.1
 ```
 
-Test:
+### Sphinx
+
+`sphinx-build` is a Python console script and can be installed by `pip`:
 
 ```sh
-make tests
-```
+curl https://github.com/sphinx-doc/sphinx/archive/refs/tags/v4.0.2.tar.gz -o /sources/sphinx-4.0.2.tar.gz &&
 
-Build documentation:
+tar xzvf /sources/sphinx-4.0.2.tar.gz &&
+cd        sphinx-4.0.2                &&
 
-```sh
-cmake -DDOC_INSTALL_DIR=share/doc/doxygen-1.9.1 -Dbuild_doc=ON .. &&
-make docs
-```
+python3 setup.py build        &&
+sudo python3 setup.py install &&
 
-Install:
-
-```sh
-sudo make install &&
-sudo install -vm644 ../doc/*.1 /usr/share/man/man1
+cd .. &&
+rm -rf sphinx-4.0.2
 ```
 
 ### pandoc
 
-```sh
+`pandoc` has many dependencies.
 
+```
+Glob                  >= 0.7      && < 0.11,
+HTTP                  >= 4000.0.5 && < 4000.4,
+HsYAML                >= 0.2      && < 0.3,
+JuicyPixels           >= 3.1.6.1  && < 3.4,
+SHA                   >= 1.6      && < 1.7,
+aeson                 >= 0.7      && < 1.6,
+aeson-pretty          >= 0.8.5    && < 0.9,
+array                 >= 0.5      && < 0.6,
+attoparsec            >= 0.12     && < 0.15,
+base64-bytestring     >= 0.1      && < 1.3,
+binary                >= 0.7      && < 0.11,
+blaze-html            >= 0.9      && < 0.10,
+blaze-markup          >= 0.8      && < 0.9,
+bytestring            >= 0.9      && < 0.12,
+case-insensitive      >= 1.2      && < 1.3,
+citeproc              >= 0.4      && < 0.4.1,
+commonmark            >= 0.2      && < 0.3,
+commonmark-extensions >= 0.2.1.2  && < 0.3,
+commonmark-pandoc     >= 0.2.1    && < 0.3,
+connection            >= 0.3.1,
+containers            >= 0.4.2.1  && < 0.7,
+data-default          >= 0.4      && < 0.8,
+deepseq               >= 1.3      && < 1.5,
+directory             >= 1.2.3    && < 1.4,
+doclayout             >= 0.3.0.1  && < 0.4,
+doctemplates          >= 0.9      && < 0.10,
+emojis                >= 0.1      && < 0.2,
+exceptions            >= 0.8      && < 0.11,
+file-embed            >= 0.0      && < 0.1,
+filepath              >= 1.1      && < 1.5,
+haddock-library       >= 1.10     && < 1.11,
+hslua                 >= 1.1      && < 1.4,
+hslua-module-path     >= 0.1.0    && < 0.2.0,
+hslua-module-system   >= 0.2      && < 0.3,
+hslua-module-text     >= 0.2.1    && < 0.4,
+http-client           >= 0.4.30   && < 0.8,
+http-client-tls       >= 0.2.4    && < 0.4,
+http-types            >= 0.8      && < 0.13,
+ipynb                 >= 0.1      && < 0.2,
+jira-wiki-markup      >= 1.4      && < 1.5,
+mtl                   >= 2.2      && < 2.3,
+network               >= 2.6,
+network-uri           >= 2.6      && < 2.8,
+pandoc-types          >= 1.22     && < 1.23,
+parsec                >= 3.1      && < 3.2,
+process               >= 1.2.3    && < 1.7,
+random                >= 1        && < 1.3,
+safe                  >= 0.3.18   && < 0.4,
+scientific            >= 0.3      && < 0.4,
+skylighting           >= 0.10.5.1 && < 0.10.6,
+skylighting-core      >= 0.10.5.1 && < 0.10.6,
+split                 >= 0.2      && < 0.3,
+syb                   >= 0.1      && < 0.8,
+tagsoup               >= 0.14.6   && < 0.15,
+temporary             >= 1.1      && < 1.4,
+texmath               >= 0.12.3   && < 0.12.4,
+text                  >= 1.1.1.0  && < 1.3,
+text-conversions      >= 0.3      && < 0.4,
+time                  >= 1.5      && < 1.12,
+unicode-transforms    >= 0.3      && < 0.4,
+unordered-containers  >= 0.2      && < 0.3,
+xml                   >= 1.3.12   && < 1.4,
+xml-conduit           >= 1.9.1.1  && < 1.10,
+unicode-collation     >= 0.1.1    && < 0.2,
+zip-archive           >= 0.2.3.4  && < 0.5,
+zlib                  >= 0.5      && < 0.7
+```
+
+```sh
+curl https://hackage.haskell.org/package/pandoc-2.14.0.1/pandoc-2.14.0.1.tar.gz -o /sources/pandoc-2.14.0.1.tar.gz &&
+
+tar xvzf /sources/pandoc-2.14.0.1.tar.gz &&
+cd        pandoc-2.14.0.1                &&
+
+cabal update                           &&
+sudo cabal install --lib                       \
+                   --prefix=/usr               \
+                   --libdir=/usr/lib           \
+                   --dynlibdir=/usr/lib        \
+                   --global                    \
+                   --enable-shared             \
+                   --enable-optimization=2     \
+                   --enable-executable-dynamic \
+                   --disable-library-vanilla   \
+                   --disable-static            \
+                   --only-dependencies &&
+
+cabal configure --prefix=/usr               \
+                --global                    \
+                --enable-executable-dynamic \
+                --enable-optimization=2     \
+                --docdir=/usr/share/doc/pandoc-2.14.0.1 &&
+
+runghc Setup build -j      &&
+rungch Setup test          &&
+sudo runghc Setup copy     &&
+sudo rungch Setup register &&
+
+cd .. &&
+rm -rf pandoc-2.14.0.1
+```
+
+```
+th-compat-0.1.2
+splitmix-0.1.0.3
+random-1.2.0
+hashable-1.3.2.0
+async-2.2.3
+base16-bytestring-0.1.1.7
+base64-bytestring-1.0.0.3
+digest-0.0.1.2
+zlib-0.6.2.3
+network-3.1.2.1
+network-uri-2.6.4.1
+```
+
+```sh
+sudo ghc-pkg unregister --force network-uri-2.6.4.1  &&
+sudo cabal install --lib                       \
+                   --prefix=/usr               \
+                   --libdir=/usr/lib           \
+                   --dynlibdir=/usr/lib        \
+                   --global                    \
+                   --enable-shared             \
+                   --enable-optimization=2     \
+                   --enable-executable-dynamic \
+                   --disable-library-vanilla   \
+                   --disable-static            \
+                   --reinstall                 \
+                   network-uri-2.6.4.1
 ```
 
 ### mdbook

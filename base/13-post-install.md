@@ -4,6 +4,31 @@
 
 Ensure you can `ssh` to the host as `lfs` by grabbing the ip address from the router or the `Hyper-V` manager if running in a VM, and attempting to login remotely. Once in, do a few quick checks, such as pinging a popular web url to ensure your network connection works, checking the `/etc/os-release` file to ensure you're actually in the `lfs` system, and checking the status of various services and the kernel with `systemctl status`, `journalctl -xe`, and `dmesg`. Don't expect no error messages, but all expected services should at least be working.
 
+### WiFi configuration
+
+To connect to a network, run the `iwctl` shell as root. First, ensure the WiFi modules are loaded, then connect to the wireless control daemon:
+
+```sh
+modprobe mac80211
+modprobe cfg80211
+modprobe iwlwifi
+iwctl
+```
+
+List stations:
+
+```sh
+[iwd]# station list
+```
+
+Connection to a network:
+
+```sh
+[iwd]# station connect <station> <network>
+```
+
+This will prompt you for a password, which `iwd` will automatically store. Future connections should happen automatically.
+
 ## Generate the trust store
 
 Note that we installed the `make-ca` package earlier, in order to install trusted CAs designated by the Mozilla Foundation, but because the system had no network connection, the CAs could not be installed. Now they can be, so run:
@@ -17,8 +42,8 @@ sudo make-ca -g
 At this point, we have a CA trust store generated, so `cURL` can be rebuilt to use it. Without doing this, all attempts to connect via https protocol will fail due to not trusting the CA that signed the server certificate.
 
 ```sh
-tar xzvf curl-7.76.1.tar.gz &&
-cd       curl-7.76.1        &&
+tar xzvf /sources/curl-7.76.1.tar.gz &&
+cd        curl-7.76.1                &&
 
 ./configure --prefix=/usr    \
             --with-openssl   \
@@ -26,10 +51,10 @@ cd       curl-7.76.1        &&
             --disable-static \
             --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt &&
 
-make                              &&
-make test                         &&
-sudo make install                 &&
-sudo rm -v /usr/lib/libcurl.{,l}a &&
+make                           &&
+make test                      &&
+sudo make install              &&
+sudo rm -v /usr/lib/libcurl.la &&
 
 cd .. &&
 rm -rf curl-7.76.1
@@ -251,7 +276,7 @@ curl -L https://github.com/zsh-users/zsh-completions/archive/refs/tags/0.33.0.ta
 tar xzvf zsh-completions-0.33.0.tar.gz &&
 cd zsh-completions-0.33.0              &&
 
-sudo install -vDm644 src/* /use/share/zsh/ &&
+sudo install -vDm644 src/* /usr/share/zsh/ &&
 
 cd .. &&
 rm -rf zsh-completions-0.33.0
@@ -264,3 +289,44 @@ Many web links to software packages, especially `GitHub` releases, utilize redir
 ```sh
 echo "-L" >> ~/.curlrc
 ```
+
+## Backup base system
+
+At this point, you should backup the completed minimal system. How you do this depends on how you setup your system. Since I have a `btrfs` root, I create a snapshot first:
+
+```sh
+sudo mkdir -p /var/snapshots
+sudo btrfs subvolume snapshot -r / /var/snapshots/lfs-snap-$(date --iso-8601=minutes | tr -d ':-')
+```
+
+Then backup the snapshot:
+
+```sh
+sudo su -
+mount /dev/backupVolGroup/lfs_backups /mnt/backups
+cd /mnt/backups
+
+cat > excludes.txt << EOF
+./boot/*
+./mnt/*
+./sources/*
+./usr/src/*
+./proc/*
+./sys/*
+./dev/*
+./run/*
+./tmp/*
+EOF
+
+tar --exclude-from=excludes.txt --acls --xattrs -cpJvf lfs-backup-$(date --iso-8601=minutes | tr -d ':-').tar.xz -C /var/snapshots/lfs-snap-<date>/ .
+```
+
+Then delete the snapshot:
+
+```sh
+sudo btrfs subvolume delete /var/snapshots/lfs-snap-<date from above>
+```
+
+This enables zero-downtime backup with no need to unmount the root filesystem. If you did not use LVM or a filesystem that supports snapshots, you will need to backup from the original host system or from rescue/installation media.
+
+Note that `/boot` can and certainly should be backed up, but on a dual-boot system, I prefer to keep the `/boot` backups separate from the root filesystem backups for each userspace distro. A sane backup/restore scheme for a multi-boot system is well beyond the scope starting out here, but will be covered later.

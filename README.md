@@ -22,11 +22,11 @@ The first part follows Linux From Scratch pretty closely, creating a base headle
 
 ## Optional extras
 
-At this point, you have a perfectly functional system you can use. Chances are, you'll want to specialize it for some specific use. Many options are provided for what can be done, for now keeping the system headless.
+At this point, you have a perfectly functional system you can use. Chances are, you'll want to specialize it for some specific use. Many options are provided for what can be done.
 
-Each optional extra will be downloaded and built in the `/sources` directory. Since we will no longer be building as `root`, installation is done using `sudo`.
+Each optional extra will be downloaded into the `/sources` directory and built in `/sources/build_dir`. Since we will no longer be building as `root`, installation is done using `sudo`.
 
-Beware that some of the crypto tools take a very long time to build and test.
+Beware that some of the crypto tools and compilers take a very long time to build and test.
 
 ### Extending the toolchain
 
@@ -38,6 +38,15 @@ Beware that some of the crypto tools take a very long time to build and test.
 6. [Text processing utilities](extras/06-text-utils.md)
 7. [Multimedia and documentation generation](extras/07-media-doc-utils.md)
 8. [Developer tools](extras/08-devtools.md)
+9. [Numerical and geospatial libraries](09-numerical.md)
+10. [System configuration](extras/10-sysconfig.md)
+
+### Graphical desktop
+
+1. [Drivers](graphics/01-drivers.md)
+2. [XOrg](graphics/02-xorg.md)
+3. [Audio and video libraries](graphics/03-audio-video.md)
+4. [GNOME desktop](graphica/04-gnome.md)
 
 ### System hardening
 
