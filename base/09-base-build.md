@@ -224,8 +224,8 @@ rm -rf xz-5.2.5
 Beware that at least one test of first block run length encoding fails. I'm not sure why this is.
 
 ```sh
-tar xzvf $LFS/sources/zstd-1.4.9.tar.gz &&
-cd        zstd-1.4.9                    &&
+tar xzvf /sources/zstd-1.4.9.tar.gz &&
+cd        zstd-1.4.9                &&
 
 make                     &&
 make check               &&
@@ -240,8 +240,8 @@ rm -rf zstd-1.4.9
 ### file
 
 ```sh
-tar xzvf $LFS/sources/file-5.40.tar.gz &&
-cd        file-5.40                    &&
+tar xzvf /sources/file-5.40.tar.gz &&
+cd        file-5.40                &&
 
 ./configure --prefix=/usr &&
 
@@ -256,8 +256,8 @@ rm -rf file-5.40
 ### readline
 
 ```sh
-tar xzvf $LFS/sources/readline-8.1.tar.gz &&
-cd        readline-8.1                    &&
+tar xzvf /sources/readline-8.1.tar.gz &&
+cd        readline-8.1                &&
 
 sed -i '/MV.*old/d' Makefile.in              &&
 sed -i '/{OLDSUFF}/c:' support/shlib-install &&
@@ -279,8 +279,8 @@ rm -rf readline-8.1
 ### m4
 
 ```sh
-tar xvf $LFS/sources/m4-1.4.18.tar.xz &&
-cd       m4-1.4.18                    &&
+tar xvf /sources/m4-1.4.18.tar.xz &&
+cd       m4-1.4.18                &&
 
 sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c        &&
 echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h &&
@@ -298,8 +298,8 @@ rm -rf m4-1.4.18
 ### bc
 
 ```sh
-tar xvf $LFS/sources/bc-4.0.1.tar.xz &&
-cd       bc-4.0.1                    &&
+tar xvf /sources/bc-4.0.1.tar.xz &&
+cd       bc-4.0.1                &&
 
 PREFIX=/usr CC=gcc ./configure.sh -G -O3 &&
 
@@ -314,8 +314,8 @@ rm -rf bc-4.0.1
 ### flex
 
 ```sh
-tar xzvf $LFS/sources/flex-2.6.4.tar.gz &&
-cd        flex-2.6.4                    &&
+tar xzvf /sources/flex-2.6.4.tar.gz &&
+cd        flex-2.6.4                &&
 
 ./configure --prefix=/usr \
             --docdir=/usr/share/doc/flex-2.6.4 \
@@ -334,7 +334,7 @@ rm -rf flex-2.6.4
 ### tcl
 
 ```sh
-tar xzvf $LFS/sources/tcl8.6.11-src.tar.gz            &&
+tar xzvf /sources/tcl8.6.11-src.tar.gz                &&
 cd        tcl8.6.11                                   &&
 tar xzvf ../tcl8.6.11-html.tar.gz --strip-component=1 &&
 
@@ -378,8 +378,8 @@ rm -rf tcl8.6.11
 ### expect
 
 ```sh
-tar xzvf $LFS/sources/expect5.45.4.tar.gz &&
-cd        expect5.45.4                    &&
+tar xzvf /sources/expect5.45.4.tar.gz &&
+cd        expect5.45.4                &&
 
 ./configure --prefix=/usr           \
             --with-tcl=/usr/lib     \
@@ -408,8 +408,8 @@ If tests fail due to "your system has no more ptys," check that:
 If this happens, it is critical to fix as it will prevent any tests run by `expect` from working and these are needed to validate many of the critical system utilities.
 
 ```sh
-tar xzvf $LFS/sources/dejagnu-1.6.2.tar.gz &&
-cd        dejagnu-1.6.2                    &&
+tar xzvf /sources/dejagnu-1.6.2.tar.gz &&
+cd        dejagnu-1.6.2                &&
 
 ./configure --prefix=/usr &&
 
@@ -433,8 +433,8 @@ rm -rf dejagnu-1.6.2
 Beware that four tests are known to fail, in the suite for `ld`, all saying some variety of "Run property."
 
 ```sh
-tar xvf $LFS/sources/binutils-2.36.1.tar.xz &&
-cd       binutils-2.36.1                    &&
+tar xvf /sources/binutils-2.36.1.tar.xz &&
+cd       binutils-2.36.1                &&
 
 sed -i '/@\tincremental_copy/d' gold/testsuite/Makefile.in &&
 
@@ -464,8 +464,8 @@ rm -rf binutils-2.36.1
 ### gmp
 
 ```sh
-tar xvf $LFS/sources/gmp-6.2.1.tar.xz &&
-cd       gmp-6.2.1                    &&
+tar xvf /sources/gmp-6.2.1.tar.xz &&
+cd       gmp-6.2.1                &&
 
 ./configure --prefix=/usr    \
             --enable-cxx     \
@@ -488,8 +488,8 @@ rm -rf gmp-6.2.1
 ### mpfr
 
 ```sh
-tar xvf $LFS/sources/mpfr-4.1.0.tar.xz &&
-cd       mpfr-4.1.0                    &&
+tar xvf /sources/mpfr-4.1.0.tar.xz &&
+cd       mpfr-4.1.0                &&
 
 ./configure --prefix=/usr        \
             --disable-static     \
@@ -509,8 +509,8 @@ rm -rf mpfr-4.1.0
 ### mpc
 
 ```sh
-tar xzvf $LFS/sources/mpc-1.2.1.tar.gz &&
-cd        mpc-1.2.1                    &&
+tar xzvf /sources/mpc-1.2.1.tar.gz &&
+cd        mpc-1.2.1                &&
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -529,8 +529,8 @@ rm -rf mpc-1.2.1
 ### isl
 
 ```sh
-tar xvf $LFS/sources/isl-0.24.tar.xz &&
-cd       isl-0.24                    &&
+tar xvf /sources/isl-0.24.tar.xz &&
+cd       isl-0.24                &&
 
 ./configure --prefix=/usr \
             --disable-static &&
@@ -546,8 +546,8 @@ rm -rf isl-0.24
 ### attr
 
 ```sh
-tar xzvf $LFS/sources/attr-2.5.1.tar.gz &&
-cd        attr-2.5.1                    &&
+tar xzvf /sources/attr-2.5.1.tar.gz &&
+cd        attr-2.5.1                &&
 
 ./configure --prefix=/usr     \
             --disable-static  \
@@ -565,8 +565,8 @@ rm -rf attr-2.5.1
 ### acl
 
 ```sh
-tar xvf $LFS/sources/acl-2.3.1.tar.xz &&
-cd        acl-2.3.1                   &&
+tar xvf /sources/acl-2.3.1.tar.xz &&
+cd       acl-2.3.1                &&
 
 ./configure --prefix=/usr         \
             --disable-static      \
@@ -583,8 +583,8 @@ rm -rf acl-2.3.1
 ### libcap
 
 ```sh
-tar xvf $LFS/sources/libcap-2.49.tar.xz &&
-cd       libcap-2.49                    &&
+tar xvf /sources/libcap-2.49.tar.xz &&
+cd       libcap-2.49                &&
 
 sed -i '/install -m.*STA/d' libcap/Makefile &&
 make prefix=/usr lib=lib                    &&
@@ -600,8 +600,8 @@ rm -rf libcap-2.49
 #### Installation
 
 ```sh
-tar xvf $LFS/sources/shadow-4.8.1.tar.xz &&
-cd       shadow-4.8.1                    &&
+tar xvf /sources/shadow-4.8.1.tar.xz &&
+cd       shadow-4.8.1                &&
 
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in                     &&
 find man -name Makefile.in -exec sed -i 's/groups\.1 / /'   {} \; &&
@@ -777,8 +777,8 @@ Note that it should say differently if you're not running on `x86_64` architectu
 ### pkgconfig
 
 ```sh
-tar xzvf $LFS/sources/pkg-config-0.29.2.tar.gz &&
-cd        pkg-config-0.29.2                    &&
+tar xzvf /sources/pkg-config-0.29.2.tar.gz &&
+cd        pkg-config-0.29.2                &&
 
 ./configure --prefix=/usr              \
             --with-internal-glib       \
@@ -796,8 +796,8 @@ rm -rf pkg-config-0.29.2
 ### ncurses
 
 ```sh
-tar xzvf $LFS/sources/ncurses-6.2.tar.gz &&
-cd        ncurses-6.2                    &&
+tar xzvf /sources/ncurses-6.2.tar.gz &&
+cd        ncurses-6.2                &&
 
 ./configure --prefix=/usr           \
             --mandir=/usr/share/man \
@@ -830,8 +830,8 @@ rm -rf ncurses-6.2
 ### sed
 
 ```sh
-tar xvf $LFS/sources/sed-4.8.tar.xz &&
-cd       sed-4.8                    &&
+tar xvf /sources/sed-4.8.tar.xz &&
+cd       sed-4.8                &&
 
 ./configure --prefix=/usr \
             --bindir=/bin &&
@@ -853,8 +853,8 @@ rm -rf sed-4.8
 ### psmisc
 
 ```sh
-tar xvf $LFS/sources/psmisc-23.4.tar.xz &&
-cd       psmisc-23.4                    &&
+tar xvf /sources/psmisc-23.4.tar.xz &&
+cd       psmisc-23.4                &&
 
 ./configure --prefix=/usr &&
 
@@ -868,8 +868,8 @@ rm -rf psmisc-23.4
 ### gettext
 
 ```sh
-tar xvf $LFS/sources/gettext-0.21.tar.xz &&
-cd       gettext-0.21                    &&
+tar xvf /sources/gettext-0.21.tar.xz &&
+cd       gettext-0.21                &&
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -888,8 +888,8 @@ rm -rf gettext-0.21
 ### bison
 
 ```sh
-tar xvf $LFS/sources/bison-3.7.6.tar.xz &&
-cd       bison-3.7.6                    &&
+tar xvf /sources/bison-3.7.6.tar.xz &&
+cd       bison-3.7.6                &&
 
 ./configure --prefix=/usr \
             --docdir=/usr/share/doc/bison-3.7.6 &&
@@ -905,8 +905,8 @@ rm -rf bison-3.7.6
 ### grep
 
 ```sh
-tar xvf $LFS/sources/grep-3.6.tar.xz &&
-cd       grep-3.6                    &&
+tar xvf /sources/grep-3.6.tar.xz &&
+cd       grep-3.6                &&
 
 ./configure --prefix=/usr \
             --bindir=/bin &&
@@ -922,8 +922,8 @@ rm -rf grep-3.6
 ### bash
 
 ```sh
-tar xzvf $LFS/sources/bash-5.1.tar.gz &&
-cd        bash-5.1                    &&
+tar xzvf /sources/bash-5.1.tar.gz &&
+cd        bash-5.1                &&
 
 sed -i  '/^bashline.o:.*shmbchar.h/a bashline.o: ${DEFDIR}/builtext.h' Makefile.in &&
 
@@ -959,8 +959,8 @@ rm -rf bash-5.1
 As noted in Linux From Scratch, five tests are expected to fail when run before `automake` is built due to circular dependencies.
 
 ```sh
-tar xvf $LFS/sources/libtool-2.4.6.tar.xz &&
-cd       libtool-2.4.6                    &&
+tar xvf /sources/libtool-2.4.6.tar.xz &&
+cd       libtool-2.4.6                &&
 
 ./configure --prefix=/usr &&
 
@@ -979,8 +979,8 @@ rm -rf libtool-2.4.6
 The "version" test is known to fail.
 
 ```sh
-tar xzvf $LFS/sources/gdbm-1.19.tar.gz &&
-cd        gdbm-1.19                    &&
+tar xzvf /sources/gdbm-1.19.tar.gz &&
+cd        gdbm-1.19                &&
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -997,8 +997,8 @@ rm -rf gdbm-1.19
 ### gperf
 
 ```sh
-tar xzvf $LFS/sources/gperf-3.1.tar.gz &&
-cd        gperf-3.1                    &&
+tar xzvf /sources/gperf-3.1.tar.gz &&
+cd        gperf-3.1                &&
 
 ./configure --prefix=/usr \
             --docdir=/usr/share/doc/gperf-3.1 &&
@@ -1014,8 +1014,8 @@ rm -rf gperf-3.1
 ### expat
 
 ```sh
-tar xvf $LFS/sources/expat-2.4.1.tar.xz &&
-cd       expat-2.4.1                    &&
+tar xvf /sources/expat-2.4.1.tar.xz &&
+cd       expat-2.4.1                &&
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -1034,8 +1034,8 @@ rm -rf expat-2.4.1
 ### inetutils
 
 ```sh
-tar xvf $LFS/sources/inetutils-2.0.tar.xz &&
-cd       inetutils-2.0                    &&
+tar xvf /sources/inetutils-2.0.tar.xz &&
+cd       inetutils-2.0                &&
 
 ./configure --prefix=/usr        \
             --localstatedir=/var \
@@ -1059,8 +1059,8 @@ rm -rf inetutils-2.0
 ### perl
 
 ```sh
-tar xvf $LFS/sources/perl-5.32.1.tar.xz &&
-cd       perl-5.32.1                    &&
+tar xvf /sources/perl-5.32.1.tar.xz &&
+cd       perl-5.32.1                &&
 
 export BUILD_ZLIB=False &&
 export BUILD_BZIP2=0    &&
@@ -1094,8 +1094,8 @@ rm -rf perl-5.32.1
 This is an additional Perl module used by other tools.
 
 ```sh
-tar xzvf $LFS/sources/XML-Parser-2.46.tar.gz &&
-cd        XML-Parser-2.46                    &&
+tar xzvf /sources/XML-Parser-2.46.tar.gz &&
+cd        XML-Parser-2.46                &&
 
 perl Makefile.PL &&
 make             &&
@@ -1109,8 +1109,8 @@ rm -rf XML-Parser-2.46
 ### intltool
 
 ```sh
-tar xzvf $LFS/sources/intltool-0.51.0.tar.gz &&
-cd        intltool-0.51.0                    &&
+tar xzvf /sources/intltool-0.51.0.tar.gz &&
+cd        intltool-0.51.0                &&
 
 sed -i 's:\\\${:\\\$\\{:' intltool-update.in &&
 ./configure --prefix=/usr
@@ -1128,8 +1128,8 @@ rm -rf intltool-0.51.0
 ### autoconf
 
 ```sh
-tar xvf $LFS/sources/autoconf-2.71.tar.xz &&
-cd       autoconf-2.71                    &&
+tar xvf /sources/autoconf-2.71.tar.xz &&
+cd       autoconf-2.71                &&
 
 ./configure --prefix=/usr &&
 
@@ -1233,8 +1233,8 @@ rm -rf libffi-3.3
 ### openssl
 
 ```sh
-tar xzvf $LFS/sources/openssl-1.1.1k.tar.gz &&
-cd        openssl-1.1.1k                    &&
+tar xzvf /sources/openssl-1.1.1k.tar.gz &&
+cd        openssl-1.1.1k                &&
 
 ./config --prefix=/usr         \
          --openssldir=/etc/ssl \
@@ -1280,15 +1280,21 @@ rm -rf libuuid-1.0.3
 
 It is not recommended to run tests in the chroot environment as the socket tests will hang indefinitely. When the new system is booted into and a network is available, `Python` can be rebuilt and tests run. This is a good chance to add `sqlite` support.
 
+See [Fedora pull request 151](https://src.fedoraproject.org/rpms/python3/pull-request/151) for an explanation of the `CFLAGS`. This apparently results in a 27% speedup when `python` the interpreter is dynamically linked with `libpython`, at the cost of disabling the ability to use `LD_PRELOAD`.
+
 ```sh
 tar xvf /sources/Python-3.9.5.tar.xz &&
 cd       Python-3.9.5                &&
 
-./configure --prefix=/usr          \
-            --enable-shared        \
-            --enable-optimizations \
-            --with-system-expat    \
-            --with-system-ffi      \
+CFLAGS_NODIST="-fno-semantic-interposition"     \
+LDFLAGS_NODIST="-fno-semantic-interposition"    \
+./configure --prefix=/usr                       \
+            --enable-shared                     \
+            --enable-optimizations              \
+            --enable-loadable-sqlite-extensions \
+            --with-lto                          \
+            --with-system-expat                 \
+            --with-system-ffi                   \
             --with-ensurepip=yes &&
 
 make         &&
@@ -1311,8 +1317,8 @@ rm -rf Python-3.9.5
 ### ninja
 
 ```sh
-tar xzvf $LFS/sources/ninja-1.10.2.tar.gz &&
-cd        ninja-1.10.2                    &&
+tar xzvf /sources/ninja-1.10.2.tar.gz &&
+cd        ninja-1.10.2                &&
 
 sed -i '/int Guess/a \
   int   j = 0;\
@@ -1336,8 +1342,8 @@ rm -rf ninja-1.10.2
 ### meson
 
 ```sh
-tar xzvf $LFS/sources/meson-0.58.0.tar.gz &&
-cd        meson-0.58.0                    &&
+tar xzvf /sources/meson-0.58.0.tar.gz &&
+cd        meson-0.58.0                &&
 
 python3 setup.py build               &&
 python3 setup.py install --root=dest &&
@@ -1378,8 +1384,8 @@ rm -rf coreutils-8.32
 ### check
 
 ```sh
-tar xzvf $LFS/sources/check-0.15.2.tar.gz &&
-cd        check-0.15.2                    &&
+tar xzvf /sources/check-0.15.2.tar.gz &&
+cd        check-0.15.2                &&
 
 ./configure --prefix=/usr \
             --disable-static &&
@@ -1395,8 +1401,8 @@ rm -rf check-0.15.2
 ### diffutils
 
 ```sh
-tar xvf $LFS/sources/diffutils-3.7.tar.xz &&
-cd       diffutils-3.7                    &&
+tar xvf /sources/diffutils-3.7.tar.xz &&
+cd       diffutils-3.7                &&
 
 ./configure --prefix=/usr &&
 
@@ -1411,8 +1417,8 @@ rm -rf diffutils-3.7
 ### gawk
 
 ```sh
-tar xvf $LFS/sources/gawk-5.1.0.tar.xz &&
-cd       gawk-5.1.0                    &&
+tar xvf /sources/gawk-5.1.0.tar.xz &&
+cd       gawk-5.1.0                &&
 
 sed -i 's/extras//' Makefile.in &&
 ./configure --prefix=/usr       &&
@@ -1430,8 +1436,8 @@ rm -rf gawk-5.1.0
 ### findutils
 
 ```sh
-tar xvf $LFS/sources/findutils-4.8.0.tar.xz &&
-cd       findutils-4.8.0                    &&
+tar xvf /sources/findutils-4.8.0.tar.xz &&
+cd       findutils-4.8.0                &&
 
 ./configure --prefix=/usr \
             --localstatedir=/var/lib/locate &&

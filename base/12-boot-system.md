@@ -214,7 +214,7 @@ sudo mount --bind /boot /mnt/lfs/boot
 Now install the kernel image into the boot partition:
 
 ```sh
-sudo cp -iv arch/x86/boot/bzImage /boot/vmlinuz-5.12.9-lfs-10.1-systemd
+sudo cp -iv arch/x86/boot/bzImage /boot/vmlinuz-5.12.9-lfs-systemd
 ```
 
 To also install the symbol map and `.config` file for debugging purposes:

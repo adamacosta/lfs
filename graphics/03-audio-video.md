@@ -529,6 +529,30 @@ cd .. &&
 rm -rf bluez-5.58
 ```
 
+### v4l-utils
+
+Camera file handling.
+
+```sh
+curl https://www.linuxtv.org/downloads/v4l-utils/v4l-utils-1.20.0.tar.bz2 -o /sources/v4l-utils-1.20.0.tar.bz2 &&
+curl https://www.linuxfromscratch.org/patches/blfs/svn/v4l-utils-1.20.0-upstream_fixes-1.patch -o /sources/patches/v4l-utils-1.20.0-upstream_fixes-1.patch &&
+
+tar xvf /sources/v4l-utils-1.20.0.tar.bz2 &&
+cd       v4l-utils-1.20.0                 &&
+
+patch -Np1 -i /sources/patches/v4l-utils-1.20.0-upstream_fixes-1.patch &&
+
+./configure --prefix=/usr     \
+            --sysconfdir=/etc \
+            --disable-static  &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf v4l-utils-1.20.0
+```
+
 ### PulseAudio
 
 ```sh
@@ -692,6 +716,27 @@ cd .. &&
 rm -rf ffmpeg-4.4
 ```
 
+### Pipewire
+
+```sh
+curl https://github.com/PipeWire/pipewire/archive/0.3.30/pipewire-0.3.30.tar.gz -o /sources/pipewire-0.3.30.tar.gz &&
+
+tar xzvf /sources/pipewire-0.3.30.tar.gz &&
+cd        pipewire-0.3.30                &&
+
+mkdir build &&
+cd    build &&
+
+meson --prefix=/usr \
+      --buildtype=release .. &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf pipewire-0.3.30
+```
+
 ## gstreamer
 
 ```sh
@@ -784,4 +829,145 @@ sudo ninja install &&
 
 cd ../.. &&
 rm -rf gst-plugins-bad-1.18.4
+```
+
+## gst-plugins-good
+
+```sh
+curl https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.18.4.tar.xz -o /sources/gst-plugins-good-1.18.4.tar.xz &&
+
+tar xvf /sources/gst-plugins-good-1.18.4.tar.xz &&
+cd       gst-plugins-good-1.18.4                &&
+
+mkdir build &&
+cd    build &&
+
+meson  --prefix=/usr       \
+       --buildtype=release \
+       -Dpackage-origin=https://www.linuxfromscratch.org/blfs/view/svn/ \
+       -Dpackage-name="GStreamer 1.18.4 BLFS" &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf gst-plugins-good-1.18.4
+```
+
+## libcanberra
+
+Library for generating desktop sounds.
+
+```sh
+curl http://0pointer.de/lennart/projects/libcanberra/libcanberra-0.30.tar.xz -o /sources/libcanberra-0.30.tar.xz &&
+curl https://www.linuxfromscratch.org/patches/blfs/svn/libcanberra-0.30-wayland-1.patch -o /sources/patches/libcanberra-0.30-wayland-1.patch &&
+
+tar xvf /sources/libcanberra-0.30.tar.xz &&
+cd       libcanberra-0.30                &&
+
+patch -Np1 -i /sources/patches/libcanberra-0.30-wayland-1.patch &&
+
+./configure --prefix=/usr \
+            --disable-gtk \
+            --disable-oss &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libcanberra-0.30
+```
+
+## djbfft
+
+Library for floating-point convolutions that claims to hold speed records for fft on general-purpose computers.
+
+```sh
+curl https://cr.yp.to/djbfft/djbfft-0.76.tar.gz -o /sources/djbfft-0.76.tar.gz &&
+
+tar xzvf /sources/djbfft-0.76.tar.gz &&
+cd        djbfft-0.76                &&
+
+sed -i 's/\/usr\/local\/djbfft/\/usr/' conf-home         &&
+sed -i 's/-O1/-march=native -O2/'      conf-cc           &&
+sed -i 's/extern int errno;/#include <errno.h>/' error.h &&
+
+make                  &&
+sudo make setup check &&
+
+cd .. &&
+rm -rf djbfft-0.76
+```
+
+## liba52
+
+Library for decoding ATSC A/52 streams
+
+```sh
+curl http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz -o /sources/a52dec-0.7.4.tar.gz &&
+
+tar xzvf /sources/a52dec-0.7.4.tar.gz &&
+cd        a52dec-0.7.4                &&
+
+./configure --prefix=/usr \
+            --mandir=/usr/share/man \
+            --enable-shared \
+            --disable-static \
+            CFLAGS="${CFLAGS:--g -O2 -fPIC}" &&
+
+make              &&
+sudo make install &&
+
+sudo cp liba52/a52_internal.h /usr/include/a52dec &&
+sudo install -v -m644 -D doc/liba52.txt \
+    /usr/share/doc/liba52-0.7.4/liba52.txt
+
+cd .. &&
+rm -rf a52dec-0.7.4
+```
+
+## libmad
+
+24-bit MPEG audio decoder.
+
+```sh
+curl https://downloads.sourceforge.net/mad/libmad-0.15.1b.tar.gz -o /sources/libmad-0.15.1b.tar.gz &&
+curl https://www.linuxfromscratch.org/patches/blfs/svn/libmad-0.15.1b-fixes-1.patch -o /sources/patches/libmad-0.15.1b-fixes-1.patch &&
+
+tar xzvf /sources/libmad-0.15.1b.tar.gz &&
+cd        libmad-0.15.1b                &&
+
+patch -Np1 -i /sources/patches/libmad-0.15.1b-fixes-1.patch  &&
+sed "s@AM_CONFIG_HEADER@AC_CONFIG_HEADERS@g" -i configure.ac &&
+touch NEWS AUTHORS ChangeLog                                 &&
+autoreconf -fi                                               &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libmad-0.15.1b
+```
+
+This package does not come with a `pkg-config` manifest, so we create one:
+
+```sh
+sudo su -
+cat > /usr/lib/pkgconfig/mad.pc << "EOF"
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: mad
+Description: MPEG audio decoder
+Requires:
+Version: 0.15.1b
+Libs: -L${libdir} -lmad
+Cflags: -I${includedir}
+EOF
+exit
 ```

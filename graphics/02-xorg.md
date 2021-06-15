@@ -42,8 +42,8 @@ meson --prefix=/usr \
 ninja              &&
 sudo ninja install &&
 
-sudo install -vdm 755 $XORG_PREFIX/share/doc/xorgproto-2021.4                        &&
-sudo install -vm 644 ../[^m]*.txt ../PM_spec $XORG_PREFIX/share/doc/xorgproto-2021.4 &&
+sudo install -vdm755 /usr/share/doc/xorgproto-2021.4                        &&
+sudo install -vm644 ../[^m]*.txt ../PM_spec /usr/share/doc/xorgproto-2021.4 &&
 
 cd ../.. &&
 rm -rf xorgproto-2021.4
@@ -379,46 +379,6 @@ cd ../.. &&
 rm -rf libdrm-2.4.106
 ```
 
-## libva
-
-```sh
-curl https://github.com/intel/libva/releases/download/2.11.0/libva-2.11.0.tar.bz2 -o /sources/xorg/libva-2.11.0.tar.bz2 &&
-
-tar xvf /sources/xorg/libva-2.11.0.tar.bz2 &&
-cd       libva-2.11.0                      &&
-
-./configure --prefix=/usr        \
-            --sysconfdir=/etc    \
-            --localstatedir=/var \
-            --disable-static &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf libva-2.11.0
-```
-
-## libvdpau
-
-```sh
-curl https://gitlab.freedesktop.org/vdpau/libvdpau/-/archive/1.4/libvdpau-1.4.tar.bz2 -o /sources/xorg/libvdpau-1.4.tar.bz2 &&
-
-tar xvf /sources/xorg/libvdpau-1.4.tar.bz2 &&
-cd       libvdpau-1.4                      &&
-
-mkdir build &&
-cd    build &&
-
-meson --prefix=/usr .. &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-rm -rf libvdpau-1.4
-```
-
 ## Wayland
 
 ```sh
@@ -479,22 +439,24 @@ cd ../.. &&
 rm -rf mesa-21.1.2
 ```
 
-## GLU
+## xbitmaps
 
 ```sh
-curl ftp://ftp.freedesktop.org/pub/mesa/glu/glu-9.0.1.tar.xz -o /sources/xorg/glu-9.0.1.tar.xz &&
+curl https://www.x.org/pub/individual/data/xbitmaps-1.1.2.tar.bz2 -o /sources/xorg/xbitmaps-1.1.2.tar.bz2 &&
 
-tar xvf /sources/xorg/glu-9.0.1.tar.xz &&
-cd       glu-9.0.1                     &&
+tar xvf /sources/xorg/xbitmaps-1.1.2.tar.bz2 &&
+cd       xbitmaps-1.1.2                      &&
 
-./configure --prefix=/usr \
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
             --disable-static &&
 
 make              &&
 sudo make install &&
 
 cd .. &&
-rm -rf glu-9.0.1
+rm -rf xbitmaps-1.1.2
 ```
 
 ## XKeyboardConfig
@@ -518,6 +480,303 @@ cd .. &&
 rm -rf xkeyboard-config-2.33
 ```
 
+## Xorg server
+
+```sh
+curl https://www.x.org/pub/individual/xserver/xorg-server-1.20.11.tar.bz2 -o /sources/xorg/xorg-server-1.20.11.tar.bz2 &&
+
+tar xvf /sources/xorg/xorg-server-1.20.11.tar.bz2 &&
+cd       xorg-server-1.20.11                      &&
+
+./configure --prefix=/usr         \
+            --sysconfdir=/etc     \
+            --localstatedir=/var  \
+            --disable-static      \
+            --enable-glamor       \
+            --enable-suid-wrapper \
+            --with-xkb-output=/var/lib/xkb &&
+
+make                                &&
+sudo make install                   &&
+sudo mkdir -pv /etc/X11/xorg.conf.d &&
+
+cd .. &&
+rm -rf xorg-server-1.20.11
+```
+
+## libevdev
+
+The kernel needs to be compiled with the following options to support generic inputs:
+
+```
+Device Drivers  --->
+  Input device support --->
+    <*> Generic input layer (needed for keyboard, mouse, ...) [CONFIG_INPUT]
+    <*>   Event interface                   [CONFIG_INPUT_EVDEV]
+    [*]   Miscellaneous devices  --->       [CONFIG_INPUT_MISC]
+      <*>    User level driver support      [CONFIG_INPUT_UINPUT]
+```
+
+```sh
+curl https://www.freedesktop.org/software/libevdev/libevdev-1.11.0.tar.xz -o /sources/xorg/libevdev-1.11.0.tar.xz &&
+
+tar xvf /sources/xorg/libevdev-1.11.0.tar.xz &&
+cd       libevdev-1.11.0                     &&
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libevdev-1.11.0
+```
+
+## Xorg evdev driver
+
+```sh
+curl https://www.x.org/pub/individual/driver/xf86-input-evdev-2.10.6.tar.bz2 -o /sources/xorg/xf86-input-evdev-2.10.6.tar.bz2 &&
+
+tar xvf /sources/xorg/xf86-input-evdev-2.10.6.tar.bz2 &&
+cd       xf86-input-evdev-2.10.6                      &&
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf xf86-input-evdev-2.10.6
+```
+
+## libinput
+
+```sh
+curl https://www.freedesktop.org/software/libinput/libinput-1.18.0.tar.xz -o /sources/xorg/libinput-1.18.0.tar.xz &&
+
+tar xvf /sources/xorg/libinput-1.18.0.tar.xz &&
+cd       libinput-1.18.0                     &&
+
+mkdir build &&
+cd    build &&
+
+meson --prefix=/usr         \
+      --buildtype=release   \
+      -Ddebug-gui=false     \
+      -Dtests=false         \
+      -Ddocumentation=false \
+      -Dlibwacom=false      \
+      .. &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf libinput-1.18.0
+```
+
+## Xorg libinput driver
+
+```sh
+curl https://www.x.org/pub/individual/driver/xf86-input-libinput-1.0.1.tar.bz2 -o /sources/xorg/xf86-input-libinput-1.0.1.tar.bz2 &&
+
+tar xvf /sources/xorg/xf86-input-libinput-1.0.1.tar.bz2 &&
+cd       xf86-input-libinput-1.0.1                      &&
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf xf86-input-libinput-1.0.1
+```
+
+## libwacom
+
+```sh
+curl https://github.com/linuxwacom/libwacom/releases/download/libwacom-1.10/libwacom-1.10.tar.bz2 -o /sources/xorg/libwacom-1.10.tar.bz2 &&
+
+tar xvf /sources/xorg/libwacom-1.10.tar.bz2 &&
+cd       libwacom-1.10                      &&
+
+mkdir build &&
+cd    build &&
+
+meson --prefix=/usr       \
+      --buildtype=release \
+      -Dtests=disabled .. &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf libwacom-1.10
+```
+
+## Wacom tablet driver
+
+Required for `GNOME` settings daemon.
+
+Requires kernel drivers if you wish to actually use a Wacom tablet.
+
+```
+Device Drivers  --->
+  HID support  --->
+    -*- HID bus support                                      [CONFIG_HID]
+         Special HID drivers --->
+              <*/M> Wacom Intuos/Graphire tablet support (USB) [CONFIG_HID_WACOM]
+```
+
+```sh
+curl https://github.com/linuxwacom/xf86-input-wacom/releases/download/xf86-input-wacom-0.40.0/xf86-input-wacom-0.40.0.tar.bz2 -o /sources/xorg/xf86-input-wacom-0.40.0.tar.bz2 &&
+
+tar xvf /sources/xorg/xf86-input-wacom-0.40.0.tar.bz2 &&
+cd       xf86-input-wacom-0.40.0                      &&
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-static     \
+            --with-xkb-rules-symlink=xorg &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf xf86-input-wacom-0.40.0
+```
+
+## libva
+
+```sh
+curl https://github.com/intel/libva/releases/download/2.11.0/libva-2.11.0.tar.bz2 -o /sources/xorg/libva-2.11.0.tar.bz2 &&
+
+tar xvf /sources/xorg/libva-2.11.0.tar.bz2 &&
+cd       libva-2.11.0                      &&
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libva-2.11.0
+```
+
+## libvdpau
+
+```sh
+curl https://gitlab.freedesktop.org/vdpau/libvdpau/-/archive/1.4/libvdpau-1.4.tar.bz2 -o /sources/xorg/libvdpau-1.4.tar.bz2 &&
+
+tar xvf /sources/xorg/libvdpau-1.4.tar.bz2 &&
+cd       libvdpau-1.4                      &&
+
+mkdir build &&
+cd    build &&
+
+meson --prefix=/usr .. &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf libvdpau-1.4
+```
+
+## libvdpau_gl
+
+```sh
+curl https://github.com/i-rinat/libvdpau-va-gl/archive/v0.4.0/libvdpau-va-gl-0.4.0.tar.gz -o /sources/xorg/libvdpau-va-gl-0.4.0.tar.gz &&
+
+tar xzvf /sources/xorg/libvdpau-va-gl-0.4.0.tar.gz &&
+cd        libvdpau-va-gl-0.4.0                     &&
+
+mkdir build &&
+cd    build &&
+
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=/usr .. &&
+
+make              &&
+sudo make install &&
+
+cd ../.. &&
+rm -rf libvdpau-va-gl-0.4.0
+```
+
+## GPM
+
+Mouse daemon that provides cut and paste capabilities in a console. This requires kernel drivers.
+
+```
+Device Drivers  --->
+  Input device support ---> [CONFIG_INPUT]
+    <*/M> Mouse interface   [CONFIG_INPUT_MOUSEDEV]
+```
+
+```sh
+curl https://anduin.linuxfromscratch.org/BLFS/gpm/gpm-1.20.7.tar.bz2 -o /sources/gpm-1.20.7.tar.bz2 &&
+curl https://www.linuxfromscratch.org/patches/blfs/svn/gpm-1.20.7-consolidated-1.patch -o /sources/patches/gpm-1.20.7-consolidated-1.patch &&
+
+tar xvf /sources/gpm-1.20.7.tar.bz2 &&
+cd       gpm-1.20.7                 &&
+
+patch -Np1 -i /sources/patches/gpm-1.20.7-consolidated-1.patch &&
+
+./autogen.sh                  &&
+./configure --prefix=/usr \
+            --sysconfdir=/etc &&
+
+make              &&
+sudo make install &&
+
+sudo install-info --dir-file=/usr/share/info/dir           \
+                  /usr/share/info/gpm.info                 &&
+
+sudo ln -sfv libgpm.so.2.1.0 /usr/lib/libgpm.so            &&
+sudo install -v -m644 conf/gpm-root.conf /etc              &&
+
+sudo install -v -m755 -d /usr/share/doc/gpm-1.20.7/support &&
+sudo install -v -m644    doc/support/*                     \
+                        /usr/share/doc/gpm-1.20.7/support  &&
+sudo install -v -m644    doc/{FAQ,HACK_GPM,README*}        \
+                        /usr/share/doc/gpm-1.20.7          &&
+
+cd .. &&
+rm -rf gpm-1.20.7
+```
+
+## GLU
+
+```sh
+curl ftp://ftp.freedesktop.org/pub/mesa/glu/glu-9.0.1.tar.xz -o /sources/xorg/glu-9.0.1.tar.xz &&
+
+tar xvf /sources/xorg/glu-9.0.1.tar.xz &&
+cd       glu-9.0.1                     &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf glu-9.0.1
+```
+
 ## libxkbcommon
 
 ```sh
@@ -538,4 +797,254 @@ sudo ninja install &&
 
 cd ../.. &&
 rm -rf libxkbcommon-1.3.0
+```
+
+## startup-notification
+
+Library for notifying a user that an application is loading.
+
+```sh
+curl https://www.freedesktop.org/software/startup-notification/releases/startup-notification-0.12.tar.gz -o /sources/xorg/startup-notification-0.12.tar.gz &&
+
+tar xzvf /sources/xorg/startup-notification-0.12.tar.gz &&
+cd        startup-notification-0.12                     &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+sudo install -v -m644 -D doc/startup-notification.txt \
+    /usr/share/doc/startup-notification-0.12/startup-notification.txt &&
+
+cd .. &&
+rm -rf startup-notification-0.12
+```
+
+## Links
+
+Required by `xdg-utils`.
+
+```sh
+curl http://links.twibright.com/download/links-2.23.tar.bz2 -o /sources/links-2.23.tar.bz2 &&
+
+tar xvf /sources/links-2.23.tar.bz2 &&
+cd       links-2.23                 &&
+
+./configure --prefix=/usr \
+            --mandir=/usr/share/man &&
+
+make              &&
+sudo make install &&
+
+sudo install -v -d -m755 /usr/share/doc/links-2.23 &&
+sudo install -v -m644 doc/links_cal/* KEYS BRAILLE_HOWTO \
+    /usr/share/doc/links-2.23                      &&
+
+cd .. &&
+rm -rf links-2.23
+```
+
+## xclock
+
+```sh
+curl https://www.x.org/pub/individual/app/xclock-1.0.9.tar.bz2 -o /sources/xorg/xclock-1.0.9.tar.bz2 &&
+
+tar xvf /sources/xorg/xclock-1.0.9.tar.bz2 &&
+cd       xclock-1.0.9                      &&
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf xclock-1.0.9
+```
+
+## xterm
+
+```sh
+curl https://invisible-mirror.net/archives/xterm/xterm-368.tgz -o /sources/xorg/xterm-368.tgz &&
+
+tar xzvf /sources/xorg/xterm-368.tgz &&
+cd        xterm-368                  &&
+
+sed -i '/v0/{n;s/new:/new:kb=^?:/}' termcap &&
+printf '\tkbs=\\177,\n' >> terminfo &&
+
+TERMINFO=/usr/share/terminfo \
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-static     \
+    --with-app-defaults=/etc/X11/app-defaults &&
+
+make                 &&
+sudo make install    &&
+sudo make install-ti &&
+
+sudo mkdir -pv /usr/share/applications        &&
+sudo cp -v *.desktop /usr/share/applications/ &&
+
+cd .. &&
+rm -rf xterm-368
+```
+
+```sh
+sudo su -
+cat >> /etc/X11/app-defaults/XTerm << "EOF"
+*VT100*locale: true
+*VT100*faceName: Monospace
+*VT100*faceSize: 10
+*backarrowKeyIsErase: true
+*ptyInitialErase: true
+EOF
+exit
+```
+
+## Xinit
+
+```sh
+curl https://www.x.org/pub/individual/app/xinit-1.4.1.tar.bz2 -o /sources/xorg/xinit-1.4.1.tar.bz2 &&
+
+tar xvf /sources/xorg/xinit-1.4.1.tar.bz2 &&
+cd       xinit-1.4.1                      &&
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-static     \
+            --with-xinitdir=/etc/X11/app-defaults &&
+
+make              &&
+sudo make install &&
+sudo ldconfig     &&
+
+cd .. &&
+rm -rf xinit-1.4.1
+```
+
+## TWM
+
+The Tiny Window Manager.
+
+```sh
+curl https://www.x.org/pub/individual/app/twm-1.0.11.tar.xz -o /sources/xorg/twm-1.0.11.tar.xz &&
+
+tar xvf /sources/xorg/twm-1.0.11.tar.xz &&
+cd       twm-1.0.11                     &&
+
+sed -i -e '/^rcdir =/s,^\(rcdir = \).*,\1/etc/X11/app-defaults,' src/Makefile.in &&
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf twm-1.0.11
+```
+
+## xdg-utils
+
+```sh
+curl https://portland.freedesktop.org/download/xdg-utils-1.1.3.tar.gz -o /sources/xorg/xdg-utils-1.1.3.tar.gz &&
+
+tar xzvf /sources/xorg/xdg-utils-1.1.3.tar.gz &&
+cd        xdg-utils-1.1.3                     &&
+
+./configure --prefix=/usr \
+            --mandir=/usr/share/man &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf xdg-utils-1.1.3
+```
+
+## Xdg-user-dirs
+
+```sh
+curl https://user-dirs.freedesktop.org/releases/xdg-user-dirs-0.17.tar.gz -o /sources/xorg/xdg-user-dirs-0.17.tar.gz &&
+
+tar xzvf /sources/xorg/xdg-user-dirs-0.17.tar.gz &&
+cd        xdg-user-dirs-0.17                     &&
+
+./configure --prefix=/usr \
+            --sysconfdir=/etc &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf xdg-user-dirs-0.17
+```
+
+To create your user dirs:
+
+```sh
+xdg-user-dirs-update
+```
+
+## Additional Fonts
+
+Create a separate directory for downloading these:
+
+```sh
+mkdir -pv /sources/fonts
+```
+
+### DejaVU Fonts
+
+```sh
+curl https://sourceforge.net/projects/dejavu/files/dejavu/2.37/dejavu-fonts-ttf-2.37.tar.bz2/download/ -o /sources/fonts/dejavu-fonts-ttf-2.37.tar.bz2 &&
+
+tar xvf /sources/fonts/dejavu-fonts-ttf-2.37.tar.bz2 &&
+cd       dejavu-fonts-ttf-2.37                       &&
+
+sudo install -v -d -m755 /usr/share/fonts/dejavu        &&
+sudo install -v -m644 ttf/*.ttf /usr/share/fonts/dejavu &&
+sudo fc-cache -v /usr/share/fonts/dejavu                &&
+
+cd .. &&
+rm -rf dejavu-fonts-ttf-2.37
+```
+
+### Liberation Fonts
+
+```sh
+curl https://github.com/liberationfonts/liberation-fonts/files/6418984/liberation-fonts-ttf-2.1.4.tar.gz -o /sources/fonts/liberation-fonts-ttf-2.1.4.tar.gz &&
+
+tar xzvf /sources/fonts/liberation-fonts-ttf-2.1.4.tar.gz &&
+cd        liberation-fonts-ttf-2.1.4                      &&
+
+sudo install -v -d -m755 /usr/share/fonts/liberation    &&
+sudo install -v -m644 *.ttf /usr/share/fonts/liberation &&
+sudo fc-cache -v /usr/share/fonts/liberation            &&
+
+cd .. &&
+rm -rf liberation-fonts-ttf-2.1.4
+```
+
+### Source Code Pro
+
+```sh
+curl https://github.com/adobe-fonts/source-code-pro/releases/download/2.038R-ro%2F1.058R-it%2F1.018R-VAR/TTF-source-code-pro-2.038R-ro-1.058R-it.zip -o /sources/fonts/TTF-source-code-pro-2.038R-ro-1.05R-it.zip &&
+
+unzip -d source-code-pro /sources/fonts/TTF-source-code-pro-2.038R-ro-1.05R-it.zip &&
+cd       source-code-pro                                                           &&
+
+sudo install -v -d -m755 /usr/share/fonts/source-code-pro    &&
+sudo install -v -m644 *.ttf /usr/share/fonts/source-code-pro &&
+sudo fc-cache -v /usr/share/fonts/source-code-pro            &&
+
+cd .. &&
+rm -rf source-code-pro
 ```

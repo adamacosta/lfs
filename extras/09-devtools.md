@@ -470,118 +470,189 @@ The build below takes up roughly 15 GB on disk when completed. The installation 
 To start, first we'll grab some patches from the folks at `Arch Linux`:
 
 ```sh
-curl https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/rust/trunk/0001-bootstrap-Change-libexec-dir.patch -o rustc-bootstrap-change-libexec-dir.patch
-curl https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/rust/trunk/0001-cargo-Change-libexec-dir.patch -o cargo-change-libexec-dir.patch
-curl https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/rust/trunk/0002-compiler-Change-LLVM-targets.patch -o rustc-change-llvm-targets.patch
+curl https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/rust/trunk/0001-bootstrap-Change-libexec-dir.patch -o /sources/patches/rustc-bootstrap-change-libexec-dir.patch &&
+curl https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/rust/trunk/0001-cargo-Change-libexec-dir.patch -o /sources/patches/cargo-change-libexec-dir.patch
 ```
 
-Now download the `rustc` tarball itself, apply the patches, and create the build config:
+Now download the `rustc` tarball itself, apply the patches, and create the build config for `cargo`.
+
+Note that Beyond Linux From Scratch recommends installing into `/opt` and creating symlinks to make upgrading easier. Due to difficulties with `rustc` being able to find its standard library and an inability to build `js78`, I am opting to just install to the normal `/usr` prefix directly. Help on how `rustc` finds crates is not forthcoming on the Internet, with all advice to just use `rustup` for installing pre-built binaries, but this is a tool for developers potentially working with many versions at once and not really a suitable answer for system integrators. It is possible to pass `-L` to the target path and `rustc` will work, but `configure` scripts will not do this and if `rustc` has a way to pass flags through environment variables, the Internet does not seem to be forthcoming with this information. `RUSTFLAGS` works for building with `cargo`, but the `mozbuild` configure system tries to use `rustc` directly rather than through `cargo`.
 
 ```sh
-curl https://static.rust-lang.org/dist/rustc-1.52.1-src.tar.gz -o rustc-1.52.1-src.tar.gz
-tar xzvf rustc-1.52.1-src.tar.gz
-cd rustc-1.52.1-src
-```
+curl https://static.rust-lang.org/dist/rustc-1.52.1-src.tar.gz -o /sources/rustc-1.52.1-src.tar.gz &&
 
-Now apply the patches and create a config file for `cargo`:
+tar xzvf /sources/rustc-1.52.1-src.tar.gz &&
+cd        rustc-1.52.1-src                &&
 
-```sh
-patch -Np1 -i ../rustc-bootstrap-change-libexec-dir.patch         &&
-patch -d src/tools/cargo -Np1 < ../cargo-change-libexec-dir.patch &&
-patch -Np1 -i ../rustc-change-llvm-targets.patch
+patch -Np1 -i /sources/patches/rustc-bootstrap-change-libexec-dir.patch         &&
+patch -d src/tools/cargo -Np1 < /sources/patches/cargo-change-libexec-dir.patch &&
 
 cat > config.toml << EOF
+changelog-seen = 2
+
 [llvm]
+targets = "X86"
 link-shared = true
 
 [build]
-target = ["x86_64-unknown-linux-gnu"]
-tools = ["cargo", "rls", "clippy", "miri", "rustfmt", "analysis", "src"]
-python = "/usr/bin/python"
+docs = false
 extended = true
-sanitizers = true
-profiler = true
-vendor = true
 
 [install]
-prefix = "/usr/lib/rustc-1.52.1"
+prefix = "/usr"
+docdir = "share/doc/rustc-1.52.1"
 
 [rust]
-# LLVM crashes when passing an object through ThinLTO twice.  This is triggered
-# when using rust code in cross-language LTO if libstd was built using ThinLTO.
-# http://blog.llvm.org/2019/09/closing-gap-cross-language-lto-between.html
-# https://github.com/rust-lang/rust/issues/54872
-codegen-units-std = 1
 codegen-tests = false
-debuginfo-level-std = 2
 channel = "stable"
 rpath = false
 
-[target.x86_64]
+[target.x86_64-unknown-linux-gnu]
 llvm-config = "/usr/bin/llvm-config"
 EOF
 ```
 
-Build:
+Build and (optionally) run the tests:
 
 ```sh
-export RUSTFLAGS="$RUSTFLAGS -C link-args=-lffi"
-./x.py build -j 64
+export RUSTFLAGS="$RUSTFLAGS -C link-args=-lffi" &&
+./x.py build -j 64                               &&
+./x.py test  -j 64 --verbose --no-fail-fast | tee rustc-tests.log
 ```
 
-Test:
+Count failed tests:
 
 ```sh
-./x.py test -j 64 --verbose --no-fail-fast | tee rustc-tests.log
+grep '^test result:' rustc-tests.log | awk '{ sum += $6 } END { print sum }'
 ```
 
-First, do a destdir install:
+BLFS editors expect at least 11 failures if built with a recent version of `gdb`. Personally, I saw 9 building for 2nd GEN Threadripper.
+
+To install, first do a destdir install:
 
 ```sh
-export LIBSSH2_SYS_USE_PKG_CONFIG=1           &&
-DESTDIR=${PWD}/install python3 ./x.py install &&
+export LIBSSH2_SYS_USE_PKG_CONFIG=1         &&
+DESTDIR=${PWD}/install ./x.py install -j 64 &&
 unset LIBSSH2_SYS_USE_PKG_CONFIG
 ```
 
-Now, install to the system:
+This allows us to create a manifest for easy uninstalling later:
 
 ```sh
-sudo chown -R root:root install                                            &&
-sudo cp -a install/* /                                                     &&
-sudo mv -v /usr/lib/rustc-1.52.1/share/doc/rust /usr/share/doc/rust-1.52.1 &&
-sudo mv -v /usr/lib/rustc-1.52.1/share/man/man1/* /usr/share/man/man1/     &&
-sudo mv -v /usr/lib/rustc-1.52.1/share/zsh/site-functions/* /usr/share/zsh/site-functions/ &&
-for TOOL in $(ls /usr/lib/rustc-1.52.1/bin); do
-    sudo ln -sv ../../../usr/lib/rustc-1.52.1/bin/${TOOL} /usr/bin/${TOOL}
-done
+find ./install/ | sed 's/\.\/install//' > rustc-1.52.1 &&
+sudo mkdir -pv /usr/share/manifests/                   &&
+sudo cp    -v   rustc-1.52.1 /usr/share/manifests/
 ```
 
-Configure `ld.so` to find the runtime libraries:
+Then do the real installation by copying to the root filesystem:
 
 ```sh
-sudo su -
-cat > /etc/ld.so.conf.d/rustc-1.52.1.conf << EOF
-# Begin rustc addition
-
-/usr/lib/rustc-1.52.1/lib
-
-# End rustc addition
-EOF
-
-ldconfig
+sudo chown -R root:root install &&
+sudo cp    -a install/* /
 ```
 
-To sanity check the installation:
+To sanity check `cargo`:
 
 ```sh
-mkdir -v ~/hellor && cd ~/hellor
-cargo init
-cargo run
+mkdir -v ~/hellor &&
+pushd    ~/hellor &&
+cargo init        &&
+cargo run         &&
+popd              &&
+rm    -r ~/hellor
 ```
 
 This should print out "Hello world!" if all went well.
 
+To check that our expected target works correctly:
+
+```sh
+cat > /tmp/conftest.rs << EOF
+pub extern fn hello() { println!("Hello world"); }
+EOF
+
+/usr/bin/rustc --crate-type staticlib --target=x86_64-unknown-linux-gnu -o /tmp/conftest.rlib /tmp/conftest.rs
+```
+
+This is roughly the test run by the `js78` `mozbuild` `configure` tool, so if it works, building `js78` and `firefox` should work.
+
+To delete the source and build trees:
+
+```sh
+cd ..               &&
+sudo rm -rf install &&
+cd ..               &&
+rm -rf rustc-1.52.1-src
+```
+
+#### Cbindgen
+
+Generate C bindings for rust. Needed to compile Firefox.
+
+```sh
+curl https://github.com/eqrion/cbindgen/archive/v0.19.0/cbindgen-0.19.0.tar.gz -o /sources/cbindgen-0.19.0.tar.gz &&
+
+tar xzvf /sources/cbindgen-0.19..0tar.gz &&
+cd        cbindgen-0.19.0                &&
+
+cargo build --release &&
+
+sudo install -Dm755 target/release/cbindgen /usr/bin/ &&
+
+cd .. &&
+rm -rf cbindgen-0.19.0
+```
+
+### lua
+
+```sh
+curl http://www.lua.org/ftp/lua-5.4.2.tar.gz -o /sources/lua-5.4.2.tar.gz &&
+curl -L http://www.linuxfromscratch.org/patches/blfs/10.1/lua-5.4.2-shared_library-1.patch -o /sources/lua-5.4.2-shared_library-1.patch &&
+
+tar xzvf /sources/lua-5.4.2.tar.gz &&
+cd        lua-5.4.2                &&
+
+cat > lua.pc << "EOF" &&
+V=5.4
+R=5.4.2
+
+prefix=/usr
+INSTALL_BIN=${prefix}/bin
+INSTALL_INC=${prefix}/include
+INSTALL_LIB=${prefix}/lib
+INSTALL_MAN=${prefix}/share/man/man1
+INSTALL_LMOD=${prefix}/share/lua/${V}
+INSTALL_CMOD=${prefix}/lib/lua/${V}
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: Lua
+Description: An Extensible Extension Language
+Version: ${R}
+Requires:
+Libs: -L${libdir} -llua -lm -ldl
+Cflags: -I${includedir}
+EOF
+
+patch -Np1 -i /sources/lua-5.4.2-shared_library-1.patch      &&
+make linux                                                   &&
+sudo make INSTALL_TOP=/usr                \
+          INSTALL_DATA="cp -d"            \
+          INSTALL_MAN=/usr/share/man/man1 \
+          TO_LIB="liblua.so liblua.so.5.4 liblua.so.5.4.2" \
+          install &&
+sudo mkdir -pv                      /usr/share/doc/lua-5.4.2 &&
+sudo cp -v doc/*.{html,css,gif,png} /usr/share/doc/lua-5.4.2 &&
+sudo install -v -m644 -D lua.pc /usr/lib/pkgconfig/lua.pc    &&
+
+cd .. &&
+rm -rf lua-5.4.2
+```
+
 ### Ruby
+
+Because we already link the `ruby` interpreter dynamically against `libruby`, we'll apply the same trick from the Fedora maintainers to try getting a speedup from avoiding the PLT when functions from `libruby` call into other functions from `libruby`.
 
 ```sh
 curl https://cache.ruby-lang.org/pub/ruby/3.0/ruby-3.0.1.tar.gz -o /sources/ruby-3.0.1.tar.gz &&
@@ -589,16 +660,48 @@ curl https://cache.ruby-lang.org/pub/ruby/3.0/ruby-3.0.1.tar.gz -o /sources/ruby
 tar xzvf /sources/ruby-3.0.1.tar.gz &&
 cd        ruby-3.0.1                &&
 
-./configure --prefix=/usr   \
-            --enable-shared \
-            --docdir=/usr/share/doc/ruby-3.0.0 &&
+CFLAGS="-fno-semantic-interposition"  \
+LDFLAGS="-fno-semantic-interposition" \
+./configure --prefix=/usr             \
+            --enable-shared           \
+            --docdir=/usr/share/doc/ruby-3.0.1 &&
 
 make              &&
+make capi         &&
 make -k check     &&
 sudo make install &&
 
 cd .. &&
 rm -rf ruby-3.0.1
+```
+
+### NodeJS
+
+The Chrome V8 JavaScript engine allowing for JavaScript execution outside of a browser.
+
+```sh
+curl https://github.com/nodejs/node/archive/refs/tags/v16.3.0.tar.gz -o /sources/node-v16.3.0.tar.gz &&
+
+tar xzvf /sources/node-v16.3.0.tar.gz &&
+cd        node-16.3.0                 &&
+
+./configure --prefix=/usr    \
+            --shared-brotli  \
+            --shared-cares   \
+            --shared-libuv   \
+            --shared-openssl \
+            --shared-nghttp2 \
+            --shared-zlib    \
+            --enable-lto     \
+            --with-intl=system-icu &&
+
+make              &&
+sudo make install &&
+
+sudo mv -fv /usr/share/doc/node /usr/share/doc/node-16.3.0 &&
+
+cd .. &&
+rm -rf node-16.3.0
 ```
 
 ### SWIG

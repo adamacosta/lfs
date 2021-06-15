@@ -1,10 +1,6 @@
-# Multimedia and documentation generation
+# Multimedia tools
 
 There is no clear dependency ordering between the various libraries and tools presented here and the programming languages presented in the next section. You may need to jump back and forth quite a bit. A lot of this is probably not needed if you only intend to build a headless system, but if you wish to use it as a build server and include building of documentation, many documentation generation tools can do quite a bit more if they include support for graphics, even if the graphics cannot be viewed on the same machine.
-
-If you wish to build `pandoc`, it requires a Haskell compiler, and `mdbook` requires `Rust`, as does `librsvg`. The recommended build order is to build everything else first, in order to have full-fledged documentation generators for `GDB` and the various other compilers, debuggers, and programming standard libraries in the next section, then come back to build `pandoc` and `mdbook`.
-
-Many libraries here may also require `CMake` to generate the `Makefile`, so you may want to head over the devtools section on build systems and install `CMake` first, then come back.
 
 ## Fonts and typesetting
 
@@ -273,6 +269,72 @@ cd ../.. &&
 rm -rf pixman-0.40.0
 ```
 
+### giflib
+
+```sh
+curl https://sourceforge.net/projects/giflib/files/giflib-5.2.1.tar.gz -o /sources/giflib-5.2.1.tar.gz &&
+
+tar xzvf /sources/giflib-5.2.1.tar.gz &&
+cd        giflib-5.2.1                &&
+
+make                          &&
+sudo make PREFIX=/usr install &&
+
+sudo rm -fv /usr/lib/libgif.a                      &&
+sudo find doc \( -name Makefile\* -o -name \*.1 \
+         -o -name \*.xml \) -exec rm -v {} \;      &&
+sudo install -v -dm755 /usr/share/doc/giflib-5.2.1 &&
+sudo cp -v -R doc/* /usr/share/doc/giflib-5.2.1    &&
+
+cd .. &&
+rm -rf giflib-5.2.1
+```
+
+## libexif
+
+```sh
+curl https://github.com/libexif/libexif/releases/download/libexif-0_6_22-release/libexif-0.6.22.tar.xz -o /sources/libexif-0.6.22.tar.xz &&
+curl https://www.linuxfromscratch.org/patches/blfs/svn/libexif-0.6.22-security_fixes-1.patch -o /sources/patches/libexif-0.6.22-security_fixes-1.patch &&
+
+tar xvf /sources/libexif-0.6.22.tar.xz &&
+cd       libexif-0.6.22                &&
+
+patch -Np1 -i /sources/patches/libexif-0.6.22-security_fixes-1.patch &&
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --with-doc-dir=/usr/share/doc/libexif-0.6.22 &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libexif-0.6.22
+```
+
+## taglib
+
+```sh
+curl https://taglib.github.io/releases/taglib-1.12.tar.gz -o /sources/taglib-1.12.tar.gz &&
+
+tar xzvf /sources/taglib-1.12.tar.gz &&
+cd        taglib-1.12                &&
+
+mkdir build &&
+cd    build &&
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_BUILD_TYPE=Release  \
+      -DBUILD_SHARED_LIBS=ON \
+      .. &&
+
+make              &&
+sudo make install &&
+
+cd ../.. &&
+rm -rf tablib-1.12
+```
+
 ## FontConfig
 
 ```sh
@@ -534,9 +596,63 @@ cd .. &&
 sudo rm -rf ImageMagick-7.0.11-13
 ```
 
-## Documentation generation tools
+## LittleCMS
 
-### GhostScript
+The Little Color Management System.
+
+```sh
+curl https://downloads.sourceforge.net/lcms/lcms2-2.12.tar.gz -o /sources/lcms2-2.12.tar.gz &&
+
+tar xzvf /sources/lcms2-2.12.tar.gz &&
+cd        lcms2-2.12                &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf lcms2-2.12
+```
+
+## sassc
+
+CSS preprocessor.
+
+```sh
+curl https://github.com/sass/sassc/archive/3.6.2/sassc-3.6.2.tar.gz -o /sources/sassc-3.6.2.tar.gz &&
+curl https://github.com/sass/libsass/archive/3.6.5/libsass-3.6.5.tar.gz -o /sources/libsass-3.6.5.tar.gz &&
+
+tar xzvf /sources/libsass-3.6.5.tar.gz &&
+cd        libsass-3.6.5                &&
+
+autoreconf -fi &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd ..                &&
+rm -rf libsass-3.6.5 &&
+
+tar xzvf /sources/sassc-3.6.2.tar.gz &&
+cd        sassc-3.6.2                &&
+
+autoreconf -fi &&
+
+./configure --prefix=/usr &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf sassc-3.6.2
+```
+
+## GhostScript
 
 Libraries for rendering postscript.
 
@@ -575,214 +691,4 @@ sudo fc-cache -v /usr/share/ghostscript/fonts/ &&
 
 cd .. &&
 rm -rf ghostscript-9.53.3
-```
-
-### asciidoc
-
-```sh
-curl https://github.com/asciidoc/asciidoc-py3/releases/download/9.1.0/asciidoc-9.1.0.tar.gz -o /sources/asciidoc-9.1.0.tar.gz &&
-
-tar xzvf /sources/asciidoc-9.1.0.tar.gz &&
-cd        asciidoc-9.1.0                &&
-
-sed -i 's:doc/testasciidoc.1::' Makefile.in &&
-rm doc/testasciidoc.1.txt                   &&
-
-./configure --prefix=/usr     \
-            --sysconfdir=/etc \
-            --docdir=/usr/share/doc/asciidoc-9.1.0 &&
-
-make              &&
-sudo make install &&
-sudo make docs    &&
-
-cd .. &&
-rm -rf asciidoc-9.1.0
-```
-
-### Doxygen
-
-```sh
-curl http://doxygen.nl/files/doxygen-1.9.1.src.tar.gz -o /sources/doxygen-1.9.1.src.tar.gz &&
-
-tar xzvf /sources/doxygen-1.9.1.src.tar.gz &&
-cd        doxygen-1.9.1                    &&
-
-rm src/._xmlgen.cpp &&
-
-mkdir -v build &&
-cd       build &&
-
-cmake -G "Unix Makefiles"         \
-      -DCMAKE_BUILD_TYPE=Release  \
-      -DCMAKE_INSTALL_PREFIX=/usr \
-      -Wno-dev .. &&
-
-make                                               &&
-make tests                                         &&
-sudo make install                                  &&
-sudo install -vm644 ../doc/*.1 /usr/share/man/man1 &&
-
-cd ../.. &&
-rm -rf doxygen-1.9.1
-```
-
-### Sphinx
-
-`sphinx-build` is a Python console script and can be installed by `pip`:
-
-```sh
-curl https://github.com/sphinx-doc/sphinx/archive/refs/tags/v4.0.2.tar.gz -o /sources/sphinx-4.0.2.tar.gz &&
-
-tar xzvf /sources/sphinx-4.0.2.tar.gz &&
-cd        sphinx-4.0.2                &&
-
-python3 setup.py build        &&
-sudo python3 setup.py install &&
-
-cd .. &&
-rm -rf sphinx-4.0.2
-```
-
-### pandoc
-
-`pandoc` has many dependencies.
-
-```
-Glob                  >= 0.7      && < 0.11,
-HTTP                  >= 4000.0.5 && < 4000.4,
-HsYAML                >= 0.2      && < 0.3,
-JuicyPixels           >= 3.1.6.1  && < 3.4,
-SHA                   >= 1.6      && < 1.7,
-aeson                 >= 0.7      && < 1.6,
-aeson-pretty          >= 0.8.5    && < 0.9,
-array                 >= 0.5      && < 0.6,
-attoparsec            >= 0.12     && < 0.15,
-base64-bytestring     >= 0.1      && < 1.3,
-binary                >= 0.7      && < 0.11,
-blaze-html            >= 0.9      && < 0.10,
-blaze-markup          >= 0.8      && < 0.9,
-bytestring            >= 0.9      && < 0.12,
-case-insensitive      >= 1.2      && < 1.3,
-citeproc              >= 0.4      && < 0.4.1,
-commonmark            >= 0.2      && < 0.3,
-commonmark-extensions >= 0.2.1.2  && < 0.3,
-commonmark-pandoc     >= 0.2.1    && < 0.3,
-connection            >= 0.3.1,
-containers            >= 0.4.2.1  && < 0.7,
-data-default          >= 0.4      && < 0.8,
-deepseq               >= 1.3      && < 1.5,
-directory             >= 1.2.3    && < 1.4,
-doclayout             >= 0.3.0.1  && < 0.4,
-doctemplates          >= 0.9      && < 0.10,
-emojis                >= 0.1      && < 0.2,
-exceptions            >= 0.8      && < 0.11,
-file-embed            >= 0.0      && < 0.1,
-filepath              >= 1.1      && < 1.5,
-haddock-library       >= 1.10     && < 1.11,
-hslua                 >= 1.1      && < 1.4,
-hslua-module-path     >= 0.1.0    && < 0.2.0,
-hslua-module-system   >= 0.2      && < 0.3,
-hslua-module-text     >= 0.2.1    && < 0.4,
-http-client           >= 0.4.30   && < 0.8,
-http-client-tls       >= 0.2.4    && < 0.4,
-http-types            >= 0.8      && < 0.13,
-ipynb                 >= 0.1      && < 0.2,
-jira-wiki-markup      >= 1.4      && < 1.5,
-mtl                   >= 2.2      && < 2.3,
-network               >= 2.6,
-network-uri           >= 2.6      && < 2.8,
-pandoc-types          >= 1.22     && < 1.23,
-parsec                >= 3.1      && < 3.2,
-process               >= 1.2.3    && < 1.7,
-random                >= 1        && < 1.3,
-safe                  >= 0.3.18   && < 0.4,
-scientific            >= 0.3      && < 0.4,
-skylighting           >= 0.10.5.1 && < 0.10.6,
-skylighting-core      >= 0.10.5.1 && < 0.10.6,
-split                 >= 0.2      && < 0.3,
-syb                   >= 0.1      && < 0.8,
-tagsoup               >= 0.14.6   && < 0.15,
-temporary             >= 1.1      && < 1.4,
-texmath               >= 0.12.3   && < 0.12.4,
-text                  >= 1.1.1.0  && < 1.3,
-text-conversions      >= 0.3      && < 0.4,
-time                  >= 1.5      && < 1.12,
-unicode-transforms    >= 0.3      && < 0.4,
-unordered-containers  >= 0.2      && < 0.3,
-xml                   >= 1.3.12   && < 1.4,
-xml-conduit           >= 1.9.1.1  && < 1.10,
-unicode-collation     >= 0.1.1    && < 0.2,
-zip-archive           >= 0.2.3.4  && < 0.5,
-zlib                  >= 0.5      && < 0.7
-```
-
-```sh
-curl https://hackage.haskell.org/package/pandoc-2.14.0.1/pandoc-2.14.0.1.tar.gz -o /sources/pandoc-2.14.0.1.tar.gz &&
-
-tar xvzf /sources/pandoc-2.14.0.1.tar.gz &&
-cd        pandoc-2.14.0.1                &&
-
-cabal update                           &&
-sudo cabal install --lib                       \
-                   --prefix=/usr               \
-                   --libdir=/usr/lib           \
-                   --dynlibdir=/usr/lib        \
-                   --global                    \
-                   --enable-shared             \
-                   --enable-optimization=2     \
-                   --enable-executable-dynamic \
-                   --disable-library-vanilla   \
-                   --disable-static            \
-                   --only-dependencies &&
-
-cabal configure --prefix=/usr               \
-                --global                    \
-                --enable-executable-dynamic \
-                --enable-optimization=2     \
-                --docdir=/usr/share/doc/pandoc-2.14.0.1 &&
-
-runghc Setup build -j      &&
-rungch Setup test          &&
-sudo runghc Setup copy     &&
-sudo rungch Setup register &&
-
-cd .. &&
-rm -rf pandoc-2.14.0.1
-```
-
-```
-th-compat-0.1.2
-splitmix-0.1.0.3
-random-1.2.0
-hashable-1.3.2.0
-async-2.2.3
-base16-bytestring-0.1.1.7
-base64-bytestring-1.0.0.3
-digest-0.0.1.2
-zlib-0.6.2.3
-network-3.1.2.1
-network-uri-2.6.4.1
-```
-
-```sh
-sudo ghc-pkg unregister --force network-uri-2.6.4.1  &&
-sudo cabal install --lib                       \
-                   --prefix=/usr               \
-                   --libdir=/usr/lib           \
-                   --dynlibdir=/usr/lib        \
-                   --global                    \
-                   --enable-shared             \
-                   --enable-optimization=2     \
-                   --enable-executable-dynamic \
-                   --disable-library-vanilla   \
-                   --disable-static            \
-                   --reinstall                 \
-                   network-uri-2.6.4.1
-```
-
-### mdbook
-
-```sh
-
 ```

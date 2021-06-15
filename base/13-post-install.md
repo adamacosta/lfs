@@ -259,6 +259,9 @@ cd zsh-syntax-highlighting-0.7.1                       &&
 
 sudo make PREFIX=/usr install &&
 
+sudo mv -fv /usr/share/doc/zsh-syntax-highlighting \
+            /usr/share/doc/zsh-syntax-highlighting-0.7.1 &&
+
 cd .. &&
 rm -rf zsh-syntax-highlighting-0.7.1
 ```

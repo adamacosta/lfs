@@ -75,7 +75,7 @@ cd .. &&
 rm -rf systemd-248
 ```
 
-Now, if you have a machine using WiFi to connect to the network, ensure that the kernel modules for WiFi drivers are loaded. Substitute in the appropriate driver for your WiFi card.
+Now, if you have a machine using WiFi to connect to the network, ensure that the kernel modules for WiFi drivers are loaded. Substitute in the appropriate driver for your WiFi card. `iwlwifi` drives the most current generation of Intel cards that support 802.11AX.
 
 ```sh
 cat > /usr/lib/modules-load.d/iwd.conf << EOF
@@ -132,7 +132,7 @@ cd        terminus-font-4.49.1                &&
 make psf
 ```
 
-Try out a few `sudo setfont <font>.psf` and install whichever you like:
+Try out a few (`sudo setfont <font>.psf`) and install whichever you like:
 
 ```sh
 gzip <font>.psf &&
@@ -150,6 +150,6 @@ Then set the one you like as the default:
 
 ```sh
 cat > /etc/vconsole.conf << "EOF"
-FONT=ter-h18b
+FONT=ter-h18n
 EOF
 ```

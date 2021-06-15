@@ -161,10 +161,10 @@ rm -rf gnupg-2.2.27
 ## GPGME
 
 ```sh
-curl https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-1.12.0.tar.bz2 -o /sources/gpgme-1.12.0.tar.bz2 &&
+curl https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-1.15.1.tar.bz2 -o /sources/gpgme-1.15.1.tar.bz2 &&
 
-tar xvf /sources/gpgme-1.12.0.tar.bz2 &&
-cd       gpgme-1.12.0                 &&
+tar xvf /sources/gpgme-1.15.1.tar.bz2 &&
+cd       gpgme-1.15.1                 &&
 
 ./configure --prefix=/usr &&
 
@@ -173,5 +173,5 @@ make -k check     &&
 sudo make install &&
 
 cd .. &&
-rm -rf gpgme-1.12.0
+rm -rf gpgme-1.15.1
 ```

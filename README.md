@@ -1,6 +1,8 @@
 # Linux from Scratch
 
-This document pulls a bit from [Linux From Scratch 10.1-systemd](https://www.linuxfromscratch.org/lfs/view/stable-systemd/index.html) and a bit from [Beyond Linux From Scratch 10.1-systemd](https://www.linuxfromscratch.org/blfs/view/10.1-systemd/index.html) to create a Linux system that can optionally be run as a VM on a Microsoft `Hyper-V` hypervisor.
+This document pulls a bit from [Linux From Scratch systemd](https://www.linuxfromscratch.org/lfs/view/systemd/index.html) and a bit from [Beyond Linux From Scratch systemd](https://www.linuxfromscratch.org/blfs/view/systemd/index.html) to create a fully-customized Linux distro.
+
+Several libraries, tools, and features are also introduced that are not in Linux From Scratch or Beyond Linux From Scratch, so you can think of this as one of many projects out there attempting "Beyond Beyond Linux From Scratch." This includes additional libraries and tools for numerical and scientific computing, machine learning, running containers, and building out Kubernetes clusters on customized distros. There are also instructions here for creating Linux systems that will run as a guest on a hypervisor, in particular Microsoft's `Hyper-V`, which I could not find much documentation on.
 
 ## Basic System
 
@@ -26,27 +28,33 @@ At this point, you have a perfectly functional system you can use. Chances are, 
 
 Each optional extra will be downloaded into the `/sources` directory and built in `/sources/build_dir`. Since we will no longer be building as `root`, installation is done using `sudo`.
 
-Beware that some of the crypto tools and compilers take a very long time to build and test.
+Beware that some of the crypto tools and compilers take a very long time to build and test. If you choose to attempt building `ATLAS`, it can potentially take days and may fail even after running for a very long time.
 
 ### Extending the toolchain
 
-1. [GnuPG](extras/01-gnupg.md)
+These are not ordered. Libraries are presented first because many tools in later sections depend on them. However, at least a few libraries depend upon build tools and compilers not included with basic Linux From Scratch. In particular, you may need to build `CMake`, `LLVM`, and `rustc` before building many libraries. Many libraries and tools also use `doxygen` to generate API documentation, which you would need to build first. `GraphViz` and `FontConfig` have optional dependencies on tools that also depend on them, so you may find yourself building each multiple times to incorporate optional features when they become available.
+
+1. [General purpose libraries](extras/01-libraries.md)
 2. [Basic system utilities](extras/02-basic-system-utils.md)
-3. [Additional system utiltiies](extras/03-addt-system-utils.md)
+3. [GnuPG](extras/03-gnupg.md)
 4. [Network utilities](extras/04-network-utils.md)
-5. [General purpose libraries](extras/05-gen-libs.md)
+5. [Additional system utiltiies](extras/05-addt-system-utils.md)
 6. [Text processing utilities](extras/06-text-utils.md)
-7. [Multimedia and documentation generation](extras/07-media-doc-utils.md)
-8. [Developer tools](extras/08-devtools.md)
-9. [Numerical and geospatial libraries](09-numerical.md)
-10. [System configuration](extras/10-sysconfig.md)
+7. [Multimedia tools](extras/07-media-utils.md)
+8. [Documentation generators](extras/08-doc-utils.md)
+9. [Developer tools](extras/09-devtools.md)
+10. [Numerical and geospatial libraries](10-numerical.md)
+11. [System configuration](extras/11-sysconfig.md)
 
 ### Graphical desktop
+
+This focuses on building the `GNOME` desktop, which is enormous and takes a very long time, but I just like the way it looks and have gotten used to it. Support for using `NVIDIA` proprietary drivers and libraries is also included here.
 
 1. [Drivers](graphics/01-drivers.md)
 2. [XOrg](graphics/02-xorg.md)
 3. [Audio and video libraries](graphics/03-audio-video.md)
 4. [GNOME desktop](graphica/04-gnome.md)
+5. [Desktop applications](graphics/05-applications.md)
 
 ### System hardening
 
@@ -66,6 +74,6 @@ Beware that some of the crypto tools and compilers take a very long time to buil
 ### Running a hypervisor
 
 1. [Kernel configuration](hypervisor/01-kernel.md)
-2. [libvirt](hypervisor/02-libvirt.md)
+2. [qemu and libvirt](hypervisor/02-libvirt.md)
 3. [virt-manager](hypervisor/03-virt-manager.md)
 4. [Terraform libvirt provider](hypervisor/04-terraform.md)
