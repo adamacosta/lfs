@@ -27,8 +27,8 @@ If you created a separate build tree: `cd build_dir`.
 ### man-pages
 
 ```sh
-tar xvf /sources/man-pages-5.11.tar.xz &&
-cd       man-pages-5.11                &&
+tar xvf /sources/base/man-pages-5.11.tar.xz &&
+cd       man-pages-5.11                     &&
 
 make install &&
 
@@ -39,13 +39,13 @@ rm -rf man-pages-5.11
 ### iana-etc
 
 ```sh
-tar xzvf /sources/iana-etc-20210407.tar.gz &&
-cd        iana-etc-20210407                &&
+tar xzvf /sources/base/iana-etc-20210611.tar.gz &&
+cd        iana-etc-20210611                     &&
 
 cp services protocols /etc &&
 
 cd .. &&
-rm -rf iana-etc-20210407
+rm -rf iana-etc-20210611
 ```
 
 ### glibc
@@ -55,10 +55,10 @@ rm -rf iana-etc-20210407
 First is the initial compile and installation of the Name Service Cache Daemon and locales. Beware that at least a few tests are likely to fail here. You can check the LFS book for expected failures. Generally at least some of cpu feature tests are going to fail depending upon architecture. The install step will complain if `/etc/ld.so.conf` does not exist, so we will create it even though it will be empty for now.
 
 ```sh
-tar xvf /sources/glibc-2.33.tar.xz &&
-cd       glibc-2.33                &&
+tar xvf /sources/base/glibc-2.33.tar.xz &&
+cd       glibc-2.33                     &&
 
-patch -Np1 -i ../../glibc-2.33-fhs-1.patch &&
+patch -Np1 -i /sources/patches/glibc-2.33-fhs-1.patch &&
 sed -e '402a\      *result = local->data.services[database_index];' \
     -i nss/nss_database.c &&
 
@@ -160,8 +160,8 @@ rm -rf glibc-2.33
 ### zlib
 
 ```sh
-tar xvf /sources/zlib-1.2.11.tar.xz &&
-cd       zlib-1.2.11                &&
+tar xvf /sources/base/zlib-1.2.11.tar.xz &&
+cd       zlib-1.2.11                     &&
 
 ./configure --prefix=/usr &&
 
@@ -178,8 +178,8 @@ rm -rf zlib-1.2.11
 ### bzip2
 
 ```sh
-tar xzvf /sources/bzip2-1.0.8.tar.gz &&
-cd        bzip2-1.0.8                &&
+tar xzvf /sources/base/bzip2-1.0.8.tar.gz &&
+cd        bzip2-1.0.8                     &&
 
 patch -Np1 -i ../../bzip2-1.0.8-install_docs-1.patch     &&
 sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@'   Makefile    &&
@@ -205,8 +205,8 @@ rm -rf bzip2-1.0.8
 ### xz
 
 ```sh
-tar xvf /sources/xz-5.2.5.tar.xz &&
-cd       xz-5.2.5                &&
+tar xvf /sources/base/xz-5.2.5.tar.xz &&
+cd       xz-5.2.5                     &&
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -224,8 +224,8 @@ rm -rf xz-5.2.5
 Beware that at least one test of first block run length encoding fails. I'm not sure why this is.
 
 ```sh
-tar xzvf /sources/zstd-1.4.9.tar.gz &&
-cd        zstd-1.4.9                &&
+tar xzvf /sources/base/zstd-1.5.0.tar.gz &&
+cd        zstd-1.5.0                     &&
 
 make                     &&
 make check               &&
@@ -234,13 +234,13 @@ make prefix=/usr install &&
 rm -v /usr/lib/libzstd.a &&
 
 cd .. &&
-rm -rf zstd-1.4.9
+rm -rf zstd-1.5.0
 ```
 
 ### file
 
 ```sh
-tar xzvf /sources/file-5.40.tar.gz &&
+tar xzvf /sources/base/file-5.40.tar.gz &&
 cd        file-5.40                &&
 
 ./configure --prefix=/usr &&
@@ -256,7 +256,7 @@ rm -rf file-5.40
 ### readline
 
 ```sh
-tar xzvf /sources/readline-8.1.tar.gz &&
+tar xzvf /sources/base/readline-8.1.tar.gz &&
 cd        readline-8.1                &&
 
 sed -i '/MV.*old/d' Makefile.in              &&
@@ -279,8 +279,8 @@ rm -rf readline-8.1
 ### m4
 
 ```sh
-tar xvf /sources/m4-1.4.18.tar.xz &&
-cd       m4-1.4.18                &&
+tar xvf /sources/base/m4-1.4.19.tar.xz &&
+cd       m4-1.4.19                     &&
 
 sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c        &&
 echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h &&
@@ -292,14 +292,14 @@ make check   &&
 make install &&
 
 cd .. &&
-rm -rf m4-1.4.18
+rm -rf m4-1.4.19
 ```
 
 ### bc
 
 ```sh
-tar xvf /sources/bc-4.0.1.tar.xz &&
-cd       bc-4.0.1                &&
+tar xvf /sources/base/bc-4.0.2.tar.xz &&
+cd       bc-4.0.2                     &&
 
 PREFIX=/usr CC=gcc ./configure.sh -G -O3 &&
 
@@ -308,14 +308,14 @@ make test    &&
 make install &&
 
 cd .. &&
-rm -rf bc-4.0.1
+rm -rf bc-4.0.2
 ```
 
 ### flex
 
 ```sh
-tar xzvf /sources/flex-2.6.4.tar.gz &&
-cd        flex-2.6.4                &&
+tar xzvf /sources/base/flex-2.6.4.tar.gz &&
+cd        flex-2.6.4                     &&
 
 ./configure --prefix=/usr \
             --docdir=/usr/share/doc/flex-2.6.4 \
@@ -334,9 +334,9 @@ rm -rf flex-2.6.4
 ### tcl
 
 ```sh
-tar xzvf /sources/tcl8.6.11-src.tar.gz                &&
-cd        tcl8.6.11                                   &&
-tar xzvf ../tcl8.6.11-html.tar.gz --strip-component=1 &&
+tar xzvf /sources/base/tcl8.6.11-src.tar.gz                       &&
+cd        tcl8.6.11                                               &&
+tar xzvf /sources/base/tcl8.6.11-html.tar.gz --strip-component=1  &&
 
 SRCDIR=$(pwd)
 cd unix &&
@@ -378,8 +378,8 @@ rm -rf tcl8.6.11
 ### expect
 
 ```sh
-tar xzvf /sources/expect5.45.4.tar.gz &&
-cd        expect5.45.4                &&
+tar xzvf /sources/base/expect5.45.4.tar.gz &&
+cd        expect5.45.4                     &&
 
 ./configure --prefix=/usr           \
             --with-tcl=/usr/lib     \
@@ -408,8 +408,8 @@ If tests fail due to "your system has no more ptys," check that:
 If this happens, it is critical to fix as it will prevent any tests run by `expect` from working and these are needed to validate many of the critical system utilities.
 
 ```sh
-tar xzvf /sources/dejagnu-1.6.2.tar.gz &&
-cd        dejagnu-1.6.2                &&
+tar xzvf /sources/base/dejagnu-1.6.2.tar.gz &&
+cd        dejagnu-1.6.2                     &&
 
 ./configure --prefix=/usr &&
 
@@ -433,8 +433,8 @@ rm -rf dejagnu-1.6.2
 Beware that four tests are known to fail, in the suite for `ld`, all saying some variety of "Run property."
 
 ```sh
-tar xvf /sources/binutils-2.36.1.tar.xz &&
-cd       binutils-2.36.1                &&
+tar xvf /sources/base/binutils-2.36.1.tar.xz &&
+cd       binutils-2.36.1                     &&
 
 sed -i '/@\tincremental_copy/d' gold/testsuite/Makefile.in &&
 
@@ -464,8 +464,8 @@ rm -rf binutils-2.36.1
 ### gmp
 
 ```sh
-tar xvf /sources/gmp-6.2.1.tar.xz &&
-cd       gmp-6.2.1                &&
+tar xvf /sources/base/gmp-6.2.1.tar.xz &&
+cd       gmp-6.2.1                     &&
 
 ./configure --prefix=/usr    \
             --enable-cxx     \
@@ -488,8 +488,8 @@ rm -rf gmp-6.2.1
 ### mpfr
 
 ```sh
-tar xvf /sources/mpfr-4.1.0.tar.xz &&
-cd       mpfr-4.1.0                &&
+tar xvf /sources/base/mpfr-4.1.0.tar.xz &&
+cd       mpfr-4.1.0                     &&
 
 ./configure --prefix=/usr        \
             --disable-static     \
@@ -509,8 +509,8 @@ rm -rf mpfr-4.1.0
 ### mpc
 
 ```sh
-tar xzvf /sources/mpc-1.2.1.tar.gz &&
-cd        mpc-1.2.1                &&
+tar xzvf /sources/base/mpc-1.2.1.tar.gz &&
+cd        mpc-1.2.1                     &&
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -529,7 +529,7 @@ rm -rf mpc-1.2.1
 ### isl
 
 ```sh
-tar xvf /sources/isl-0.24.tar.xz &&
+tar xvf /sources/base/isl-0.24.tar.xz &&
 cd       isl-0.24                &&
 
 ./configure --prefix=/usr \
@@ -546,8 +546,8 @@ rm -rf isl-0.24
 ### attr
 
 ```sh
-tar xzvf /sources/attr-2.5.1.tar.gz &&
-cd        attr-2.5.1                &&
+tar xzvf /sources/base/attr-2.5.1.tar.gz &&
+cd        attr-2.5.1                     &&
 
 ./configure --prefix=/usr     \
             --disable-static  \
@@ -565,8 +565,8 @@ rm -rf attr-2.5.1
 ### acl
 
 ```sh
-tar xvf /sources/acl-2.3.1.tar.xz &&
-cd       acl-2.3.1                &&
+tar xvf /sources/base/acl-2.3.1.tar.xz &&
+cd       acl-2.3.1                     &&
 
 ./configure --prefix=/usr         \
             --disable-static      \
@@ -583,16 +583,18 @@ rm -rf acl-2.3.1
 ### libcap
 
 ```sh
-tar xvf /sources/libcap-2.49.tar.xz &&
-cd       libcap-2.49                &&
+tar xvf /sources/base/libcap-2.50.tar.xz &&
+cd       libcap-2.50                     &&
 
 sed -i '/install -m.*STA/d' libcap/Makefile &&
 make prefix=/usr lib=lib                    &&
 make test                                   &&
 make prefix=/usr lib=lib install            &&
 
+chmod -v 755 /usr/lib/lib{cap,psx}.so.2.50  &&
+
 cd .. &&
-rm -rf libcap-2.49
+rm -rf libcap-2.50
 ```
 
 ### shadow
@@ -600,8 +602,8 @@ rm -rf libcap-2.49
 #### Installation
 
 ```sh
-tar xvf /sources/shadow-4.8.1.tar.xz &&
-cd       shadow-4.8.1                &&
+tar xvf /sources/base/shadow-4.8.1.tar.xz &&
+cd       shadow-4.8.1                     &&
 
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in                     &&
 find man -name Makefile.in -exec sed -i 's/groups\.1 / /'   {} \; &&
@@ -637,8 +639,8 @@ passwd root
 ### gcc
 
 ```sh
-tar xvf /sources/gcc-11.1.0.tar.xz &&
-cd       gcc-11.1.0                    &&
+tar xvf /sources/base/gcc-11.1.0.tar.xz &&
+cd       gcc-11.1.0                     &&
 
 sed -e '/m64=/s/lib64/lib/' \
     -i.orig gcc/config/i386/t-linux64 &&
@@ -777,8 +779,8 @@ Note that it should say differently if you're not running on `x86_64` architectu
 ### pkgconfig
 
 ```sh
-tar xzvf /sources/pkg-config-0.29.2.tar.gz &&
-cd        pkg-config-0.29.2                &&
+tar xzvf /sources/base/pkg-config-0.29.2.tar.gz &&
+cd        pkg-config-0.29.2                     &&
 
 ./configure --prefix=/usr              \
             --with-internal-glib       \
@@ -796,8 +798,8 @@ rm -rf pkg-config-0.29.2
 ### ncurses
 
 ```sh
-tar xzvf /sources/ncurses-6.2.tar.gz &&
-cd        ncurses-6.2                &&
+tar xzvf /sources/base/ncurses-6.2.tar.gz &&
+cd        ncurses-6.2                     &&
 
 ./configure --prefix=/usr           \
             --mandir=/usr/share/man \
@@ -830,8 +832,8 @@ rm -rf ncurses-6.2
 ### sed
 
 ```sh
-tar xvf /sources/sed-4.8.tar.xz &&
-cd       sed-4.8                &&
+tar xvf /sources/base/sed-4.8.tar.xz &&
+cd       sed-4.8                     &&
 
 ./configure --prefix=/usr \
             --bindir=/bin &&
@@ -853,8 +855,8 @@ rm -rf sed-4.8
 ### psmisc
 
 ```sh
-tar xvf /sources/psmisc-23.4.tar.xz &&
-cd       psmisc-23.4                &&
+tar xvf /sources/base/psmisc-23.4.tar.xz &&
+cd       psmisc-23.4                     &&
 
 ./configure --prefix=/usr &&
 
@@ -868,8 +870,8 @@ rm -rf psmisc-23.4
 ### gettext
 
 ```sh
-tar xvf /sources/gettext-0.21.tar.xz &&
-cd       gettext-0.21                &&
+tar xvf /sources/base/gettext-0.21.tar.xz &&
+cd       gettext-0.21                     &&
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -888,8 +890,8 @@ rm -rf gettext-0.21
 ### bison
 
 ```sh
-tar xvf /sources/bison-3.7.6.tar.xz &&
-cd       bison-3.7.6                &&
+tar xvf /sources/base/bison-3.7.6.tar.xz &&
+cd       bison-3.7.6                     &&
 
 ./configure --prefix=/usr \
             --docdir=/usr/share/doc/bison-3.7.6 &&
@@ -905,8 +907,8 @@ rm -rf bison-3.7.6
 ### grep
 
 ```sh
-tar xvf /sources/grep-3.6.tar.xz &&
-cd       grep-3.6                &&
+tar xvf /sources/base/grep-3.6.tar.xz &&
+cd       grep-3.6                     &&
 
 ./configure --prefix=/usr \
             --bindir=/bin &&
@@ -922,8 +924,8 @@ rm -rf grep-3.6
 ### bash
 
 ```sh
-tar xzvf /sources/bash-5.1.tar.gz &&
-cd        bash-5.1                &&
+tar xzvf /sources/base/bash-5.1.tar.gz &&
+cd        bash-5.1                     &&
 
 sed -i  '/^bashline.o:.*shmbchar.h/a bashline.o: ${DEFDIR}/builtext.h' Makefile.in &&
 
@@ -959,8 +961,8 @@ rm -rf bash-5.1
 As noted in Linux From Scratch, five tests are expected to fail when run before `automake` is built due to circular dependencies.
 
 ```sh
-tar xvf /sources/libtool-2.4.6.tar.xz &&
-cd       libtool-2.4.6                &&
+tar xvf /sources/base/libtool-2.4.6.tar.xz &&
+cd       libtool-2.4.6                     &&
 
 ./configure --prefix=/usr &&
 
@@ -979,8 +981,8 @@ rm -rf libtool-2.4.6
 The "version" test is known to fail.
 
 ```sh
-tar xzvf /sources/gdbm-1.19.tar.gz &&
-cd        gdbm-1.19                &&
+tar xzvf /sources/base/gdbm-1.19.tar.gz &&
+cd        gdbm-1.19                     &&
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -997,8 +999,8 @@ rm -rf gdbm-1.19
 ### gperf
 
 ```sh
-tar xzvf /sources/gperf-3.1.tar.gz &&
-cd        gperf-3.1                &&
+tar xzvf /sources/base/gperf-3.1.tar.gz &&
+cd        gperf-3.1                     &&
 
 ./configure --prefix=/usr \
             --docdir=/usr/share/doc/gperf-3.1 &&
@@ -1014,8 +1016,8 @@ rm -rf gperf-3.1
 ### expat
 
 ```sh
-tar xvf /sources/expat-2.4.1.tar.xz &&
-cd       expat-2.4.1                &&
+tar xvf /sources/base/expat-2.4.1.tar.xz &&
+cd       expat-2.4.1                     &&
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -1034,8 +1036,8 @@ rm -rf expat-2.4.1
 ### inetutils
 
 ```sh
-tar xvf /sources/inetutils-2.0.tar.xz &&
-cd       inetutils-2.0                &&
+tar xvf /sources/base/inetutils-2.0.tar.xz &&
+cd       inetutils-2.0                     &&
 
 ./configure --prefix=/usr        \
             --localstatedir=/var \
@@ -1059,8 +1061,8 @@ rm -rf inetutils-2.0
 ### perl
 
 ```sh
-tar xvf /sources/perl-5.32.1.tar.xz &&
-cd       perl-5.32.1                &&
+tar xvf /sources/base/perl-5.34.0.tar.xz &&
+cd       perl-5.34.0                     &&
 
 export BUILD_ZLIB=False &&
 export BUILD_BZIP2=0    &&
@@ -1086,7 +1088,7 @@ make install &&
 unset BUILD_ZLIB BUILD_BZIP2 &&
 
 cd .. &&
-rm -rf perl-5.32.1
+rm -rf perl-5.34.0
 ```
 
 ### XML::Parser
@@ -1094,8 +1096,8 @@ rm -rf perl-5.32.1
 This is an additional Perl module used by other tools.
 
 ```sh
-tar xzvf /sources/XML-Parser-2.46.tar.gz &&
-cd        XML-Parser-2.46                &&
+tar xzvf /sources/base/XML-Parser-2.46.tar.gz &&
+cd        XML-Parser-2.46                     &&
 
 perl Makefile.PL &&
 make             &&
@@ -1109,8 +1111,8 @@ rm -rf XML-Parser-2.46
 ### intltool
 
 ```sh
-tar xzvf /sources/intltool-0.51.0.tar.gz &&
-cd        intltool-0.51.0                &&
+tar xzvf /sources/base/intltool-0.51.0.tar.gz &&
+cd        intltool-0.51.0                     &&
 
 sed -i 's:\\\${:\\\$\\{:' intltool-update.in &&
 ./configure --prefix=/usr
@@ -1128,8 +1130,8 @@ rm -rf intltool-0.51.0
 ### autoconf
 
 ```sh
-tar xvf /sources/autoconf-2.71.tar.xz &&
-cd       autoconf-2.71                &&
+tar xvf /sources/base/autoconf-2.71.tar.xz &&
+cd       autoconf-2.71                     &&
 
 ./configure --prefix=/usr &&
 
@@ -1146,8 +1148,8 @@ rm -rf autoconf-2.71
 Several `automake` tests are expected to fail.
 
 ```sh
-tar xvf /sources/automake-1.16.3.tar.xz &&
-cd       automake-1.16.3                &&
+tar xvf /sources/base/automake-1.16.3.tar.xz &&
+cd       automake-1.16.3                     &&
 
 sed -i "s/''/etags/" t/tags-lisp-space.sh &&
 ./configure --prefix=/usr \
@@ -1166,8 +1168,8 @@ At this point, you should be able to rebuild `libtool` if you wish to make all o
 ### kmod
 
 ```sh
-tar xvf /sources/kmod-28.tar.xz &&
-cd       kmod-28                &&
+tar xvf /sources/base/kmod-29.tar.xz &&
+cd       kmod-29                     &&
 
 ./configure --prefix=/usr          \
             --bindir=/bin          \
@@ -1188,14 +1190,14 @@ cp -iv man/*.8 /usr/share/man/man8/ &&
 cp -iv man/*.5 /usr/share/man/man5/ &&
 
 cd .. &&
-rm -rf kmod-28
+rm -rf kmod-29
 ```
 
 ### libelf
 
 ```sh
-tar xvf /sources/elfutils-0.183.tar.bz2 &&
-cd       elfutils-0.183                 &&
+tar xvf /sources/base/elfutils-0.185.tar.bz2 &&
+cd       elfutils-0.185                      &&
 
 ./configure --prefix=/usr                \
             --disable-debuginfod         \
@@ -1209,14 +1211,14 @@ install -vm644 config/libelf.pc /usr/lib/pkgconfig &&
 rm /lib/libelf.a                                   &&
 
 cd .. &&
-rm -rf elfutils-0.183
+rm -rf elfutils-0.185
 ```
 
 ### libffi
 
 ```sh
-tar xzvf /sources/libffi-3.3.tar.gz &&
-cd        libffi-3.3                &&
+tar xzvf /sources/base/libffi-3.3.tar.gz &&
+cd        libffi-3.3                     &&
 
 ./configure --prefix=/usr    \
             --disable-static \
@@ -1233,8 +1235,8 @@ rm -rf libffi-3.3
 ### openssl
 
 ```sh
-tar xzvf /sources/openssl-1.1.1k.tar.gz &&
-cd        openssl-1.1.1k                &&
+tar xzvf /sources/base/openssl-1.1.1k.tar.gz &&
+cd        openssl-1.1.1k                     &&
 
 ./config --prefix=/usr         \
          --openssldir=/etc/ssl \
@@ -1317,8 +1319,8 @@ rm -rf Python-3.9.5
 ### ninja
 
 ```sh
-tar xzvf /sources/ninja-1.10.2.tar.gz &&
-cd        ninja-1.10.2                &&
+tar xzvf /sources/base/ninja-1.10.2.tar.gz &&
+cd        ninja-1.10.2                     &&
 
 sed -i '/int Guess/a \
   int   j = 0;\
@@ -1342,22 +1344,22 @@ rm -rf ninja-1.10.2
 ### meson
 
 ```sh
-tar xzvf /sources/meson-0.58.0.tar.gz &&
-cd        meson-0.58.0                &&
+tar xzvf /sources/base/meson-0.58.1.tar.gz &&
+cd        meson-0.58.1                     &&
 
 python3 setup.py build               &&
 python3 setup.py install --root=dest &&
-cp -rv dest/* /                      &&
+cp -rfv dest/* /                     &&
 
 cd .. &&
-rm -rf meson-0.58.0
+rm -rf meson-0.58.1
 ```
 
 ### coreutils
 
 ```sh
-tar xvf /sources/coreutils-8.32.tar.xz &&
-cd       coreutils-8.32                &&
+tar xvf /sources/base/coreutils-8.32.tar.xz &&
+cd       coreutils-8.32                     &&
 
 patch -Np1 -i ../../coreutils-8.32-i18n-1.patch   &&
 sed -i '/test.lock/s/^/#/' gnulib-tests/gnulib.mk &&
@@ -1384,8 +1386,8 @@ rm -rf coreutils-8.32
 ### check
 
 ```sh
-tar xzvf /sources/check-0.15.2.tar.gz &&
-cd        check-0.15.2                &&
+tar xzvf /sources/base/check-0.15.2.tar.gz &&
+cd        check-0.15.2                     &&
 
 ./configure --prefix=/usr \
             --disable-static &&
@@ -1401,8 +1403,8 @@ rm -rf check-0.15.2
 ### diffutils
 
 ```sh
-tar xvf /sources/diffutils-3.7.tar.xz &&
-cd       diffutils-3.7                &&
+tar xvf /sources/base/diffutils-3.7.tar.xz &&
+cd       diffutils-3.7                     &&
 
 ./configure --prefix=/usr &&
 
@@ -1417,8 +1419,8 @@ rm -rf diffutils-3.7
 ### gawk
 
 ```sh
-tar xvf /sources/gawk-5.1.0.tar.xz &&
-cd       gawk-5.1.0                &&
+tar xvf /sources/base/gawk-5.1.0.tar.xz &&
+cd       gawk-5.1.0                     &&
 
 sed -i 's/extras//' Makefile.in &&
 ./configure --prefix=/usr       &&
@@ -1436,8 +1438,8 @@ rm -rf gawk-5.1.0
 ### findutils
 
 ```sh
-tar xvf /sources/findutils-4.8.0.tar.xz &&
-cd       findutils-4.8.0                &&
+tar xvf /sources/base/findutils-4.8.0.tar.xz &&
+cd       findutils-4.8.0                     &&
 
 ./configure --prefix=/usr \
             --localstatedir=/var/lib/locate &&
@@ -1456,8 +1458,8 @@ rm -rf findutils-4.8.0
 ### groff
 
 ```sh
-tar xzvf /sources/groff-1.22.4.tar.gz &&
-cd        groff-1.22.4                &&
+tar xzvf /sources/base/groff-1.22.4.tar.gz &&
+cd        groff-1.22.4                     &&
 
 PAGE=letter ./configure --prefix=/usr &&
 
@@ -1471,8 +1473,8 @@ rm -rf groff-1.22.4
 ### less
 
 ```sh
-tar xzvf /sources/less-581.tar.gz &&
-cd        less-581                &&
+tar xzvf /sources/base/less-581.tar.gz &&
+cd        less-581                     &&
 
 ./configure --prefix=/usr \
             --sysconfdir=/etc &&
@@ -1487,8 +1489,8 @@ rm -rf less-581
 ### gzip
 
 ```sh
-tar xvf /sources/gzip-1.10.tar.xz &&
-cd       gzip-1.10                &&
+tar xvf /sources/base/gzip-1.10.tar.xz &&
+cd       gzip-1.10                     &&
 
 ./configure --prefix=/usr &&
 
@@ -1503,8 +1505,8 @@ rm -rf gzip-1.10
 ### iproute2
 
 ```sh
-tar xvf /sources/iproute2-5.12.0.tar.xz &&
-cd       iproute2-5.12.0                &&
+tar xvf /sources/base/iproute2-5.12.0.tar.xz &&
+cd       iproute2-5.12.0                     &&
 
 sed -i  /ARPD/d Makefile          &&
 rm  -fv man/man8/arpd.8           &&
@@ -1520,8 +1522,8 @@ rm -rf iproute2-5.12.0
 ### kbd
 
 ```sh
-tar xvf /sources/kbd-2.4.0.tar.xz &&
-cd       kbd-2.4.0                &&
+tar xvf /sources/base/kbd-2.4.0.tar.xz &&
+cd       kbd-2.4.0                     &&
 
 patch -Np1 -i ../../kbd-2.4.0-backspace-1.patch      &&
 sed -i '/RESIZECONS_PROGS=/s/yes/no/' configure      &&
@@ -1542,8 +1544,8 @@ rm -rf kbd-2.4.0
 ### libpipeline
 
 ```sh
-tar xzvf /sources/libpipeline-1.5.3.tar.gz &&
-cd        libpipeline-1.5.3                &&
+tar xzvf /sources/base/libpipeline-1.5.3.tar.gz &&
+cd        libpipeline-1.5.3                     &&
 
 ./configure --prefix=/usr &&
 
@@ -1558,8 +1560,8 @@ rm -rf libpipeline-1.5.3
 ### make
 
 ```sh
-tar xzvf /sources/make-4.3.tar.gz &&
-cd        make-4.3                &&
+tar xzvf /sources/base/make-4.3.tar.gz &&
+cd        make-4.3                     &&
 
 ./configure --prefix=/usr &&
 
@@ -1574,8 +1576,8 @@ rm -rf make-4.3
 ### patch
 
 ```sh
-tar xvf /sources/patch-2.7.6.tar.xz &&
-cd       patch-2.7.6                &&
+tar xvf /sources/base/patch-2.7.6.tar.xz &&
+cd       patch-2.7.6                     &&
 
 ./configure --prefix=/usr &&
 
@@ -1590,8 +1592,8 @@ rm -rf patch-2.7.6
 ### man-db
 
 ```sh
-tar xvf /sources/man-db-2.9.4.tar.xz &&
-cd       man-db-2.9.4                &&
+tar xvf /sources/base/man-db-2.9.4.tar.xz &&
+cd       man-db-2.9.4                     &&
 
 sed -i '/find/s@/usr@@' init/systemd/man-db.service.in &&
 ./configure --prefix=/usr                        \
@@ -1616,8 +1618,8 @@ rm -rf man-db-2.9.4
 Test 227 'binary store/restore' is known to fail.
 
 ```sh
-tar xvf /sources/tar-1.34.tar.xz &&
-cd       tar-1.34                &&
+tar xvf /sources/base/tar-1.34.tar.xz &&
+cd       tar-1.34                     &&
 
 FORCE_UNSAFE_CONFIGURE=1  \
 ./configure --prefix=/usr \
@@ -1635,8 +1637,8 @@ rm -rf tar-1.34
 ### texinfo
 
 ```sh
-tar xvf /sources/texinfo-6.7.tar.xz &&
-cd       texinfo-6.7                &&
+tar xvf /sources/base/texinfo-6.7.tar.xz &&
+cd       texinfo-6.7                     &&
 
 ./configure --prefix=/usr &&
 
@@ -1659,8 +1661,8 @@ rm -rf texinfo-6.7
 ### vim
 
 ```sh
-tar xzvf /sources/vim-8.2.2813.tar.gz &&
-cd        vim-8.2.2813                &&
+tar xzvf /sources/base/vim-8.2.3001.tar.gz &&
+cd        vim-8.2.3001                     &&
 
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h &&
 ./configure --prefix=/usr                                   &&
@@ -1675,10 +1677,10 @@ ln -sv vim /usr/bin/vi &&
 for L in  /usr/share/man/{,*/}man1/vim.1; do
     ln -sv vim.1 $(dirname $L)/vi.1
 done
-ln -sv ../vim/vim82/doc /usr/share/doc/vim-8.2.2813 &&
+ln -sv ../vim/vim82/doc /usr/share/doc/vim-8.2.3001 &&
 
 cd .. &&
-rm -rf vim-8.2.2813
+rm -rf vim-8.2.3001
 ```
 
 Create the default config file:
@@ -1845,8 +1847,8 @@ EOF
 This is to enable `shadow` to use `PAM`.
 
 ```sh
-tar xvf /sources/shadow-4.8.1.tar.xz &&
-cd       shadow-4.8.1                &&
+tar xvf /sources/base/shadow-4.8.1.tar.xz &&
+cd       shadow-4.8.1                     &&
 
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in &&
 
@@ -2041,15 +2043,15 @@ Remove limits and access files if they exist:
 ### sudo
 
 ```sh
-tar xzvf /sources/sudo-1.9.7.tar.gz &&
-cd        sudo-1.9.7                &&
+tar xzvf /sources/sudo-1.9.7p1.tar.gz &&
+cd        sudo-1.9.7p1                &&
 
 ./configure --prefix=/usr              \
             --libexecdir=/usr/lib      \
             --with-secure-path         \
             --with-all-insults         \
             --with-env-editor          \
-            --docdir=/usr/share/doc/sudo-1.9.5p2 \
+            --docdir=/usr/share/doc/sudo-1.9.7p1 \
             --with-passprompt="[sudo] password for %p: " &&
 
 make
@@ -2069,7 +2071,7 @@ make install                                                  &&
 ln -sfv libsudo_util.so.0.0.0 /usr/lib/sudo/libsudo_util.so.0 &&
 
 cd .. &&
-rm -rf sudo-1.9.7
+rm -rf sudo-1.9.7p1
 ```
 
 ### Configuring sudo
@@ -2111,8 +2113,8 @@ chmod 644 /etc/pam.d/sudo
 ### libcap PAM module
 
 ```sh
-tar xvf /sources/libcap-2.49.tar.xz &&
-cd       libcap-2.49                &&
+tar xvf /sources/base/libcap-2.50.tar.xz &&
+cd       libcap-2.50                     &&
 
 make -C pam_cap &&
 
@@ -2128,7 +2130,7 @@ EOF
 tail -n +3 /etc/pam.d/system-auth.bak >> /etc/pam.d/system-auth &&
 
 cd .. &&
-rm -rf libcap-2.49
+rm -rf libcap-2.50
 ```
 
 ### libtasn
@@ -2151,8 +2153,8 @@ rm -rf libtasn1-4.16.0
 ### p11-kit
 
 ```sh
-tar xvf /sources/p11-kit-0.23.22.tar.xz &&
-cd       p11-kit-0.23.22                &&
+tar xvf /sources/p11-kit-0.24.0.tar.xz &&
+cd       p11-kit-0.24.0                &&
 
 sed '20,$ d' -i trust/trust-extract-compat &&
 cat >> trust/trust-extract-compat << "EOF" &&
@@ -2168,13 +2170,13 @@ EOF
             --with-trust-paths=/etc/pki/anchors &&
 
 make         &&
-make install &&
-ln -sfv /usr/libexec/p11-kit/trust-extract-compat \
+sudo make install &&
+sudo ln -sfv /usr/libexec/p11-kit/trust-extract-compat \
         /usr/bin/update-ca-certificates                  &&
-ln -sfv ./pkcs11/p11-kit-trust.so /usr/lib/libnssckbi.so &&
+sudo ln -sfv ./pkcs11/p11-kit-trust.so /usr/lib/libnssckbi.so &&
 
 cd .. &&
-rm -rf p11-kit-0.23.22
+rm -rf p11-kit-0.24.0
 ```
 
 ### make-ca
@@ -2349,8 +2351,8 @@ rm -rf which-2.21
 The `gnu-efi=true` option is added to build the efi executables installed by `bootctl install`.
 
 ```sh
-tar xzvf /sources/systemd-248.tar.gz &&
-cd        systemd-248                &&
+tar xzvf /sources/base/systemd-248.tar.gz &&
+cd        systemd-248                     &&
 
 patch -Np1 -i /sources/systemd-248-upstream_fixes-1.patch                 &&
 sed -i 's/GROUP="render"/GROUP="video"/' rules.d/50-udev-default.rules.in &&
@@ -2472,8 +2474,8 @@ systemctl enable sshd.service
 ### D-Bus
 
 ```sh
-tar xzvf /sources/dbus-1.12.20.tar.gz &&
-cd        dbus-1.12.20                &&
+tar xzvf /sources/base/dbus-1.12.20.tar.gz &&
+cd        dbus-1.12.20                     &&
 
 ./configure --prefix=/usr                        \
             --sysconfdir=/etc                    \
@@ -2498,8 +2500,8 @@ rm -rf dbus-1.12.20
 ### procps-ng
 
 ```sh
-tar xvf /sources/procps-ng-3.3.17.tar.xz &&
-cd       procps-3.3.17                   &&
+tar xvf /sources/base/procps-ng-3.3.17.tar.xz &&
+cd       procps-3.3.17                        &&
 
 ./configure --prefix=/usr                            \
             --exec-prefix=                           \
@@ -2520,8 +2522,8 @@ rm -rf procps-ng-3.3.17
 ### util-linux
 
 ```sh
-tar xvf /sources/util-linux-2.36.2.tar.xz &&
-cd       util-linux-2.36.2                &&
+tar xvf /sources/base/util-linux-2.37.tar.xz &&
+cd       util-linux-2.37                     &&
 
 ./configure ADJTIME_PATH=/var/lib/hwclock/adjtime   \
             --docdir=/usr/share/doc/util-linux-2.36.2 \
@@ -2542,7 +2544,7 @@ su tester -c "make -k check" &&
 make install                 &&
 
 cd .. &&
-rm -rf util-linux-2.36.2
+rm -rf util-linux-2.37
 ```
 
 ### Filesystem programs
@@ -2552,8 +2554,8 @@ Select whichever of these you need support for, depending upon the filesystem(s)
 #### e2fsprogs
 
 ```sh
-tar xzvf /sources/e2fsprogs-1.46.2.tar.gz &&
-cd        e2fsprogs-1.46.2                &&
+tar xzvf /sources/base/e2fsprogs-1.46.2.tar.gz &&
+cd        e2fsprogs-1.46.2                     &&
 
 mkdir -v build &&
 cd       build &&

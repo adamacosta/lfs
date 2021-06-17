@@ -736,6 +736,24 @@ exec switch_root /.root "$init" "$@"
 EOF
 ```
 
+#### Microcode
+
+Download the appropriate microcode for your processor. Run `grep -F -m 1 "cpu family" /proc/cpuinfo` to get the family. I happen to have an AMD processor family 23, which is hex 17h for the Zen line. 
+
+```sh
+curl https://anduin.linuxfromscratch.org/BLFS/linux-firmware/amd-ucode/microcode_amd_fam17h.bin -o /sources/microcode_amd_fam17h.bin &&
+
+sudo mkdir -pv /usr/lib/firmware/amd-ucode &&
+sudo cp    -v /sources/microcode_amd_fam17h.bin /usr/lib/firmware/amd-ucode
+``` 
+
+Creating the `initrd` will automatically include the microcode:
+
+```sh
+sudo mkinitramfs 5.12.11
+sudo mv -iv initrd.img-5.12.11 /boot
+```
+
 Now copy this into the loader configuration:
 
 ```sh
@@ -744,8 +762,8 @@ ROOT_FSTYPE=$(blkid -s TYPE -o value /dev/<root device>)
 
 cat > /boot/loader/entries/lfs.conf << EOF
 title   Linux From Scratch
-linux   /vmlinuz-5.12.9-lfs-10.1-systemd
-initrd  /initrd.img-5.12.9
+linux   /vmlinuz-5.12.11-lfs
+initrd  /initrd.img-5.12.11
 options root="UUID=$ROOT_UUID" rw loglevel=7 earlyprintk=vga,keep rootfstype=$ROOT_FSTYPE
 EOF
 ```
@@ -757,8 +775,8 @@ ROOT_FSTYPE=$(blkid -s TYPE -o value /dev/<root device>)
 
 cat > /boot/loader/entries/lfs.conf << EOF
 title   Linux From Scratch
-linux   /vmlinuz-5.12.9-lfs-10.1-systemd
-initrd  /initrd.img-5.12.9
+linux   /vmlinuz-5.12.11-lfs
+initrd  /initrd.img-5.12.11
 options root=/dev/mapper/<volGroup>-<volId> rw loglevel=7 earlyprintk=vga,keep rootfstype=$ROOT_FSTYPE
 EOF
 ```

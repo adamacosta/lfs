@@ -24,11 +24,14 @@ rm -rf nghttp2-1.43.0
 
 ## bind (client only)
 
-```sh
-curl ftp://ftp.isc.org/isc/bind9/9.16.11/bind-9.16.11.tar.xz -o /sources/bind-9.16.11.tar.xz &&
+Building just the client provides the `dig` utility for querying DNS servers.
 
-tar xvf /sources/bind-9.16.11.tar.xz &&
-cd       bind-9.16.11                &&
+
+```sh
+curl ftp://ftp.isc.org/isc/bind9/9.16.16/bind-9.16.16.tar.xz -o /sources/bind-9.16.16.tar.xz &&
+
+tar xvf /sources/bind-9.16.16.tar.xz &&
+cd       bind-9.16.16                &&
 
 ./configure --prefix=/usr \
             --without-python &&
@@ -44,13 +47,15 @@ sudo make -C bin/dig install                                     &&
 sudo cp -v doc/man/{dig.1,host.1,nslookup.1} /usr/share/man/man1 &&
 
 cd .. &&
-rm -rf bind-9.16.11
+rm -rf bind-9.16.16
 ```
 
 ## traceroute
 
+Trace the network hops of your packets.
+
 ```sh
-curl -L https://downloads.sourceforge.net/traceroute/traceroute-2.1.0.tar.gz -o /sources/traceroute-2.1.0.tar.gz &&
+curl https://downloads.sourceforge.net/traceroute/traceroute-2.1.0.tar.gz -o /sources/traceroute-2.1.0.tar.gz &&
 
 tar xzvf /sources/traceroute-2.1.0.tar.gz &&
 cd        traceroute-2.1.0                &&
@@ -67,8 +72,10 @@ rm -rf traceroute-2.1.0
 
 ## whois
 
+Query the domain registry database.
+
 ```sh
-curl -L https://github.com/rfc1036/whois/archive/v5.4.3/whois-5.4.3.tar.gz -o /sources/whois-5.4.3.tar.gz &&
+curl https://github.com/rfc1036/whois/archive/v5.4.3/whois-5.4.3.tar.gz -o /sources/whois-5.4.3.tar.gz &&
 
 tar xzvf /sources/whois-5.4.3.tar.gz &&
 cd        whois-5.4.3                &&
@@ -82,8 +89,10 @@ rm -rf whois-5.4.3
 
 ## nmap
 
+Port scanning tool.
+
 ```sh
-curl -L http://nmap.org/dist/nmap-7.91.tar.bz2 -o /sources/nmap-7.91.tar.bz2 &&
+curl http://nmap.org/dist/nmap-7.91.tar.bz2 -o /sources/nmap-7.91.tar.bz2 &&
 
 tar xvf /sources/nmap-7.91.tar.bz2 &&
 cd       nmap-7.91                 &&

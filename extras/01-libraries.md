@@ -329,6 +329,8 @@ exit
 
 ## icu
 
+International Components for Unicode.
+
 ```sh
 curl https://github.com/unicode-org/icu/releases/download/release-69-1/icu4c-69_1-src.tgz -o /sources/icu4c-69_1-src.tgz &&
 
@@ -440,34 +442,9 @@ cd .. &&
 rm -rf libyaml-0.2.5
 ```
 
-## hdf5
-
-Hierarchical data format.
-
-```sh
-curl "https://www.hdfgroup.org/package/cmake-hdf5-1-12-0-tar-gz/?wpdmdl=14580&refresh=60c269659fecd1623353701" -o /sources/hdf5-1.12.0.tar.gz &&
-
-tar xzvf /sources/hdf5-1.12.0.tar.gz    &&
-cd        CMake-hdf5-1.12.0/hdf5-1.12.0 &&
-
-mkdir build &&
-cd    build &&
-
-cmake -DCMAKE_INSTALL_PREFIX=/usr \
-      -DCMAKE_BUILD_TYPE=Release  \
-      -DBUILD_STATIC_LIBS=OFF     \
-      .. &&
-
-make              &&
-sudo make install &&
-
-cd ../../.. &&
-rm -rf CMake-hdf5-1.12.0
-```
-
 ## liblinear
 
-Library for classification via Support Vector Machines.
+Library for classification via Support Vector Machines. Used by `nmap`.
 
 ```sh
 curl -L https://github.com/cjlin1/liblinear/archive/v242/liblinear-242.tar.gz -o /sources/liblinear-242.tar.gz &&
@@ -508,7 +485,7 @@ rm -rf openmpi-4.1.1
 
 ## hwloc
 
-Libraries to aid HPC applications that use OpenMPI to discover hardware locality features.
+Libraries to aid HPC applications that use OpenMPI to discover hardware locality features. Includes the handy `lstopo` utility that visualizes your PCI bus connections in a terminal, information you would normally need to pull from the manuals for your processor and motherboard.
 
 ```sh
 curl https://download.open-mpi.org/release/hwloc/v2.4/hwloc-2.4.1.tar.gz -o /sources/hwloc-2.4.1.tar.gz &&
@@ -528,7 +505,7 @@ rm -rf hwloc-2.4.1
 
 ## Boost
 
-Many, many C++ libraries. Is an optional dependency of some other libraries and may result in better performance.
+Many, many C++ libraries. Is an optional dependency of some other libraries and may result in better performance. Many later tools explicitly depend on it.
 
 ```sh
 curl https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz -o /sources/boost_1_76_0.tar.gz &&
@@ -600,7 +577,7 @@ rm -rf exiv2-0.27.3-Source
 
 ## TBB
 
-Threading building blocks for C++.
+Threading building blocks for C++. Theoretically, this should build on supported architectures other than Intel processors, but I haven't gotten it to build on Threadripper.
 
 ```sh
 curl https://github.com/oneapi-src/oneTBB/archive/refs/tags/v2021.2.0.tar.gz -o /sources/tbb-2021.2.0.tgz &&
@@ -626,6 +603,8 @@ rm -rf oneTBB-2021.2.0
 ```
 
 ## GLib
+
+Integral core library for `GNOME` but is also used by many other tools.
 
 ```sh
 curl https://download.gnome.org/sources/glib/2.68/glib-2.68.3.tar.xz -o /sources/glib-2.68.3.tar.xz &&

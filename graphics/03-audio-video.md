@@ -97,8 +97,6 @@ rm -rf librsvg-2.50.7
 
 ## LAME
 
-Fetch:
-
 ```sh
 curl https://downloads.sourceforge.net/lame/lame-3.100.tar.gz -o /sources/lame-3.100.tar.gz &&
 
@@ -665,9 +663,22 @@ cd ../.. &&
 rm -rf opencv-4.5.2
 ```
 
+## Python OpenCV
+
+Python bindings for `OpenCV`.
+
+```sh
+curl https://github.com/opencv/opencv-python/archive/refs/tags/54.tar.gz -o /sources/python-opencv-4.5.2.54.tar.gz &&
+
+tar xzvf /sources/python-opencv-4.5.2.54.tar.gz &&
+cd        opencv-python-54               &&
+
+
+```
+
 ## FFmpeg
 
-A huge suite of CLI tools for manipulating audio and video files. If you wish to build the documentation, skip ahead and install `GhostScript` and `Doxygen` first.
+A huge suite of CLI tools for manipulating audio and video files. If you wish to build the documentation, `GhostScript` and `doxygen` are required.
 
 ```sh
 curl https://ffmpeg.org/releases/ffmpeg-4.4.tar.xz -o /sources/ffmpeg-4.4.tar.xz &&
@@ -901,7 +912,7 @@ rm -rf djbfft-0.76
 
 ## liba52
 
-Library for decoding ATSC A/52 streams
+Library for decoding ATSC A/52 streams.
 
 ```sh
 curl http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz -o /sources/a52dec-0.7.4.tar.gz &&

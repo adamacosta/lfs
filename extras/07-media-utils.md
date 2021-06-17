@@ -124,8 +124,6 @@ After `HarfBuzz` is installed, you should now rebuild and reinstall `Graphite2` 
 
 ### libpng
 
-Fetch:
-
 ```sh
 curl https://downloads.sourceforge.net/libpng/libpng-1.6.37.tar.xz -o /sources/libpng-1.6.37.tar.xz &&
 curl https://downloads.sourceforge.net/sourceforge/libpng-apng/libpng-1.6.37-apng.patch.gz -o /sources/libpng-1.6.37-apng.patch.gz &&
@@ -424,7 +422,7 @@ rm -rf pango-1.48.5
 
 ## GObject introspection
 
-Inspect object APIs.
+Inspect object APIs. Like `GLib`, is a critical component of `GNOME` but also used by other tools.
 
 ```sh
 curl https://download.gnome.org/sources/gobject-introspection/1.68/gobject-introspection-1.68.0.tar.xz -o /sources/gobject-introspection-1.68.0.tar.xz &&

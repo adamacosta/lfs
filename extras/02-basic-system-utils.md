@@ -2,7 +2,7 @@
 
 ## rsync
 
-This will be built without support for the daemon.
+Synchornize different file trees, indifferent to whether the target is local or remote. This will be built without support for the daemon.
 
 ```sh
 curl https://www.samba.org/ftp/rsync/src/rsync-3.2.3.tar.gz -o /sources/rsync-3.2.3.tar.gz &&
@@ -24,6 +24,8 @@ rm -rf rsync-3.2.3
 
 ## pigz
 
+Parallel drop-in replacement for `gzip`.
+
 ```sh
 curl https://zlib.net/pigz/pigz-2.6.tar.gz -o /sources/pigz-2.6.tar.gz &&
 
@@ -40,6 +42,8 @@ rm -rf pigz-2.6
 ```
 
 ## pbzip2
+
+Parallel drop-in replacement for `bzip2`.
 
 ```sh
 curl https://launchpad.net/pbzip2/1.1/1.1.13/+download/pbzip2-1.1.13.tar.gz -o /sources/pbzip2-1.1.13.tar.gz &&
@@ -123,6 +127,8 @@ rm -rf time-1.9
 
 ## tmux
 
+Terminal multiplexer. Allows running multiple sessions from a single terminal.
+
 First, get its dependency, `libevent`:
 
 ```sh
@@ -159,6 +165,8 @@ rm -rf tmux-3.2
 ```
 
 ## wget
+
+Alternative web downloader to `curl`. Linux From Scratch relies upon this download files in bulk from a list.
 
 ```sh
 curl https://ftp.gnu.org/gnu/wget/wget-1.21.1.tar.gz -o /sources/wget-1.21.1.tar.gz &&

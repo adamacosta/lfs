@@ -32,7 +32,7 @@ Beware that some of the crypto tools and compilers take a very long time to buil
 
 ### Extending the toolchain
 
-These are not ordered. Libraries are presented first because many tools in later sections depend on them. However, at least a few libraries depend upon build tools and compilers not included with basic Linux From Scratch. In particular, you may need to build `CMake`, `LLVM`, and `rustc` before building many libraries. Many libraries and tools also use `doxygen` to generate API documentation, which you would need to build first. `GraphViz` and `FontConfig` have optional dependencies on tools that also depend on them, so you may find yourself building each multiple times to incorporate optional features when they become available.
+These are not ordered. Libraries are presented first because many tools in later sections depend on them. However, at least a few libraries depend upon build tools and compilers not included with basic Linux From Scratch. In particular, you may need to build `CMake`, `LLVM`, and `rustc` before building many libraries. Many libraries and tools also use `doxygen` to generate API documentation, which you would need to build first. `GraphViz` and `FreeType` have optional dependencies on tools that also depend on them, so you may find yourself building each multiple times to incorporate optional features when they become available.
 
 1. [General purpose libraries](extras/01-libraries.md)
 2. [Basic system utilities](extras/02-basic-system-utils.md)
@@ -43,7 +43,7 @@ These are not ordered. Libraries are presented first because many tools in later
 7. [Multimedia tools](extras/07-media-utils.md)
 8. [Documentation generators](extras/08-doc-utils.md)
 9. [Developer tools](extras/09-devtools.md)
-10. [Numerical and geospatial libraries](10-numerical.md)
+10. [Numerical and geospatial libraries](extras/10-numerical.md)
 11. [System configuration](extras/11-sysconfig.md)
 
 ### Graphical desktop
@@ -53,8 +53,14 @@ This focuses on building the `GNOME` desktop, which is enormous and takes a very
 1. [Drivers](graphics/01-drivers.md)
 2. [XOrg](graphics/02-xorg.md)
 3. [Audio and video libraries](graphics/03-audio-video.md)
-4. [GNOME desktop](graphica/04-gnome.md)
+4. [GNOME desktop](graphics/04-gnome.md)
 5. [Desktop applications](graphics/05-applications.md)
+
+### Scientific and Statistical Computing
+
+1. [Additional native libraries](scicomp/01-libraries.md)
+2. [Python scientific computing stack](scicomp/02-python.md)
+3. [Alternative scientific and statistical toolchains](scicomp/03-alternatives.md)
 
 ### System hardening
 

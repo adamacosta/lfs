@@ -177,8 +177,8 @@ Then perform the downloads:
 
 ```sh
 pushd /sources/xorg                          &&
-mkdir lib                                    &&
-cd lib                                       &&
+mkdir  lib                                   &&
+cd     lib                                   &&
 grep -v '^#' ../lib-7.md5 | awk '{print $2}' | wget -i- -c \
     -B https://www.x.org/pub/individual/lib/ &&
 md5sum -c ../lib-7.md5                       &&
@@ -296,7 +296,7 @@ cd .. &&
 rm -rf xcb-util-keysyms-0.4.0
 ```
 
-## xcb-render-util
+## xcb-util-renderutil
 
 ```sh
 curl https://xcb.freedesktop.org/dist/xcb-util-renderutil-0.3.9.tar.bz2 -o /sources/xorg/xcb-util-renderutil-0.3.9.tar.bz2 &&
@@ -459,6 +459,164 @@ cd .. &&
 rm -rf xbitmaps-1.1.2
 ```
 
+## Xorg Applications
+
+First, create the list of files to be downloaded:
+
+```sh
+cat > /sources/xorg/app-7.md5 << "EOF"
+3b9b79fa0f9928161f4bad94273de7ae  iceauth-1.0.8.tar.bz2
+c4a3664e08e5a47c120ff9263ee2f20c  luit-1.1.1.tar.bz2
+215940de158b1a3d8b3f8b442c606e2f  mkfontscale-1.2.1.tar.bz2
+92be564d4be7d8aa7b5024057b715210  sessreg-1.1.2.tar.bz2
+93e736c98fb75856ee8227a0c49a128d  setxkbmap-1.3.2.tar.bz2
+3a93d9f0859de5d8b65a68a125d48f6a  smproxy-1.0.6.tar.bz2
+e96b56756990c56c24d2d02c2964456b  x11perf-1.6.1.tar.bz2
+e50587c1bb832aafd1a19d91a0890a0b  xauth-1.1.tar.bz2
+5b6405973db69c0443be2fba8e1a8ab7  xbacklight-1.2.3.tar.bz2
+9956d751ea3ae4538c3ebd07f70736a0  xcmsdb-1.0.5.tar.bz2
+25cc7ca1ce5dcbb61c2b471c55e686b5  xcursorgen-1.0.7.tar.bz2
+8809037bd48599af55dad81c508b6b39  xdpyinfo-1.3.2.tar.bz2
+480e63cd365f03eb2515a6527d5f4ca6  xdriinfo-1.0.6.tar.bz2
+e1d7dc1afd3ddb8fab16d6a76f21a258  xev-1.2.4.tar.bz2
+90b4305157c2b966d5180e2ee61262be  xgamma-1.0.6.tar.bz2
+a48c72954ae6665e0616f6653636da8c  xhost-1.0.8.tar.bz2
+ac6b7432726008b2f50eba82b0e2dbe4  xinput-1.6.3.tar.bz2
+c45e9f7971a58b8f0faf10f6d8f298c0  xkbcomp-1.4.5.tar.bz2
+c747faf1f78f5a5962419f8bdd066501  xkbevd-1.1.4.tar.bz2
+502b14843f610af977dffc6cbf2102d5  xkbutils-1.0.4.tar.bz2
+938177e4472c346cf031c1aefd8934fc  xkill-1.0.5.tar.bz2
+61671fee12535347db24ec3a715032a7  xlsatoms-1.1.3.tar.bz2
+4fa92377e0ddc137cd226a7a87b6b29a  xlsclients-1.1.4.tar.bz2
+e50ffae17eeb3943079620cb78f5ce0b  xmessage-1.0.5.tar.bz2
+51f1d30a525e9903280ffeea2744b1f6  xmodmap-1.0.10.tar.bz2
+eaac255076ea351fd08d76025788d9f9  xpr-1.0.5.tar.bz2
+2358e29133d183ff67d4ef8afd70b9d2  xprop-1.2.5.tar.bz2
+fe40f7a4fd39dd3a02248d3e0b1972e4  xrandr-1.5.1.tar.xz
+34ae801ef994d192c70fcce2bdb2a1b2  xrdb-1.2.0.tar.bz2
+c56fa4adbeed1ee5173f464a4c4a61a6  xrefresh-1.0.6.tar.bz2
+70ea7bc7bacf1a124b1692605883f620  xset-1.2.4.tar.bz2
+5fe769c8777a6e873ed1305e4ce2c353  xsetroot-1.1.2.tar.bz2
+b13afec137b9b331814a9824ab03ec80  xvinfo-1.1.4.tar.bz2
+11794a8eba6d295a192a8975287fd947  xwd-1.0.7.tar.bz2
+26d46f7ef0588d3392da3ad5802be420  xwininfo-1.1.5.tar.bz2
+79972093bb0766fcd0223b2bd6d11932  xwud-1.0.5.tar.bz2
+EOF
+```
+
+Then, download each file:
+
+```sh
+mkdir -pv /sources/xorg/app &&
+pushd     /sources/xorg/app &&
+grep -v '^#' ../app-7.md5 | awk '{print $2}' | wget -i- -c \
+    -B https://www.x.org/pub/individual/app/ &&
+md5sum -c ../app-7.md5 &&
+popd
+```
+
+To install each package:
+
+```sh
+for package in $(grep -v '^#' /sources/xorg/app-7.md5 | awk '{print $2}')
+do
+  packagedir=${package%.tar.?z*}
+  tar -xf /sources/xorg/app/$package &&
+  pushd $packagedir                  &&
+     case $packagedir in
+       luit-[0-9]* )
+         sed -i -e "/D_XOPEN/s/5/6/" configure
+       ;;
+     esac
+
+     ./configure --prefix=/usr        \
+                 --sysconfdir=/etc    \
+                 --localstatedir=/var \
+                 --disable-static &&
+     
+     make              &&
+     sudo make install &&
+
+  popd                 &&
+  rm -rf $packagedir   &&
+done
+```
+
+## xcursor-themes
+
+```sh
+curl https://www.x.org/pub/individual/data/xcursor-themes-1.0.6.tar.bz2 -o /sources/xorg/xcursor-themes-1.0.6.tar.bz2 &&
+
+tar xvf /sources/xorg/xcursor-themes-1.0.6.tar.bz2 &&
+cd       xcursor-themes-1.0.6                      &&
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf xcursor-themes-1.0.6
+```
+
+## Xorg Fonts
+
+Create the list of files to download:
+
+```sh
+cat > /sources/xorg/font-7.md5 << "EOF"
+3d6adb76fdd072db8c8fae41b40855e8  font-util-1.3.2.tar.bz2
+bbae4f247b88ccde0e85ed6a403da22a  encodings-1.0.5.tar.bz2
+0497de0176a0dfa5fac2b0552a4cf380  font-alias-1.0.4.tar.bz2
+fcf24554c348df3c689b91596d7f9971  font-adobe-utopia-type1-1.0.4.tar.bz2
+e8ca58ea0d3726b94fe9f2c17344be60  font-bh-ttf-1.0.3.tar.bz2
+53ed9a42388b7ebb689bdfc374f96a22  font-bh-type1-1.0.3.tar.bz2
+bfb2593d2102585f45daa960f43cb3c4  font-ibm-type1-1.0.3.tar.bz2
+4ee18ab6c1edf636b8e75b73e6037371  font-misc-ethiopic-1.0.4.tar.bz2
+3eeb3fb44690b477d510bbd8f86cf5aa  font-xfree86-type1-1.0.4.tar.bz2
+EOF
+```
+
+Then download them:
+
+```sh
+mkdir -pv /sources/xorg/font &&
+pushd     /sources/xorg/font &&
+grep -v '^#' ../font-7.md5 | awk '{print $2}' | wget -i- -c \
+    -B https://www.x.org/pub/individual/font/ &&
+md5sum -c ../font-7.md5      &&
+popd
+```
+
+Install the fonts:
+
+```sh
+for package in $(grep -v '^#' /sources/xorg/font-7.md5 | awk '{print $2}')
+do
+  packagedir=${package%.tar.bz2}
+  tar -xf /sources/xorg/font/$package
+  pushd $packagedir
+    ./configure --prefix=/usr        \
+                --sysconfdir=/etc    \
+                --localstatedir=/var \
+                --disable-static &&
+    make                  &&
+    sudo make install     &&
+  popd                    &&
+  sudo rm -rf $packagedir &&
+done
+```
+
+To ensure that `FontConfig` can find them:
+
+```sh
+sudo ln -svfn /usr/share/fonts/X11/OTF /usr/share/fonts/X11-OTF &&
+sudo ln -svfn /usr/share/fonts/X11/TTF /usr/share/fonts/X11-TTF
+```
+
 ## XKeyboardConfig
 
 ```sh
@@ -504,7 +662,9 @@ cd .. &&
 rm -rf xorg-server-1.20.11
 ```
 
-## libevdev
+## Input Drivers
+
+### libevdev
 
 The kernel needs to be compiled with the following options to support generic inputs:
 
@@ -535,7 +695,7 @@ cd .. &&
 rm -rf libevdev-1.11.0
 ```
 
-## Xorg evdev driver
+### Xorg evdev driver
 
 ```sh
 curl https://www.x.org/pub/individual/driver/xf86-input-evdev-2.10.6.tar.bz2 -o /sources/xorg/xf86-input-evdev-2.10.6.tar.bz2 &&
@@ -555,7 +715,7 @@ cd .. &&
 rm -rf xf86-input-evdev-2.10.6
 ```
 
-## libinput
+### libinput
 
 ```sh
 curl https://www.freedesktop.org/software/libinput/libinput-1.18.0.tar.xz -o /sources/xorg/libinput-1.18.0.tar.xz &&
@@ -581,7 +741,7 @@ cd ../.. &&
 rm -rf libinput-1.18.0
 ```
 
-## Xorg libinput driver
+### Xorg libinput driver
 
 ```sh
 curl https://www.x.org/pub/individual/driver/xf86-input-libinput-1.0.1.tar.bz2 -o /sources/xorg/xf86-input-libinput-1.0.1.tar.bz2 &&
@@ -601,7 +761,7 @@ cd .. &&
 rm -rf xf86-input-libinput-1.0.1
 ```
 
-## libwacom
+### libwacom
 
 ```sh
 curl https://github.com/linuxwacom/libwacom/releases/download/libwacom-1.10/libwacom-1.10.tar.bz2 -o /sources/xorg/libwacom-1.10.tar.bz2 &&
@@ -623,7 +783,7 @@ cd ../.. &&
 rm -rf libwacom-1.10
 ```
 
-## Wacom tablet driver
+### Wacom tablet driver
 
 Required for `GNOME` settings daemon.
 
@@ -655,69 +815,7 @@ sudo make install &&
 cd .. &&
 rm -rf xf86-input-wacom-0.40.0
 ```
-
-## libva
-
-```sh
-curl https://github.com/intel/libva/releases/download/2.11.0/libva-2.11.0.tar.bz2 -o /sources/xorg/libva-2.11.0.tar.bz2 &&
-
-tar xvf /sources/xorg/libva-2.11.0.tar.bz2 &&
-cd       libva-2.11.0                      &&
-
-./configure --prefix=/usr        \
-            --sysconfdir=/etc    \
-            --localstatedir=/var \
-            --disable-static &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf libva-2.11.0
-```
-
-## libvdpau
-
-```sh
-curl https://gitlab.freedesktop.org/vdpau/libvdpau/-/archive/1.4/libvdpau-1.4.tar.bz2 -o /sources/xorg/libvdpau-1.4.tar.bz2 &&
-
-tar xvf /sources/xorg/libvdpau-1.4.tar.bz2 &&
-cd       libvdpau-1.4                      &&
-
-mkdir build &&
-cd    build &&
-
-meson --prefix=/usr .. &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-rm -rf libvdpau-1.4
-```
-
-## libvdpau_gl
-
-```sh
-curl https://github.com/i-rinat/libvdpau-va-gl/archive/v0.4.0/libvdpau-va-gl-0.4.0.tar.gz -o /sources/xorg/libvdpau-va-gl-0.4.0.tar.gz &&
-
-tar xzvf /sources/xorg/libvdpau-va-gl-0.4.0.tar.gz &&
-cd        libvdpau-va-gl-0.4.0                     &&
-
-mkdir build &&
-cd    build &&
-
-cmake -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_INSTALL_PREFIX=/usr .. &&
-
-make              &&
-sudo make install &&
-
-cd ../.. &&
-rm -rf libvdpau-va-gl-0.4.0
-```
-
-## GPM
+### GPM
 
 Mouse daemon that provides cut and paste capabilities in a console. This requires kernel drivers.
 
@@ -759,7 +857,70 @@ cd .. &&
 rm -rf gpm-1.20.7
 ```
 
-## GLU
+## Hardware Video Accleration
+
+### libva
+
+```sh
+curl https://github.com/intel/libva/releases/download/2.11.0/libva-2.11.0.tar.bz2 -o /sources/xorg/libva-2.11.0.tar.bz2 &&
+
+tar xvf /sources/xorg/libva-2.11.0.tar.bz2 &&
+cd       libva-2.11.0                      &&
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libva-2.11.0
+```
+
+### libvdpau
+
+```sh
+curl https://gitlab.freedesktop.org/vdpau/libvdpau/-/archive/1.4/libvdpau-1.4.tar.bz2 -o /sources/xorg/libvdpau-1.4.tar.bz2 &&
+
+tar xvf /sources/xorg/libvdpau-1.4.tar.bz2 &&
+cd       libvdpau-1.4                      &&
+
+mkdir build &&
+cd    build &&
+
+meson --prefix=/usr .. &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf libvdpau-1.4
+```
+
+### libvdpau_gl
+
+```sh
+curl https://github.com/i-rinat/libvdpau-va-gl/archive/v0.4.0/libvdpau-va-gl-0.4.0.tar.gz -o /sources/xorg/libvdpau-va-gl-0.4.0.tar.gz &&
+
+tar xzvf /sources/xorg/libvdpau-va-gl-0.4.0.tar.gz &&
+cd        libvdpau-va-gl-0.4.0                     &&
+
+mkdir build &&
+cd    build &&
+
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=/usr .. &&
+
+make              &&
+sudo make install &&
+
+cd ../.. &&
+rm -rf libvdpau-va-gl-0.4.0
+```
+
+### GLU
 
 ```sh
 curl ftp://ftp.freedesktop.org/pub/mesa/glu/glu-9.0.1.tar.xz -o /sources/xorg/glu-9.0.1.tar.xz &&
@@ -823,7 +984,7 @@ rm -rf startup-notification-0.12
 
 ## Links
 
-Required by `xdg-utils`.
+Text interface web browser. Required by `xdg-utils`.
 
 ```sh
 curl http://links.twibright.com/download/links-2.23.tar.bz2 -o /sources/links-2.23.tar.bz2 &&
@@ -1025,9 +1186,9 @@ curl https://github.com/liberationfonts/liberation-fonts/files/6418984/liberatio
 tar xzvf /sources/fonts/liberation-fonts-ttf-2.1.4.tar.gz &&
 cd        liberation-fonts-ttf-2.1.4                      &&
 
-sudo install -v -d -m755 /usr/share/fonts/liberation    &&
-sudo install -v -m644 *.ttf /usr/share/fonts/liberation &&
-sudo fc-cache -v /usr/share/fonts/liberation            &&
+sudo install  -v -d -m755 /usr/share/fonts/liberation    &&
+sudo install  -v -m644 *.ttf /usr/share/fonts/liberation &&
+sudo fc-cache -v /usr/share/fonts/liberation             &&
 
 cd .. &&
 rm -rf liberation-fonts-ttf-2.1.4

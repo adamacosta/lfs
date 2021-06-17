@@ -2,6 +2,8 @@
 
 ## oniguruma
 
+JSON parsing library.
+
 ```sh
 curl https://github.com/kkos/oniguruma/releases/download/v6.9.7.1/onig-6.9.7.1.tar.gz -o /sources/onig-6.9.7.1.tar.gz &&
 
@@ -18,6 +20,8 @@ rm -rf onig-6.9.7
 ```
 
 ## jq
+
+Query JSON text streams.
 
 ```sh
 curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-1.6.tar.gz -o /sources/jq-1.6.tar.gz &&
@@ -37,6 +41,8 @@ rm -rf jq-1.6
 ```
 
 ## yq
+
+Query yaml text streams.
 
 This is intended to be a fully portable binary installation, given it is a statically-linked golang binary. In lieu of having to install golang, you can just download a binary release:
 

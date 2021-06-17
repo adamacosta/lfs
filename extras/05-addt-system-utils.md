@@ -17,15 +17,46 @@ cd .. &&
 rm -rf unrarsrc-6.0.6
 ```
 
+## CyrusSASL
+
+```sh
+curl https://github.com/cyrusimap/cyrus-sasl/releases/download/cyrus-sasl-2.1.27/cyrus-sasl-2.1.27.tar.gz -o /sources/cyrus-sasl-2.1.27.tar.gz &&
+curl https://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.27-doc_fixes-1.patch -o /sources/patches/cyrus-sasl-2.1.27-doc_fixes-1.patch &&
+
+tar xzvf /sources/cyrus-sasl-2.1.27.tar.gz &&
+cd        cyrus-sasl-2.1.27                &&
+
+patch -Np1 -i /sources/patches/cyrus-sasl-2.1.27-doc_fixes-1.patch &&
+
+./configure --prefix=/usr                       \
+            --sysconfdir=/etc                   \
+            --enable-auth-sasldb                \
+            --with-dbpath=/var/lib/sasl/sasldb2 \
+            --with-sphinx-build=no              \
+            --with-saslauthd=/var/run/saslauthd &&
+
+make -j1          &&
+sudo make install &&
+
+sudo install -vdm755                          /usr/share/doc/cyrus-sasl-2.1.27/html &&
+sudo install -vm644  saslauthd/LDAP_SASLAUTHD /usr/share/doc/cyrus-sasl-2.1.27      &&
+sudo install -vm644  doc/legacy/*.html        /usr/share/doc/cyrus-sasl-2.1.27/html &&
+sudo install -vdm700 /var/lib/sasl                                                  &&
+
+cd .. &&
+rm -rf cyrus-sasl-2.1.27
+```
+
 ## openldap (client only)
 
 ```sh
-curl https://www.openldap.org/software/download/OpenLDAP/openldap-release/openldap-2.4.57.tgz -o openldap-2.4.57.tgz
-curl https://www.linuxfromscratch.org/patches/blfs/10.1/openldap-2.4.57-consolidated-1.patch -o openldap-2.4.57-consolidated-1.patch
-tar xzvf openldap-2.4.57.tgz
-cd openldap-2.4.57
+curl https://www.openldap.org/software/download/OpenLDAP/openldap-release/openldap-2.5.5.tgz -o openldap-2.5.5.tgz
+curl https://www.linuxfromscratch.org/patches/blfs/svn/openldap-2.5.5-consolidated-1.patch -o openldap-2.5.5-consolidated-1.patch &&
 
-patch -Np1 -i ../openldap-2.4.57-consolidated-1.patch &&
+tar xzvf /sources/openldap-2.5.5.tgz &&
+cd        openldap-2.5.5
+
+patch -Np1 -i /sources/patches/openldap-2.5.5-consolidated-1.patch &&
 autoconf &&
 ./configure --prefix=/usr     \
             --sysconfdir=/etc \
@@ -34,11 +65,11 @@ autoconf &&
             --disable-debug   \
             --disable-slapd
 make depend &&
-make -j
+make
 sudo make install
 
 cd ..
-rm -rf openldap-2.4.57
+rm -rf openldap-2.5.5
 ```
 
 ## sendmail
@@ -198,6 +229,8 @@ rm -rf db-5.3.28
 
 ## Aspell
 
+GNU spellchecker.
+
 ```sh
 curl https://ftp.gnu.org/gnu/aspell/aspell-0.60.8.tar.gz -o /sources/aspell-0.60.8.tar.gz &&
 
@@ -289,6 +322,8 @@ rm -rf hunspell-1.7.0
 
 ## mutt
 
+Mail client.
+
 ```sh
 curl https://bitbucket.org/mutt/mutt/downloads/mutt-2.0.5.tar.gz -o mutt-2.0.5.tar.gz
 tar xzvf mutt-2.0.5.tar.gz
@@ -320,6 +355,8 @@ cat /usr/share/doc/mutt-2.0.5/samples/gpg.rc >> ~/.muttrc
 
 ## at
 
+Job scheduler.
+
 ```sh
 curl http://software.calhariz.com/at/at_3.2.1.orig.tar.gz -o at_3.2.1.orig.tar.gz
 tar xzvf at_3.2.1.orig.tar.gz
@@ -344,6 +381,8 @@ rm -rf at-3.2.1
 
 ## parallel
 
+Parallel job runner.
+
 ```sh
 curl https://ftp.gnu.org/gnu/parallel/parallel-20210522.tar.bz2 -o /sources/parallel-20210522.tar.bz2 &&
 
@@ -361,6 +400,8 @@ rm -rf parallel-20210522
 ```
 
 ## cpio
+
+Archiving tool utilized to build the ram disk archives or `initrd` that can be used to bootstrap Linux with a root filesystem prepopulated with tools, libraries, and kernel modules needed to bring up the real root filesystem. Also used by the Redhat Package Manager.
 
 ```sh
 curl https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2 -o cpio-2.13.tar.bz2

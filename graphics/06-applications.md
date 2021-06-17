@@ -49,14 +49,21 @@ rm -rf gnome-color-manager-3.36.0
 
 ## GNOME Terminal
 
+This assumes you copied in the transparency patch, copied from the Arch User Repository. Remove the lines to apply the patch run `autoreconf` if you don't want this.
+
 ```sh
 curl https://download.gnome.org/sources/gnome-terminal/3.40/gnome-terminal-3.40.2.tar.xz -o /sources/gnome/gnome-terminal-3.40.2.tar.xz &&
 
 tar xvf /sources/gnome/gnome-terminal-3.40.2.tar.xz &&
 cd       gnome-terminal-3.40.2                      &&
 
-./configure --prefix=/usr       \
-            --disable-static    &&
+patch -Np1 -i /sources/patches/gnome-terminal-3.40.2-transparency.patch &&
+
+autoreconf -fiv &&
+
+./configure --prefix=/usr    \
+            --disable-static \
+            --with-nautilus-extension &&
 
 make              &&
 sudo make install &&

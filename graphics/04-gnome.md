@@ -189,9 +189,9 @@ cd ../.. &&
 rm -rf gtk-4.2.1
 ```
 
-At this point, you can rebuild `Python` to include the `TKinter` graphics toolkit if you build `tk`.
-
 ## tk
+
+After installing this, you can rebuild `Python` to include the `TKinter` graphics toolkit.
 
 ```sh
 curl https://downloads.sourceforge.net/tcl/tk8.6.11.1-src.tar.gz -o /sources/tk8.6.11-1-src.tar.gz &&
@@ -1521,7 +1521,7 @@ rm -rf gnome-keyring-40.0
 
 ## GeoClue
 
-Enabled creation of location-aware applications.
+Enables creation of location-aware applications.
 
 ```sh
 curl https://gitlab.freedesktop.org/geoclue/geoclue/-/archive/2.5.7/geoclue-2.5.7.tar.bz2 -o /sources/gnome/geoclue-2.5.7.tar.bz2 &&
@@ -2284,9 +2284,9 @@ First, create a system user to run the daemon:
 
 ```sh
 sudo groupadd -g 21 gdm               &&
-sudo useradd -c "GDM Daemon Owner" -d /var/lib/gdm -u 21 \
-             -g gdm -s /bin/false gdm &&
-sudo passwd  -ql gdm
+sudo useradd  -c "GDM Daemon Owner" -d /var/lib/gdm -u 21 \
+              -g gdm -s /bin/false gdm &&
+sudo passwd   -ql gdm
 ```
 
 Then build and install.

@@ -5,8 +5,8 @@
 Rebuild with `Python` bindings and ensure `pkg-config` picks up the `libkmod.pc` file, as `systemd` will not be able to find it otherwise.
 
 ```sh
-tar xvf /sources/kmod-28.tar.xz &&
-cd       kmod-28                &&
+tar xvf /sources/base/kmod-29.tar.xz &&
+cd       kmod-29                     &&
 
 ./configure --prefix=/usr          \
             --bindir=/bin          \
@@ -25,11 +25,11 @@ sudo make install-includeHEADERS       &&
 sudo make install-pkgpyexecLTLIBRARIES &&
 sudo make install-dist_pkgpyexecPYTHON &&
 
-sudo cp -iv man/*.8 /usr/share/man/man8/ &&
-sudo cp -iv man/*.5 /usr/share/man/man5/ &&
+sudo cp -ifv man/*.8 /usr/share/man/man8/ &&
+sudo cp -ifv man/*.5 /usr/share/man/man5/ &&
 
 cd .. &&
-rm -rf kmod-28
+rm -rf kmod-29
 ```
 
 ## systemd rebuild
@@ -78,7 +78,7 @@ rm -rf systemd-248
 Now, if you have a machine using WiFi to connect to the network, ensure that the kernel modules for WiFi drivers are loaded. Substitute in the appropriate driver for your WiFi card. `iwlwifi` drives the most current generation of Intel cards that support 802.11AX.
 
 ```sh
-cat > /usr/lib/modules-load.d/iwd.conf << EOF
+cat > /usr/lib/modules-load.d/iwd.conf <<EOF
 mac80211
 cfg80211
 iwlwifi
@@ -88,7 +88,7 @@ EOF
 Update the `PAM` configuration for `systemd-logind`.
 
 ```sh
-cat >> /etc/pam.d/system-session << "EOF"
+cat >> /etc/pam.d/system-session <<"EOF"
 # Begin Systemd addition
 
 session  required    pam_loginuid.so
@@ -97,7 +97,7 @@ session  optional    pam_systemd.so
 # End Systemd addition
 EOF
 
-cat > /etc/pam.d/systemd-user << "EOF"
+cat > /etc/pam.d/systemd-user <<"EOF"
 # Begin /etc/pam.d/systemd-user
 
 account  required    pam_access.so
@@ -149,7 +149,7 @@ sudo install -vm644 *.gz /usr/share/consolefonts/
 Then set the one you like as the default:
 
 ```sh
-cat > /etc/vconsole.conf << "EOF"
-FONT=ter-h18n
+cat > /etc/vconsole.conf <<"EOF"
+FONT=ter-h20n
 EOF
 ```

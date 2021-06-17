@@ -167,6 +167,8 @@ rm -rf superlu-5.2.2
 
 ## Armadillo
 
+Linear algebra libraries beyond the BLAS.
+
 ```sh
 curl http://sourceforge.net/projects/arma/files/armadillo-10.5.1.tar.xz -o /sources/armadillo-10.5.1.tar.xz &&
 
@@ -240,6 +242,8 @@ sudo projsync --system-directory --all
 ```
 
 ## GeoTIFF
+
+Augmentation of the TIFF image format that includes geolocation metadata.
 
 ```sh
 curl https://github.com/OSGeo/libgeotiff/releases/download/1.6.0/libgeotiff-1.6.0.tar.gz -o /sources/libgeotiff-1.6.0.tar.gz &&

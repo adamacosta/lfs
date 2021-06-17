@@ -107,7 +107,7 @@ export LFS=/mnt/lfs
 sudo mkdir -p       $LFS
 sudo mkfs.ext4      /dev/<your lfs partition>
 sudo mount          /dev/<your lfs partition> $LFS
-sudo mkdir -v       $LFS/sources
+sudo mkdir -v       $LFS/sources/{patches,base}
 sudo chmod -v  a+wt $LFS/sources
 ```
 
@@ -155,20 +155,21 @@ From the host system, download the list of packages and checksums provided by Li
 wget https://www.linuxfromscratch.org/lfs/view/development/wget-list &&
 wget https://www.linuxfromscratch.org/lfs/view/development/md5sums   &&
 
-wget --input-file=wget-list --continue --directory-prefix=$LFS/sources
-cp md5sums $LFS/sources &&
-pushd $LFS/sources
-  md5sum -c md5sums
+wget --input-file=wget-list --continue --directory-prefix=$LFS/sources/base &&
+
+cp md5sums $LFS/sources/base &&
+pushd $LFS/sources/base      &&
+  md5sum -c md5sums          &&
 popd
 ```
 
-### Updates from LFS 10.1-systemd
+### Updates from LFS
 
 We will be using packages from the development version of Linux From Scratch, rather than stable LFS, as well as `linux-5.12.7`, which is the latest stable version of the Linux kernel. Download these and replace the versions provided by `LFS`:
 
 ```sh
-wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.12.9.tar.xz -O $LFS/sources/linux-5.12.9.tar.xz &&
-rm  $LFS/sources/linux-5.12.2.tar.xz
+wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.12.11.tar.xz -O $LFS/sources/linux-5.12.11.tar.xz &&
+rm  $LFS/sources/base/linux-5.12.11.tar.xz
 ```
 
 We will also download `isl-0.24`, which is an optional dependency of `gcc` for manipulating constrained integer sets:
@@ -194,16 +195,16 @@ We will also add `curl`, `openssh`, `pam`, and `sudo` to make life a bit easier 
 wget https://curl.se/download/curl-7.76.1.tar.gz -O $LFS/sources/curl-7.76.1.tar.gz                                                &&
 wget https://mirror.esc7.net/pub/OpenBSD/OpenSSH/portable/openssh-8.6p1.tar.gz -O $LFS/sources/openssh-8.6p1.tar.gz                &&
 wget https://github.com/linux-pam/linux-pam/releases/download/v1.5.1/Linux-PAM-1.5.1.tar.xz -O $LFS/sources/Linux-PAM-1.5.1.tar.xz &&
-wget https://www.sudo.ws/dist/sudo-1.9.7.tar.gz -O $LFS/sources/sudo-1.9.7.tar.gz
+wget https://www.sudo.ws/dist/sudo-1.9.7p1.tar.gz -O $LFS/sources/sudo-1.9.7p1.tar.gz
 ```
 
 We will also be adding `libtasn`, `p11-kit`, `make-ca`, `nettle`, `libunistring`, `GnuTLS`, `PCRE`, and `zsh`:
 
 ```sh
 wget https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.16.0.tar.gz -O $LFS/sources/libtasn1-4.16.0.tar.gz                              &&
-wget https://github.com/p11-glue/p11-kit/releases/download/0.23.22/p11-kit-0.23.22.tar.xz -O $LFS/sources/p11-kit-0.23.22.tar.xz &&
+wget https://github.com/p11-glue/p11-kit/releases/download/0.24.0/p11-kit-0.24.0.tar.xz -O $LFS/sources/p11-kit-0.24.0.tar.xz &&
 wget https://github.com/djlucas/make-ca/releases/download/v1.7/make-ca-1.7.tar.xz -O $LFS/sources/make-ca-1.7.tar.xz             &&
-wget https://ftp.gnu.org/gnu/nettle/nettle-3.7.1.tar.gz -O $LFS/sources/nettle-3.7.1.tar.gz                                      &&
+wget https://ftp.gnu.org/gnu/nettle/nettle-3.7.3.tar.gz -O $LFS/sources/nettle-3.7.3.tar.gz                                      &&
 wget https://ftp.gnu.org/gnu/libunistring/libunistring-0.9.10.tar.xz -O $LFS/sources/libunistring-0.9.10.tar.gz                  &&
 wget https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/gnutls-3.7.0.tar.xz -O $LFS/sources/gnutls-3.7.0.tar.xz                        &&
 wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.bz2 -O $LFS/sources/pcre-8.44.tar.bz2                                           &&

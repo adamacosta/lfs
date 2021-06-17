@@ -4,43 +4,47 @@
 
 ### git
 
-```sh
-curl https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.31.1.tar.xz -o /sources/git-2.31.1.tar.xz &&
-curl https://mirrors.edge.kernel.org/pub/software/scm/git/git-manpages-2.31.0.tar.xz -o /sources/git-manpages-2.31.1.tar.xz &&
+Used by the Linux kernel and subsequently adopted by most Linux projects. `go` packages somewhat depend on it.
 
-tar xvf /sources/git-2.31.1.tar.xz &&
-cd       git-2.31.1                &&
+```sh
+curl https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.32.0.tar.xz -o /sources/git-2.32.0.tar.xz &&
+curl https://mirrors.edge.kernel.org/pub/software/scm/git/git-manpages-2.32.0.tar.xz -o /sources/git-manpages-2.32.0.tar.xz &&
+
+tar xvf /sources/git-2.32.0.tar.xz &&
+cd       git-2.32.0                &&
 
 ./configure --prefix=/usr                   \
             --with-gitconfig=/etc/gitconfig &&
 
 make                                                       &&
-sudo make perllibdir=/usr/lib/perl5/5.32/site_perl install &&
-sudo tar -xf /sources/git-manpages-2.31.1.tar.xz \
+sudo make perllibdir=/usr/lib/perl5/5.34/site_perl install &&
+sudo tar -xf /sources/git-manpages-2.32.0.tar.xz \
     -C /usr/share/man --no-same-owner --no-overwrite-dir   &&
 
 cd .. &&
-rm -rf git-2.31.1
+rm -rf git-2.32.0
 ```
 
 ## Debuggers and analyzers
 
 ### GDB
 
+The GNU debugger suite.
+
 This requires `doxygen` to build the documentation. If you choose not to install that, remove the lines:
 
 ```sh
 make -C gdb/doc doxy
-sudo install -d /usr/share/doc/gdb-10.1
+sudo install -d /usr/share/doc/gdb-10.2
 sudo rm -rf gdb/doc/doxy/xml
-sudo cp -Rv gdb/doc/doxy /usr/share/doc/gdb-10.1
+sudo cp -Rv gdb/doc/doxy /usr/share/doc/gdb-10.2
 ```
 
 ```sh
-curl https://ftp.gnu.org/gnu/gdb/gdb-10.1.tar.xz -o /sources/gdb-10.1.tar.xz &&
+curl https://ftp.gnu.org/gnu/gdb/gdb-10.2.tar.xz -o /sources/gdb-10.2.tar.xz &&
 
-tar xvf /sources/gdb-10.1.tar.xz &&
-cd       gdb-10.1                &&
+tar xvf /sources/gdb-10.2.tar.xz &&
+cd       gdb-10.2                &&
 
 mkdir build &&
 cd    build &&
@@ -60,15 +64,17 @@ popd                                         &&
 
 sudo make -C gdb install                     &&
 
-sudo install -d /usr/share/doc/gdb-10.1          &&
+sudo install -d /usr/share/doc/gdb-10.2          &&
 sudo rm -rf gdb/doc/doxy/xml                     &&
-sudo cp -Rv gdb/doc/doxy /usr/share/doc/gdb-10.1 &&
+sudo cp -Rv gdb/doc/doxy /usr/share/doc/gdb-10.2 &&
 
 cd ../.. &&
-rm -rf gdb-10.1
+rm -rf gdb-10.2
 ```
 
 ### valgrind
+
+Dynamic analyzer for native code. Finds memory bugs that compilers can't flag, especially memory leaks.
 
 ```sh
 curl https://sourceware.org/ftp/valgrind/valgrind-3.17.0.tar.bz2 -o /sources/valgrind-3.17.0.tar.bz2 &&
@@ -110,7 +116,7 @@ cd .. &&
 rm -rf libarchive-3.5.1
 ```
 
-We will run the build in a `Python` virtualenv to enable using `Sphinx` to build the html documentation.
+Building the documentation requires `Sphinx` to build the html documentation. This can be installed or the build can just be run in a `Python` virtualenv as is shown here.
 
 ```sh
 curl https://cmake.org/files/v3.20/cmake-3.20.3.tar.gz -o /sources/cmake-3.20.3.tar.gz &&
@@ -167,6 +173,8 @@ rm -rf nasm-2.15.05
 
 ### yasm
 
+Iteration on `nasm`, used by `FFmpeg`.
+
 ```sh
 curl http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz -o /sources/yasm-1.3.0.tar.gz &&
 
@@ -203,26 +211,26 @@ cd ../..
 Now we can build the latest stable `go` using `go-1.4`:
 
 ```sh
-curl https://go.googlesource.com/go/+archive/refs/tags/go1.16.4.tar.gz -o /sources/go1.16.4.tar.gz &&
+curl https://go.googlesource.com/go/+archive/refs/tags/go1.16.5.tar.gz -o /sources/go1.16.5.tar.gz &&
 
-mkdir -v go1.16.4                             &&
-tar xzvf /sources/go1.16.4.tar.gz -C go1.16.4 &&
-cd go1.16.4/src                               &&
+mkdir -v go1.16.5                             &&
+tar xzvf /sources/go1.16.5.tar.gz -C go1.16.5 &&
+cd go1.16.5/src                               &&
 
 GOROOT_FINAL=/usr/lib/go               \
 GOROOT_BOOTSTRAP=/sources/build_dir/go \
-GOPATH=/sources/build_dir/go1.16.4     \
+GOPATH=/sources/build_dir/go1.16.5     \
 ./make.bash &&
 
-PATH="/sources/build_dir/go1.16.4/bin:$PATH" go install -v -race std             &&
-PATH="/sources/build_dir/go1.16.4/bin:$PATH" go install -v -buildmode=shared std &&
+PATH="/sources/build_dir/go1.16.5/bin:$PATH" go install -v -race std             &&
+PATH="/sources/build_dir/go1.16.5/bin:$PATH" go install -v -buildmode=shared std &&
 
-sudo install -vdm755 /usr/lib/go                     &&
-sudo install -vdm755 /usr/share/doc/go-1.16.4        &&
-cd ..                                                &&
-sudo cp -a bin pkg src lib misc api test /usr/lib/go &&
-sudo cp -r doc/* /usr/share/doc/go-1.16.4            &&
-sudo ln -svf /usr/lib/go/bin/go /usr/bin/go          &&
+sudo install -vdm755 /usr/lib/go                      &&
+sudo install -vdm755 /usr/share/doc/go-1.16.5         &&
+cd ..                                                 &&
+sudo cp -av bin pkg src lib misc api test /usr/lib/go &&
+sudo cp -rv doc/* /usr/share/doc/go-1.16.5            &&
+sudo ln -svf /usr/lib/go/bin/go /usr/bin/go           &&
 sudo ln -svf /usr/lib/go/bin/gofmt /usr/bin/gofmt
 ```
 
@@ -234,6 +242,8 @@ sudo rm -rf go*
 ```
 
 ### LLVM and Clang
+
+At least `Rust` requires `LLVM` as it targets it as an IR to generate machine code from. `Firefox` developers prefer building with `Clang` to use the same compiler across all platforms, though `gcc` may work, possibly with tweaks to Mozilla's build defaults.
 
 ```sh
 curl https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/llvm-12.0.0.src.tar.xz -o /sources/llvm-12.0.0.src.tar.xz &&
@@ -605,16 +615,18 @@ rm -rf cbindgen-0.19.0
 
 ### lua
 
-```sh
-curl http://www.lua.org/ftp/lua-5.4.2.tar.gz -o /sources/lua-5.4.2.tar.gz &&
-curl -L http://www.linuxfromscratch.org/patches/blfs/10.1/lua-5.4.2-shared_library-1.patch -o /sources/lua-5.4.2-shared_library-1.patch &&
+Scripting language commonly used to embed scripting capabilities into other applications.
 
-tar xzvf /sources/lua-5.4.2.tar.gz &&
-cd        lua-5.4.2                &&
+```sh
+curl http://www.lua.org/ftp/lua-5.4.3.tar.gz -o /sources/lua-5.4.3.tar.gz &&
+curl https://www.linuxfromscratch.org/patches/blfs/svn/lua-5.4.3-shared_library-1.patch -o /sources/lua-5.4.3-shared_library-1.patch &&
+
+tar xzvf /sources/lua-5.4.3.tar.gz &&
+cd        lua-5.4.3                &&
 
 cat > lua.pc << "EOF" &&
 V=5.4
-R=5.4.2
+R=5.4.3
 
 prefix=/usr
 INSTALL_BIN=${prefix}/bin
@@ -635,24 +647,24 @@ Libs: -L${libdir} -llua -lm -ldl
 Cflags: -I${includedir}
 EOF
 
-patch -Np1 -i /sources/lua-5.4.2-shared_library-1.patch      &&
+patch -Np1 -i /sources/lua-5.4.3-shared_library-1.patch      &&
 make linux                                                   &&
 sudo make INSTALL_TOP=/usr                \
           INSTALL_DATA="cp -d"            \
           INSTALL_MAN=/usr/share/man/man1 \
-          TO_LIB="liblua.so liblua.so.5.4 liblua.so.5.4.2" \
+          TO_LIB="liblua.so liblua.so.5.4 liblua.so.5.4.3" \
           install &&
-sudo mkdir -pv                      /usr/share/doc/lua-5.4.2 &&
-sudo cp -v doc/*.{html,css,gif,png} /usr/share/doc/lua-5.4.2 &&
+sudo mkdir -pv                      /usr/share/doc/lua-5.4.3 &&
+sudo cp -v doc/*.{html,css,gif,png} /usr/share/doc/lua-5.4.3 &&
 sudo install -v -m644 -D lua.pc /usr/lib/pkgconfig/lua.pc    &&
 
 cd .. &&
-rm -rf lua-5.4.2
+rm -rf lua-5.4.3
 ```
 
 ### Ruby
 
-Because we already link the `ruby` interpreter dynamically against `libruby`, we'll apply the same trick from the Fedora maintainers to try getting a speedup from avoiding the PLT when functions from `libruby` call into other functions from `libruby`.
+Because we link the `ruby` interpreter dynamically against `libruby`, we'll apply the same trick from the Fedora maintainers to try getting a speedup from avoiding the PLT when functions from `libruby` call into other functions from `libruby`.
 
 ```sh
 curl https://cache.ruby-lang.org/pub/ruby/3.0/ruby-3.0.1.tar.gz -o /sources/ruby-3.0.1.tar.gz &&
@@ -706,6 +718,8 @@ rm -rf node-16.3.0
 
 ### SWIG
 
+Autogenerate bindings for foreign function calls across many languages.
+
 ```sh
 curl https://downloads.sourceforge.net/swig/swig-4.0.2.tar.gz -o /sources/swig-4.0.2.tar.gz &&
 
@@ -729,10 +743,10 @@ rm -rf swig-4.0.2
 #### docutils
 
 ```sh
-curl https://downloads.sourceforge.net/docutils/docutils-0.17.1.tar.gz -o /sources/docutils-0.17.1.tar.gz &&
+curl https://downloads.sourceforge.net/docutils/docutils-0.17.1.tar.gz -o /sources/python-docutils-0.17.1.tar.gz &&
 
-tar xzvf /sources/docutils-0.17.1.tar.gz &&
-cd        docutils-0.17.1                &&
+tar xzvf /sources/python-docutils-0.17.1.tar.gz &&
+cd        docutils-0.17.1                       &&
 
 python setup.py build                     &&
 sudo python setup.py install --optimize=1 &&
@@ -748,10 +762,10 @@ sudo rm -rf docutils-0.17.1
 #### PyCairo
 
 ```sh
-curl https://github.com/pygobject/pycairo/releases/download/v1.20.1/pycairo-1.20.1.tar.gz -o /sources/pycairo-1.20.1.tar.gz &&
+curl https://github.com/pygobject/pycairo/releases/download/v1.20.1/pycairo-1.20.1.tar.gz -o /sources/python-pycairo-1.20.1.tar.gz &&
 
-tar xzvf /sources/pycairo-1.20.1.tar.gz &&
-cd        pycairo-1.20.1                &&
+tar xzvf /sources/python-pycairo-1.20.1.tar.gz &&
+cd        pycairo-1.20.1                       &&
 
 python3 setup.py build                       &&
 sudo python3 setup.py install --optimize=1   &&
@@ -765,10 +779,10 @@ sudo rm -rf pycairo-1.20.1
 #### PyGObject
 
 ```sh
-curl https://download.gnome.org/sources/pygobject/3.40/pygobject-3.40.1.tar.xz -o /sources/pygobject-3.40.1.tar.xz &&
+curl https://download.gnome.org/sources/pygobject/3.40/pygobject-3.40.1.tar.xz -o /sources/python-pygobject-3.40.1.tar.xz &&
 
-tar xvf /sources/pygobject-3.40.1.tar.xz &&
-cd       pygobject-3.40.1                &&
+tar xvf /sources/python-pygobject-3.40.1.tar.xz &&
+cd       pygobject-3.40.1                       &&
 
 mkdir build &&
 cd    build &&
@@ -811,10 +825,10 @@ rm -rf dbus-python-1.2.16
 #### Pygments
 
 ```sh
-curl https://files.pythonhosted.org/packages/source/P/Pygments/Pygments-2.9.0.tar.gz -o /sources/Pygments-2.9.0.tar.gz &&
+curl https://files.pythonhosted.org/packages/source/P/Pygments/Pygments-2.9.0.tar.gz -o /sources/python-Pygments-2.9.0.tar.gz &&
 
-tar xzvf /sources/Pygments-2.9.0.tar.gz &&
-cd        Pygments-2.9.0                &&
+tar xzvf /sources/python-Pygments-2.9.0.tar.gz &&
+cd        Pygments-2.9.0                       &&
 
 sudo python3 setup.py install --optimize=1 &&
 
@@ -825,10 +839,10 @@ sudo rm -rf Pygments-2.9.0
 #### lxml
 
 ```sh
-curl https://files.pythonhosted.org/packages/source/l/lxml/lxml-4.6.3.tar.gz -o /sources/lxml-4.6.3.tar.gz &&
+curl https://files.pythonhosted.org/packages/source/l/lxml/lxml-4.6.3.tar.gz -o /sources/python-lxml-4.6.3.tar.gz &&
 
-tar xzvf /sources/lxml-4.6.3.tar.gz &&
-cd        lxml-4.6.3                &&
+tar xzvf /sources/python-lxml-4.6.3.tar.gz &&
+cd        lxml-4.6.3                       &&
 
 python3 setup.py build                     &&
 sudo python3 setup.py install --optimize=1 &&
@@ -840,10 +854,10 @@ sudo rm -rf lxml-4.6.3
 #### MarkupSafe
 
 ```sh
-curl https://files.pythonhosted.org/packages/source/M/MarkupSafe/MarkupSafe-2.0.1.tar.gz -o /sources/MarkupSafe-2.0.1.tar.gz &&
+curl https://files.pythonhosted.org/packages/source/M/MarkupSafe/MarkupSafe-2.0.1.tar.gz -o /sources/python-MarkupSafe-2.0.1.tar.gz &&
 
-tar xzvf /sources/MarkupSafe-2.0.1.tar.gz &&
-cd        MarkupSafe-2.0.1                &&
+tar xzvf /sources/python-MarkupSafe-2.0.1.tar.gz &&
+cd        MarkupSafe-2.0.1                       &&
 
 python3 setup.py build                     &&
 sudo python3 setup.py install --optimize=1 &&
@@ -870,10 +884,10 @@ sudo rm -rf PyYAML-5.3.1
 #### Jinja2
 
 ```sh
-curl https://files.pythonhosted.org/packages/source/J/Jinja2/Jinja2-3.0.1.tar.gz -o /sources/Jinja2-3.0.1.tar.gz &&
+curl https://files.pythonhosted.org/packages/source/J/Jinja2/Jinja2-3.0.1.tar.gz -o /sources/python-Jinja2-3.0.1.tar.gz &&
 
-tar xzvf /sources/Jinja2-3.0.1.tar.gz &&
-cd        Jinja2-3.0.1                &&
+tar xzvf /sources/python-Jinja2-3.0.1.tar.gz &&
+cd        Jinja2-3.0.1                       &&
 
 sudo python3 setup.py install --optimize=1 &&
 
@@ -884,10 +898,10 @@ sudo rm -rf Jinja2-3.0.1
 #### Mako
 
 ```sh
-curl https://files.pythonhosted.org/packages/source/M/Mako/Mako-1.1.4.tar.gz -o /sources/Mako-1.1.4.tar.gz &&
+curl https://files.pythonhosted.org/packages/source/M/Mako/Mako-1.1.4.tar.gz -o /sources/python-Mako-1.1.4.tar.gz &&
 
-tar xzvf /sources/Mako-1.1.4.tar.gz &&
-cd        Mako-1.1.4                &&
+tar xzvf /sources/python-Mako-1.1.4.tar.gz &&
+cd        Mako-1.1.4                       &&
 
 sudo python3 setup.py install --optimize=1 &&
 
