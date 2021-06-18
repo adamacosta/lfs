@@ -97,6 +97,8 @@ rm -rf librsvg-2.50.7
 
 ## LAME
 
+MP3 encoder. Build `libsndfile` first for optional audio sampling support
+
 ```sh
 curl https://downloads.sourceforge.net/lame/lame-3.100.tar.gz -o /sources/lame-3.100.tar.gz &&
 
@@ -863,6 +865,29 @@ sudo ninja install &&
 
 cd ../.. &&
 rm -rf gst-plugins-good-1.18.4
+```
+
+## gst-libav
+
+```sh
+curl https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.18.4.tar.xz -o /sources/gst-libav-1.18.4.tar.xz &&
+
+tar xvf /sources/gst-libav-1.18.4.tar.xz &&
+cd       gst-libav-1.18.4                &&
+
+mkdir build &&
+cd    build &&
+
+meson  --prefix=/usr       \
+       --buildtype=release \
+       -Dpackage-origin=https://www.linuxfromscratch.org/blfs/view/svn/ \
+       -Dpackage-name="GStreamer 1.18.4 BLFS" &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf gst-libav-1.18.4
 ```
 
 ## libcanberra

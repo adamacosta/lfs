@@ -2037,7 +2037,7 @@ rm -rf ibus-1.5.24
 
 ## Samba
 
-Unfortunately, GNOME Control Center seems to also require `smbclient`. `samba` itself has a few dependencies we need to grab.
+GNOME Control Center requires `smbclient` and you will want this to be able to read from Windows network directories. `samba` itself has a few dependencies we need to grab.
 
 ### lmdb
 
@@ -2095,10 +2095,10 @@ rm -rf Parse-Yapp-1.21
 ### python-iso8601
 
 ```sh
-curl https://github.com/micktwomey/pyiso8601/archive/refs/tags/0.1.14.tar.gz -o /sources/python-iso8601-0.1.14.tar.gz &&
+curl https://github.com/micktwomey/pyiso8601/archive/refs/tags/0.1.14.tar.gz -o /sources/python/python-iso8601-0.1.14.tar.gz &&
 
-tar xzvf /sources/python-iso8601-0.1.14.tar.gz &&
-cd        pyiso8601-0.1.14                     &&
+tar xzvf /sources/python/python-iso8601-0.1.14.tar.gz &&
+cd        pyiso8601-0.1.14                            &&
 
 sudo python3 setup.py install --optimize=1 &&
 
@@ -2109,10 +2109,10 @@ rm -rf pyiso8601-0.1.14
 ### python-setuptools_rust
 
 ```sh
-curl https://files.pythonhosted.org/packages/12/22/6ba3031e7cbd6eb002e13ffc7397e136df95813b6a2bd71ece52a8f89613/setuptools-rust-0.12.1.tar.gz -o /sources/setuptools_rust-0.12.1.tar.gz &&
+curl https://files.pythonhosted.org/packages/12/22/6ba3031e7cbd6eb002e13ffc7397e136df95813b6a2bd71ece52a8f89613/setuptools-rust-0.12.1.tar.gz -o /sources/python/setuptools_rust-0.12.1.tar.gz &&
 
-tar xzvf /sources/setuptools_rust-0.12.1.tar.gz &&
-cd        setuptools-rust-0.12.1                &&
+tar xzvf /sources/python/setuptools_rust-0.12.1.tar.gz &&
+cd        setuptools-rust-0.12.1                       &&
 
 python3 setup.py build                     &&
 sudo python3 setup.py install --optimize=1 &&
@@ -2124,10 +2124,10 @@ sudo rm -rf setuptools-rust-0.12.1
 ### python-cryptography
 
 ```sh
-curl https://github.com/pyca/cryptography/archive/refs/tags/3.4.7.tar.gz -o /sources/python-cryptography-3.4.7.tar.gz &&
+curl https://github.com/pyca/cryptography/archive/refs/tags/3.4.7.tar.gz -o /sources/python/python-cryptography-3.4.7.tar.gz &&
 
-tar xzvf /sources/python-cryptography-3.4.7.tar.gz &&
-cd        cryptography-3.4.7                       &&
+tar xzvf /sources/python/python-cryptography-3.4.7.tar.gz &&
+cd        cryptography-3.4.7                              &&
 
 python3 setup.py build                     &&
 sudo python3 setup.py install --optimize=1 &&
@@ -2139,10 +2139,10 @@ sudo rm -rf cryptography-3.4.7
 ### python-asn1
 
 ```sh
-curl https://files.pythonhosted.org/packages/a4/db/fffec68299e6d7bad3d504147f9094830b704527a7fc098b721d38cc7fa7/pyasn1-0.4.8.tar.gz -o /sources/pyasn1-0.4.8.tar.gz &&
+curl https://files.pythonhosted.org/packages/a4/db/fffec68299e6d7bad3d504147f9094830b704527a7fc098b721d38cc7fa7/pyasn1-0.4.8.tar.gz -o /sources/python/pyasn1-0.4.8.tar.gz &&
 
-tar xzvf /sources/pyasn1-0.4.8.tar.gz &&
-cd        pyasn1-0.4.8                &&
+tar xzvf /sources/python/pyasn1-0.4.8.tar.gz &&
+cd        pyasn1-0.4.8                       &&
 
 python3 setup.py build                     &&
 sudo python3 setup.py install --optimize=1 &&
@@ -2175,7 +2175,7 @@ make              &&
 sudo make install &&
 
 sudo install -v -m644    examples/smb.conf.default /etc/samba &&
-sudo mkdir   -pv /etc/openldap/schema                         &&
+sudo mkdir   -pv        /etc/openldap/schema                  &&
 
 sudo install -v -m644    examples/LDAP/README              \
                         /etc/openldap/schema/README.LDAP      &&
@@ -2283,9 +2283,9 @@ The `GNOME` graphical login manager.
 First, create a system user to run the daemon:
 
 ```sh
-sudo groupadd -g 21 gdm               &&
-sudo useradd  -c "GDM Daemon Owner" -d /var/lib/gdm -u 21 \
-              -g gdm -s /bin/false gdm &&
+sudo groupadd -g  21 gdm                &&
+sudo useradd  -c  "GDM Daemon Owner" -d /var/lib/gdm -u 21 \
+              -g  gdm -s /bin/false gdm &&
 sudo passwd   -ql gdm
 ```
 

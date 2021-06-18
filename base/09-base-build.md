@@ -1183,7 +1183,7 @@ make         &&
 make install &&
 
 for target in depmod insmod lsmod modinfo modprobe rmmod; do
-  sudo ln -sfv kmod /usr/bin/$target
+  ln -sfv kmod /usr/bin/$target
 done
 
 cp -iv man/*.8 /usr/share/man/man8/ &&
@@ -2086,6 +2086,12 @@ EOF
 ```
 
 Feel free not to set `NOPASSWD` if it worries you, but many remote configuration management tools are much easier to use if they can escalate without a password and you're already authenticating with `ssh`.
+
+Inherit key environment variables:
+
+```sh
+echo 'Defaults env_keep += "LANG LC_* MAKEFLAGS CFLAGS CPPFLAGS CXXFLAGS LDFLAGS"' > /etc/sudoers.d/envkeep
+```
 
 Create a `PAM` config:
 

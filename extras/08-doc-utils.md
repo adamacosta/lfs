@@ -363,6 +363,18 @@ sudo cabal install --lib                       \
 
 ### mdbook
 
-```sh
+Convert markdown pages into book format. Used to generate the online `rust` tutorial books. 
 
+```sh
+curl https://github.com/rust-lang/mdBook/archive/refs/tags/v0.4.10.tar.gz -o /sources/mdbook-0.4.10.tar.gz &&
+
+tar xzvf /sources/mdbook-0.4.10.tar.gz &&
+cd        mdBook-0.4.10                &&
+
+cargo build --release &&
+
+sudo install -Dm755 target/release/mdbook /usr/bin/ &&
+
+cd .. &&
+rm -rf mdBook-0.4.10
 ```

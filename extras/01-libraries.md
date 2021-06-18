@@ -24,6 +24,31 @@ cd ../.. &&
 rm -rf inih-r53
 ```
 
+## popt
+
+Command-line option parser. If `doxygen` is not installed, remove the calls to build and install the API documentation.
+
+```sh
+curl http://ftp.rpm.org/popt/releases/popt-1.x/popt-1.18.tar.gz -o /sources/popt-1.18.tar.gz &&
+
+tar xzvf /sources/popt-1.18.tar.gz &&
+cd        popt-1.18                &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make                          &&
+sed -i 's@\./@src/@' Doxyfile &&
+doxygen                       &&
+sudo make install             &&
+
+sudo install -v -m755 -d /usr/share/doc/popt-1.18             &&
+sudo install -v -m644 doxygen/html/* /usr/share/doc/popt-1.18 &&
+
+cd .. &&
+rm -rf popt-1.18
+```
+
 ## mtdev
 
 Interface to multitouch kernel events.
@@ -472,6 +497,8 @@ tar xzvf /sources/openmpi-4.1.1.tar.gz &&
 cd        openmpi-4.1.1                &&
 
 ./configure --prefix=/usr                         \
+            --sysconfdir=/etc                     \
+            --localstatedir=/var                  \
             --docdir=/usr/share/doc/openmpi-4.1.1 \
             --enable-mpi-cxx &&
 

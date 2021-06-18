@@ -451,7 +451,7 @@ cd ../.. &&
 rm -rf gobject-introspection-1.68.0
 ```
 
-## SDL
+## SDL2
 
 ```sh
 curl https://www.libsdl.org/release/SDL2-2.0.14.tar.gz -o /sources/SDL2-2.0.14.tar.gz &&
@@ -475,6 +475,49 @@ sudo cp -Rv  docs/output/html/* /usr/share/doc/SDL2-2.0.14/html &&
 
 cd .. &&
 rm -rf SDL2-2.0.14
+```
+
+## SDL
+
+```sh
+curl https://www.libsdl.org/release/SDL-1.2.15.tar.gz -o /sources/SDL-1.2.15.tar.gz &&
+
+tar xzvf /sources/SDL-1.2.15.tar.gz &&
+cd        SDL-1.2.15                &&
+
+sed -e '/_XData32/s:register long:register _Xconst long:' \
+    -i src/video/x11/SDL_x11sym.h &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+sudo install -v -m755 -d /usr/share/doc/SDL-1.2.15/html &&
+sudo install -v -m644    docs/html/*.html \
+                         /usr/share/doc/SDL-1.2.15/html &&
+
+cd .. &&
+rm -rf SDL-1.2.15
+```
+
+## SDL Image
+
+```sh
+curl https://www.libsdl.org/projects/SDL_image/release/SDL_image-1.2.12.tar.gz -o /sources/SDL_image-1.2.12.tar.gz &&
+
+tar xzvf /sources/SDL_image-1.2.12.tar.gz &&
+cd        SDL_image-1.2.12                &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf SDL_image-1.2.12
 ```
 
 ## libwebp

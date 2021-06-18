@@ -22,8 +22,7 @@ sudo ./nvidia-installer                      \
         --tmpdir=${PWD}/tmpbuild             \
         --ui=none                            \
         --no-rpms                            \
-        --disable-nouveau                    \
-        --run-nvidia-xconfig &&
+        --disable-nouveau &&
 
 echo "nvidia-uvm" |
     sudo install -vDm644 /dev/stdin /usr/lib/modules-load.d/nvidia-uvm.conf &&

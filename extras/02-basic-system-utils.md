@@ -164,6 +164,151 @@ cd .. &&
 rm -rf tmux-3.2
 ```
 
+## logrotate
+
+Daemon to compress and rotate system logs so errant logging doesn't fill up your filesystem.
+
+```sh
+curl https://github.com/logrotate/logrotate/releases/download/3.18.1/logrotate-3.18.1.tar.xz -o /sources/logrotate-3.18.1.tar.xz &&
+
+tar xvf /sources/logrotate-3.18.1.tar.xz &&
+cd       logrotate-3.18.1                &&
+
+./configure --prefix=/usr &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf logrotate-3.18.1
+```
+
+`logrotate` requires configuration files. The base configuration from Beyond Linux From Scratch is this:
+
+```sh
+cat > /etc/logrotate.conf << EOF
+# Begin /etc/logrotate.conf
+
+# Rotate log files weekly
+weekly
+
+# Don't mail logs to anybody
+nomail
+
+# If the log file is empty, it will not be rotated
+notifempty
+
+# Number of backups that will be kept
+# This will keep the 2 newest backups only
+rotate 2
+
+# Create new empty files after rotating old ones
+# This will create empty log files, with owner
+# set to root, group set to sys, and permissions 664
+create 0664 root sys
+
+# Compress the backups with gzip
+compress
+
+# No packages own lastlog or wtmp -- rotate them here
+/var/log/wtmp {
+    monthly
+    create 0664 root utmp
+    rotate 1
+}
+
+/var/log/lastlog {
+    monthly
+    rotate 1
+}
+
+# Some packages drop log rotation info in this directory
+# so we include any file in it.
+include /etc/logrotate.d
+
+# End /etc/logrotate.conf
+EOF
+
+chmod -v 0644 /etc/logrotate.conf
+```
+
+Then create the structure for additional configs:
+
+```sh
+mkdir -p /etc/logrotate.d
+```
+
+```sh
+cat > /etc/logrotate.d/sys.log << EOF
+/var/log/sys.log {
+   # If the log file is larger than 100kb, rotate it
+   size   100k
+   rotate 5
+   weekly
+   postrotate
+      /bin/killall -HUP syslogd
+   endscript
+}
+EOF
+
+chmod -v 0644 /etc/logrotate.d/sys.log
+```
+
+Then a `systemd` one-shot service is created, along with a timer to run it daily:
+
+```sh
+cat > /usr/lib/systemd/system/logrotate.service << "EOF" &&
+[Unit]
+Description=Runs the logrotate command
+Documentation=man:logrotate(8)
+DefaultDependencies=no
+After=local-fs.target
+Before=shutdown.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/sbin/logrotate /etc/logrotate.conf
+EOF
+cat > /usr/lib/systemd/system/logrotate.timer << "EOF" &&
+[Unit]
+Description=Runs the logrotate command daily at 3:00 AM
+
+[Timer]
+OnCalendar=*-*-* 3:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+EOF
+systemctl enable logrotate.timer
+```
+
+## D-Bus
+
+Although installed as part of base Linux From Scratch, here we rebuild with support for per-user sessions. You will need to add `--disable-doxygen-docs` if you don't have `doxygen` installed and `--disable-xml-docs` if you don't have `xmlto` installed. These will disable the API documentation and the html documentation, respectively.
+
+```sh
+tar xzvf /sources/base/dbus-1.12.20.tar.gz &&
+cd        dbus-1.12.20                     &&
+
+./configure --prefix=/usr                        \
+            --sysconfdir=/etc                    \
+            --localstatedir=/var                 \
+            --enable-user-session                \
+            --disable-static                     \
+            --docdir=/usr/share/doc/dbus-1.12.20 \
+            --with-console-auth-dir=/run/console \
+            --with-system-pid-file=/run/dbus/pid \
+            --with-system-socket=/run/dbus/system_bus_socket &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf dbus-1.12.20
+```
+
 ## wget
 
 Alternative web downloader to `curl`. Linux From Scratch relies upon this download files in bulk from a list.

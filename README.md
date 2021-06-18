@@ -62,13 +62,12 @@ This focuses on building the `GNOME` desktop, which is enormous and takes a very
 2. [Python scientific computing stack](scicomp/02-python.md)
 3. [Alternative scientific and statistical toolchains](scicomp/03-alternatives.md)
 
-### System hardening
+### Running a hypervisor
 
-1. [Kernel configuration](hardening/01-kernel.md)
-2. [SELinux](hardening/02-selinux.md)
-3. [iptables](hardening/03-iptables.md)
-4. [Setting up a firewall](hardening/04-firewall.md)
-5. [Tripwire](hardening/05-tripwire.md)
+1. [Kernel configuration](hypervisor/01-kernel.md)
+2. [QEMU and libvirt](hypervisor/02-qemu.md)
+3. [Graphical guest managers](hypervisor/03-graphical-mgr.md)
+4. [Terraform libvirt provider](hypervisor/04-terraform.md)
 
 ### Container tools
 
@@ -77,9 +76,10 @@ This focuses on building the `GNOME` desktop, which is enormous and takes a very
 3. [Redhat container tools](containers/03-redhat-tools.md)
 4. [Serving an image registry](containers/04-registry.md)
 
-### Running a hypervisor
+### System hardening
 
-1. [Kernel configuration](hypervisor/01-kernel.md)
-2. [qemu and libvirt](hypervisor/02-libvirt.md)
-3. [virt-manager](hypervisor/03-virt-manager.md)
-4. [Terraform libvirt provider](hypervisor/04-terraform.md)
+1. [Kernel configuration](hardening/01-kernel.md)
+2. [SELinux](hardening/02-selinux.md)
+3. [iptables](hardening/03-iptables.md)
+4. [Setting up a firewall](hardening/04-firewall.md)
+5. [Tripwire](hardening/05-tripwire.md)

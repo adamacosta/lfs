@@ -420,6 +420,46 @@ cd ../.. &&
 rm -rf gnome-weather-40.0
 ```
 
+## Avahi Client
+
+Link-local service discovery. Since `systemd-resolved` handles `mDNS` perfectly well on its own, I am only installing the client since `Seahorse` requires it.
+
+Create a group for privileged access to `Avahi` clients:
+
+```sh
+sudo groupadd -fg 86 netdev
+```
+
+```sh
+curl https://github.com/lathiat/avahi/releases/download/v0.8/avahi-0.8.tar.gz -o /sources/avahi-0.8.tar.gz &&
+curl https://www.linuxfromscratch.org/patches/blfs/svn/avahi-0.8-ipv6_race_condition_fix-1.patch -o /sources/patches/avahi-0.8-ipv6_race_condition_fix-1.patch &&
+
+tar xzvf /sources/avahi-0.8.tar.gz &&
+cd        avahi-0.8                &&
+
+patch -Np1 -i /sources/patches/avahi-0.8-ipv6_race_condition_fix-1.patch &&
+
+./configure --prefix=/usr        \
+            --sysconfdir=/etc    \
+            --localstatedir=/var \
+            --disable-static     \
+            --disable-libdaemon  \
+            --disable-mono       \
+            --disable-monodoc    \
+            --disable-python     \
+            --disable-qt3        \
+            --disable-qt4        \
+            --disable-qt5        \
+            --enable-core-docs   \
+            --with-distro=none   &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf avahi-0.8
+```
+
 ## Seahorse
 
 Graphical interface for managing and using encryption keys.
@@ -468,9 +508,32 @@ cd ../.. &&
 rm -rf epiphany-40.2
 ```
 
+## Totem
+
+The `GNOME` video player.
+
+```sh
+curl https://download-fallback.gnome.org/sources/totem/3.38/totem-3.38.1.tar.xz -o /sources/gnome/totem-3.38.1.tar.xz &&
+
+tar xvf /sources/gnome/totem-3.38.1.tar.xz &&
+cd       totem-3.38.1                      &&
+
+mkdir build &&
+cd    build &&
+
+meson --prefix=/usr \
+      --buildtype=release .. &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+sudo rm -rf totem-3.38.1
+```
+
 ## VLC Player
 
-Media player that recognizes virtually every format known to man. Does not yet support building with `lua-5.4`, so we need to install an older version first.
+Media player that recognizes virtually every format known to man. Does not yet support building with `lua-5.4`, so we need to install an older version first. Also requires `Qt5` for the graphical interface.
 
 ```sh
 curl https://www.lua.org/ftp/lua-5.2.4.tar.gz -o /sources/lua-5.2.4.tar.gz &&
@@ -554,10 +617,9 @@ export LUAC=/usr/bin/luac5.2                   &&
 export LUA_LIBS="$(pkg-config --libs lua52)"   &&
 export CPPFLAGS="$(pkg-config --cflags lua52)" &&
 
-BUILDCC=gcc ./configure --prefix=/usr    \
+BUILDCC=gcc ./configure --prefix=/usr \
                         --disable-opencv \
                         --disable-vpx &&
-
 
 make                                               &&
 sudo make docdir=/usr/share/doc/vlc-3.0.15 install &&

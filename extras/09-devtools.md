@@ -119,10 +119,10 @@ rm -rf libarchive-3.5.1
 Building the documentation requires `Sphinx` to build the html documentation. This can be installed or the build can just be run in a `Python` virtualenv as is shown here.
 
 ```sh
-curl https://cmake.org/files/v3.20/cmake-3.20.3.tar.gz -o /sources/cmake-3.20.3.tar.gz &&
+curl https://cmake.org/files/v3.20/cmake-3.20.4.tar.gz -o /sources/cmake-3.20.4.tar.gz &&
 
-tar xzvf /sources/cmake-3.20.3.tar.gz &&
-cd        cmake-3.20.3                &&
+tar xzvf /sources/cmake-3.20.4.tar.gz &&
+cd        cmake-3.20.4                &&
 
 python -m venv buildenv   &&
 . ./buildenv/bin/activate &&
@@ -135,7 +135,7 @@ sed -i '/"lib64"/s/64//' Modules/GNUInstallDirs.cmake &&
             --mandir=/share/man  \
             --no-system-jsoncpp  \
             --no-system-librhash \
-            --docdir=/usr/share/doc/cmake-3.20.3 &&
+            --docdir=/share/doc/cmake-3.20.4 &&
 
 make              &&
 sudo make install &&
@@ -143,7 +143,7 @@ sudo make install &&
 deactivate &&
 
 cd .. &&
-rm -rf cmake-3.20.3
+rm -rf cmake-3.20.4
 ```
 
 ## Assemblers
@@ -488,11 +488,13 @@ Now download the `rustc` tarball itself, apply the patches, and create the build
 
 Note that Beyond Linux From Scratch recommends installing into `/opt` and creating symlinks to make upgrading easier. Due to difficulties with `rustc` being able to find its standard library and an inability to build `js78`, I am opting to just install to the normal `/usr` prefix directly. Help on how `rustc` finds crates is not forthcoming on the Internet, with all advice to just use `rustup` for installing pre-built binaries, but this is a tool for developers potentially working with many versions at once and not really a suitable answer for system integrators. It is possible to pass `-L` to the target path and `rustc` will work, but `configure` scripts will not do this and if `rustc` has a way to pass flags through environment variables, the Internet does not seem to be forthcoming with this information. `RUSTFLAGS` works for building with `cargo`, but the `mozbuild` configure system tries to use `rustc` directly rather than through `cargo`.
 
-```sh
-curl https://static.rust-lang.org/dist/rustc-1.52.1-src.tar.gz -o /sources/rustc-1.52.1-src.tar.gz &&
+I have not been able to get `miri` to build with latest `rustc`, which is the reason for enumerating exactly which tools we want and allowing failed tool creation in the dist stage. It appears to be looking for git metadata that does not exist in the release tarball. In addition to the reduced toolset and installation prefix, the other change from Beyond Linux From Scratch is to use the installed versions. This avoids downloading the nightly `rustc`, `cargo`, and `rustfmt` when they are already present. If you're building `rust` for the first time, this will not work and you will need to allow the embedded downloader to grab them from the Internet.
 
-tar xzvf /sources/rustc-1.52.1-src.tar.gz &&
-cd        rustc-1.52.1-src                &&
+```sh
+curl https://static.rust-lang.org/dist/rustc-1.53.0-src.tar.gz -o /sources/rustc-1.53.0-src.tar.gz &&
+
+tar xzvf /sources/rustc-1.53.0-src.tar.gz &&
+cd        rustc-1.53.0-src                &&
 
 patch -Np1 -i /sources/patches/rustc-bootstrap-change-libexec-dir.patch         &&
 patch -d src/tools/cargo -Np1 < /sources/patches/cargo-change-libexec-dir.patch &&
@@ -505,17 +507,22 @@ targets = "X86"
 link-shared = true
 
 [build]
-docs = false
 extended = true
+cargo = "/usr/bin/cargo"
+rustc = "/usr/bin/rustc"
+rustfmt = "/usr/bin/rustfmt"
 
 [install]
 prefix = "/usr"
-docdir = "share/doc/rustc-1.52.1"
+docdir = "share/doc/rustc-1.53.0"
 
 [rust]
 codegen-tests = false
 channel = "stable"
 rpath = false
+
+[dist]
+missing-tools = true
 
 [target.x86_64-unknown-linux-gnu]
 llvm-config = "/usr/bin/llvm-config"
@@ -526,7 +533,7 @@ Build and (optionally) run the tests:
 
 ```sh
 export RUSTFLAGS="$RUSTFLAGS -C link-args=-lffi" &&
-./x.py build -j 64                               &&
+./x.py build -j 64 --exclude src/tools/miri      &&
 ./x.py test  -j 64 --verbose --no-fail-fast | tee rustc-tests.log
 ```
 
@@ -546,12 +553,22 @@ DESTDIR=${PWD}/install ./x.py install -j 64 &&
 unset LIBSSH2_SYS_USE_PKG_CONFIG
 ```
 
-This allows us to create a manifest for easy uninstalling later:
+Delete tools we do not need and replace duplicate libraries with symlinks to the architecture-specific original:
 
 ```sh
-find ./install/ | sed 's/\.\/install//' > rustc-1.52.1 &&
+export INSTALL_DIR="${PWD}/install"
+pushd install/usr/lib/rustlib                                            &&
+rm components install.log manifest-* rust-installer-version uninstall.sh &&
+ln -srft ${INSTALL_DIR}/usr/lib x86_64-unknown-linux-gnu/lib/*.so       &&
+popd
+```
+
+This allows us to create a manifest for easy manual uninstalling later:
+
+```sh
+find ./install/ -type f | sed 's/\.\/install//' > rustc-1.53.0 &&
 sudo mkdir -pv /usr/share/manifests/                   &&
-sudo cp    -v   rustc-1.52.1 /usr/share/manifests/
+sudo cp    -v   rustc-1.53.0 /usr/share/manifests/
 ```
 
 Then do the real installation by copying to the root filesystem:
@@ -589,10 +606,9 @@ This is roughly the test run by the `js78` `mozbuild` `configure` tool, so if it
 To delete the source and build trees:
 
 ```sh
-cd ..               &&
 sudo rm -rf install &&
 cd ..               &&
-rm -rf rustc-1.52.1-src
+rm -rf rustc-1.53.0-src
 ```
 
 #### Cbindgen
@@ -602,7 +618,7 @@ Generate C bindings for rust. Needed to compile Firefox.
 ```sh
 curl https://github.com/eqrion/cbindgen/archive/v0.19.0/cbindgen-0.19.0.tar.gz -o /sources/cbindgen-0.19.0.tar.gz &&
 
-tar xzvf /sources/cbindgen-0.19..0tar.gz &&
+tar xzvf /sources/cbindgen-0.19.0.tar.gz &&
 cd        cbindgen-0.19.0                &&
 
 cargo build --release &&
