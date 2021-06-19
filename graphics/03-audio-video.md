@@ -77,22 +77,22 @@ rm -rf vala-0.52.4
 SVG library and toolset. For Hacker News street cred, written in Rust.
 
 ```sh
-wget https://download.gnome.org/sources/librsvg/2.50/librsvg-2.50.7.tar.xz -P /sources/librsvg-2.50.7.tar.xz &&
+wget https://download.gnome.org/sources/librsvg/2.51/librsvg-2.51.3.tar.xz -P /sources &&
 
-tar xvf /sources/librsvg-2.50.7.tar.xz &&
-cd       librsvg-2.50.7                &&
+tar xvf /sources/librsvg-2.51.3.tar.xz &&
+cd       librsvg-2.51.3                &&
 
 ./configure --prefix=/usr    \
             --enable-vala    \
             --disable-static \
-            --docdir=/usr/share/doc/librsvg-2.50.7 &&
+            --docdir=/usr/share/doc/librsvg-2.51.3 &&
 
 make              &&
 make -k check      &&
 sudo make install &&
 
 cd .. &&
-rm -rf librsvg-2.50.7
+rm -rf librsvg-2.51.3
 ```
 
 ## LAME
