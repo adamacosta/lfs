@@ -2,6 +2,8 @@
 
 There is no clear dependency ordering between the various libraries and tools presented here and the programming languages presented in the next section. You may need to jump back and forth quite a bit. A lot of this is probably not needed if you only intend to build a headless system, but if you wish to use it as a build server and include building of documentation, many documentation generation tools can do quite a bit more if they include support for graphics, even if the graphics cannot be viewed on the same machine.
 
+There is an additional chicken and egg problem here in that `Cairo` will support `OpenGL` and `X11` if they are present, but can support its own graphics devices without needing an X server. You may want to recompile `Cairo` and `Pango` after installing `Xorg` and the `GTK` libraries for `GNOME`, but I present them first. `GraphViz` and `ImageMagick` will also add graphical features if recompiled after `Xorg` and `GTK`.
+
 ## Fonts and typesetting
 
 ### FreeType and deps
@@ -15,7 +17,7 @@ You may wish to install `brotli` first, which provides implementations of variou
 This is not strictly a dependency of `FreeType` itself, but `HarfBuzz` may not behave as expected if it is not present. Note that `Graphite` also has circular dependencies on `FreeType` and `HarfBuzz`, so though it will build without them, you will also want to rebuild after.
 
 ```sh
-curl https://github.com/silnrsi/graphite/releases/download/1.3.14/graphite2-1.3.14.tgz -o /sources/graphite2-1.3.14.tgz &&
+wget https://github.com/silnrsi/graphite/releases/download/1.3.14/graphite2-1.3.14.tgz -P /sources &&
 
 tar xzvf /sources/graphite2-1.3.14.tgz &&
 cd        graphite2-1.3.14             &&
@@ -37,7 +39,7 @@ rm -rf graphite2-1.3.14
 #### brotli
 
 ```sh
-curl https://github.com/google/brotli/archive/v1.0.9/brotli-1.0.9.tar.gz -o /sources/brotli-1.0.9.tar.gz &&
+wget https://github.com/google/brotli/archive/v1.0.9/brotli-1.0.9.tar.gz -P /sources &&
 
 tar xzvf /sources/brotli-1.0.9.tar.gz &&
 cd        brotli-1.0.9                &&
@@ -68,8 +70,8 @@ sudo rm -rf brotli-1.0.9
 #### FreeType
 
 ```sh
-curl https://downloads.sourceforge.net/freetype/freetype-2.10.4.tar.xz -o /sources/freetype-2.10.4.tar.xz &&
-curl https://downloads.sourceforge.net/freetype/freetype-doc-2.10.4.tar.xz -o /sources/freetype-doc-2.10.4.tar.xz &&
+wget https://downloads.sourceforge.net/freetype/freetype-2.10.4.tar.xz -P /sources &&
+wget https://downloads.sourceforge.net/freetype/freetype-doc-2.10.4.tar.xz -P /sources &&
 
 tar xvf /sources/freetype-2.10.4.tar.xz &&
 tar xvf /sources/freetype-doc-2.10.4.tar.xz \
@@ -99,7 +101,7 @@ rm -rf freetype-2.10.4
 #### HarfBuzz
 
 ```sh
-curl https://github.com/harfbuzz/harfbuzz/releases/download/2.8.1/harfbuzz-2.8.1.tar.xz -o /sources/harfbuzz-2.8.1.tar.xz &&
+wget https://github.com/harfbuzz/harfbuzz/releases/download/2.8.1/harfbuzz-2.8.1.tar.xz -P /sources &&
 
 tar xvf /sources/harfbuzz-2.8.1.tar.xz &&
 cd      harfbuzz-2.8.1                 &&
@@ -125,8 +127,8 @@ After `HarfBuzz` is installed, you should now rebuild and reinstall `Graphite2` 
 ### libpng
 
 ```sh
-curl https://downloads.sourceforge.net/libpng/libpng-1.6.37.tar.xz -o /sources/libpng-1.6.37.tar.xz &&
-curl https://downloads.sourceforge.net/sourceforge/libpng-apng/libpng-1.6.37-apng.patch.gz -o /sources/libpng-1.6.37-apng.patch.gz &&
+wget https://downloads.sourceforge.net/libpng/libpng-1.6.37.tar.xz -P /sources &&
+wget https://downloads.sourceforge.net/sourceforge/libpng-apng/libpng-1.6.37-apng.patch.gz -P /sources/patches &&
 
 tar xvf /sources/libpng-1.6.37.tar.xz         &&
 gzip -d /sources/libpng-1.6.37-apng.patch.gz  &&
@@ -150,7 +152,7 @@ rm -rf libpng-1.6.37
 ### OpenJPEG
 
 ```sh
-curl https://github.com/uclouvain/openjpeg/archive/v2.4.0/openjpeg-2.4.0.tar.gz -o /sources/openjpeg-2.4.0.tar.gz &&
+wget https://github.com/uclouvain/openjpeg/archive/v2.4.0/openjpeg-2.4.0.tar.gz -P /sources &&
 
 tar xzvf /sources/openjpeg-2.4.0.tar.gz &&
 cd        openjpeg-2.4.0                &&
@@ -177,7 +179,7 @@ rm -rf openjpeg-2.4.0
 ### libjpeg-turbo
 
 ```sh
-curl https://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-2.0.6.tar.gz -o /sources/libjpeg-turbo-2.0.6.tar.gz &&
+wget https://downloads.sourceforge.net/libjpeg-turbo/libjpeg-turbo-2.0.6.tar.gz -P /sources &&
 
 tar xzvf /sources/libjpeg-turbo-2.0.6.tar.gz &&
 cd        libjpeg-turbo-2.0.6                &&
@@ -203,7 +205,7 @@ rm -rf libjpeg-turbo-2.0.6
 ### libTIFF
 
 ```sh
-curl http://download.osgeo.org/libtiff/tiff-4.2.0.tar.gz -o /sources/tiff-4.2.0.tar.gz &&
+wget http://download.osgeo.org/libtiff/tiff-4.2.0.tar.gz -P /sources &&
 
 tar xzvf /sources/tiff-4.2.0.tar.gz &&
 cd        tiff-4.2.0                &&
@@ -226,7 +228,7 @@ rm -rf tiff-4.2.0
 Pixel buffer library divested from GTK+.
 
 ```sh
-curl https://download.gnome.org/sources/gdk-pixbuf/2.42/gdk-pixbuf-2.42.6.tar.xz -o /sources/gdk-pixbuf-2.42.6.tar.xz &&
+wget https://download.gnome.org/sources/gdk-pixbuf/2.42/gdk-pixbuf-2.42.6.tar.xz -P /sources &&
 
 tar xvf /sources/gdk-pixbuf-2.42.6.tar.xz &&
 cd       gdk-pixbuf-2.42.6                &&
@@ -249,7 +251,7 @@ rm -rf gdk-pixbuf-2.42.6
 Libraries for low-level pixel manipulation.
 
 ```sh
-curl https://www.cairographics.org/releases/pixman-0.40.0.tar.gz -o /sources/pixman-0.40.0.tar.xz &&
+wget https://www.cairographics.org/releases/pixman-0.40.0.tar.gz -P /sources &&
 
 tar xvf /sources/pixman-0.40.0.tar.xz &&
 cd       pixman-0.40.0                &&
@@ -270,7 +272,7 @@ rm -rf pixman-0.40.0
 ### giflib
 
 ```sh
-curl https://sourceforge.net/projects/giflib/files/giflib-5.2.1.tar.gz -o /sources/giflib-5.2.1.tar.gz &&
+wget https://sourceforge.net/projects/giflib/files/giflib-5.2.1.tar.gz -P /sources &&
 
 tar xzvf /sources/giflib-5.2.1.tar.gz &&
 cd        giflib-5.2.1                &&
@@ -291,8 +293,8 @@ rm -rf giflib-5.2.1
 ## libexif
 
 ```sh
-curl https://github.com/libexif/libexif/releases/download/libexif-0_6_22-release/libexif-0.6.22.tar.xz -o /sources/libexif-0.6.22.tar.xz &&
-curl https://www.linuxfromscratch.org/patches/blfs/svn/libexif-0.6.22-security_fixes-1.patch -o /sources/patches/libexif-0.6.22-security_fixes-1.patch &&
+wget https://github.com/libexif/libexif/releases/download/libexif-0_6_22-release/libexif-0.6.22.tar.xz -P /sources &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/libexif-0.6.22-security_fixes-1.patch -P /sources/patches &&
 
 tar xvf /sources/libexif-0.6.22.tar.xz &&
 cd       libexif-0.6.22                &&
@@ -313,7 +315,7 @@ rm -rf libexif-0.6.22
 ## taglib
 
 ```sh
-curl https://taglib.github.io/releases/taglib-1.12.tar.gz -o /sources/taglib-1.12.tar.gz &&
+wget https://taglib.github.io/releases/taglib-1.12.tar.gz -P /sources &&
 
 tar xzvf /sources/taglib-1.12.tar.gz &&
 cd        taglib-1.12                &&
@@ -336,7 +338,7 @@ rm -rf tablib-1.12
 ## FontConfig
 
 ```sh
-curl https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.1.tar.bz2 -o /sources/fontconfig-2.13.1.tar.bz2 &&
+wget https://www.freedesktop.org/software/fontconfig/release/fontconfig-2.13.1.tar.bz2 -P /sources &&
 
 tar xvf /sources/fontconfig-2.13.1.tar.bz2 &&
 cd       fontconfig-2.13.1                 &&
@@ -356,10 +358,10 @@ rm -rf fontconfig-2.13.1
 
 ## Cairo
 
-2d graphics library.
+2d graphics library. If you come to rebuild after installing `Xorg` and `OpenGL`, add the `--enable-gl` flag. `X11` libraries will be detected and enabled automatically.
 
 ```sh
-curl https://www.cairographics.org/snapshots/cairo-1.17.4.tar.xz -o /sources/cairo-1.17.4.tar.xz &&
+wget https://www.cairographics.org/snapshots/cairo-1.17.4.tar.xz -P /sources &&
 
 tar xvf /sources/cairo-1.17.4.tar.xz &&
 cd       cairo-1.17.4                &&
@@ -381,7 +383,7 @@ rm -rf cairo-1.17.4
 Unicode Bidirectional Algorithm for bidirectional alphabet rendering.
 
 ```sh
-curl https://github.com/fribidi/fribidi/releases/download/v1.0.9/fribidi-1.0.9.tar.xz -o /sources/fribidi-1.0.9.tar.xz &&
+wget https://github.com/fribidi/fribidi/releases/download/v1.0.9/fribidi-1.0.9.tar.xz -P /sources &&
 
 tar xvf /sources/fribidi-1.0.9.tar.xz &&
 cd       fribidi-1.0.9                &&
@@ -403,7 +405,7 @@ rm -rf fribidi-1.0.9
 Text rendering and internationalization.
 
 ```sh
-curl https://download.gnome.org/sources/pango/1.48/pango-1.48.5.tar.xz -o /sources/pango-1.48.5.tar.xz &&
+wget https://download.gnome.org/sources/pango/1.48/pango-1.48.5.tar.xz -P /sources &&
 
 tar xvf /sources/pango-1.48.5.tar.xz &&
 cd       pango-1.48.5                &&
@@ -425,7 +427,7 @@ rm -rf pango-1.48.5
 Inspect object APIs. Like `GLib`, is a critical component of `GNOME` but also used by other tools.
 
 ```sh
-curl https://download.gnome.org/sources/gobject-introspection/1.68/gobject-introspection-1.68.0.tar.xz -o /sources/gobject-introspection-1.68.0.tar.xz &&
+wget https://download.gnome.org/sources/gobject-introspection/1.68/gobject-introspection-1.68.0.tar.xz -P /sources &&
 
 tar xvf /sources/gobject-introspection-1.68.0.tar.xz &&
 cd       gobject-introspection-1.68.0                &&
@@ -454,7 +456,7 @@ rm -rf gobject-introspection-1.68.0
 ## SDL2
 
 ```sh
-curl https://www.libsdl.org/release/SDL2-2.0.14.tar.gz -o /sources/SDL2-2.0.14.tar.gz &&
+wget https://www.libsdl.org/release/SDL2-2.0.14.tar.gz -P /sources &&
 
 tar xzvf /sources/SDL2-2.0.14.tar.gz &&
 cd        SDL2-2.0.14                &&
@@ -480,7 +482,7 @@ rm -rf SDL2-2.0.14
 ## SDL
 
 ```sh
-curl https://www.libsdl.org/release/SDL-1.2.15.tar.gz -o /sources/SDL-1.2.15.tar.gz &&
+wget https://www.libsdl.org/release/SDL-1.2.15.tar.gz -P /sources &&
 
 tar xzvf /sources/SDL-1.2.15.tar.gz &&
 cd        SDL-1.2.15                &&
@@ -505,7 +507,7 @@ rm -rf SDL-1.2.15
 ## SDL Image
 
 ```sh
-curl https://www.libsdl.org/projects/SDL_image/release/SDL_image-1.2.12.tar.gz -o /sources/SDL_image-1.2.12.tar.gz &&
+wget https://www.libsdl.org/projects/SDL_image/release/SDL_image-1.2.12.tar.gz -P /sources &&
 
 tar xzvf /sources/SDL_image-1.2.12.tar.gz &&
 cd        SDL_image-1.2.12                &&
@@ -523,7 +525,7 @@ rm -rf SDL_image-1.2.12
 ## libwebp
 
 ```sh
-curl http://downloads.webmproject.org/releases/webp/libwebp-1.2.0.tar.gz -o /sources/libwebp-1.2.0.tar.gz &&
+wget http://downloads.webmproject.org/releases/webp/libwebp-1.2.0.tar.gz -P /sources &&
 
 tar xzvf /sources/libwebp-1.2.0.tar.gz &&
 cd        libwebp-1.2.0                &&
@@ -546,7 +548,7 @@ rm -rf libwebp-1.2.0
 ## woff
 
 ```sh
-curl https://github.com/google/woff2/archive/v1.0.2/woff2-1.0.2.tar.gz -o /sources/woff2-1.0.2.tar.gz &&
+wget https://github.com/google/woff2/archive/v1.0.2/woff2-1.0.2.tar.gz -P /sources &&
 
 tar xzvf /sources/woff2-1.0.2.tar.gz &&
 cd        woff2-1.0.2                &&
@@ -571,7 +573,7 @@ PDF rendering library.
 `clang` is optional but required for the fuzzing and address sanitizers to work, which may help prevent security issues.
 
 ```sh
-curl https://poppler.freedesktop.org/poppler-21.05.0.tar.xz -o /sources/poppler-21.05.0.tar.xz &&
+wget https://poppler.freedesktop.org/poppler-21.05.0.tar.xz -P /sources &&
 
 tar xvf /sources/poppler-21.05.0.tar.xz &&
 cd       poppler-21.05.0                &&
@@ -596,16 +598,17 @@ rm -rf poppler-21.05.0
 ## GraphViz
 
 ```sh
-curl https://www2.graphviz.org/Packages/stable/portable_source/graphviz-2.44.1.tar.gz -o /sources/graphviz-2.44.1.tar.gz &&
+wget https://www2.graphviz.org/Packages/stable/portable_source/graphviz-2.44.1.tar.gz -P /sources &&
 
 tar xzvf /sources/graphviz-2.44.1.tar.gz &&
 cd        graphviz-2.44.1                &&
 
 sed -i '/LIBPOSTFIX="64"/s/64//' configure.ac &&
-autoreconf                                    &&
+
+autoreconf               &&
 ./configure --prefix=/usr \
             --disable-php \
-            PS2PDF=true                       &&
+            PS2PDF=true  &&
 
 make              &&
 sudo make install &&
@@ -614,35 +617,12 @@ cd .. &&
 rm -rf graphviz-2.44.1
 ```
 
-## ImageMagick
-
-```sh
-curl https://download.imagemagick.org/ImageMagick/download/releases/ImageMagick-7.0.11-13.tar.gz -o /sources/ImageMagick-7.0.11-13.tar.gz &&
-
-tar xzvf /sources/ImageMagick-7.0.11-13.tar.gz &&
-cd        ImageMagick-7.0.11-13                &&
-
-./configure --prefix=/usr     \
-            --sysconfdir=/etc \
-            --enable-hdri     \
-            --with-modules    \
-            --with-perl       \
-            --disable-static &&
-
-make                                                                   &&
-make -k check                                                          &&
-sudo make DOCUMENTATION_PATH=/usr/share/doc/imagemagick-7.0.11 install &&
-
-cd .. &&
-sudo rm -rf ImageMagick-7.0.11-13
-```
-
 ## LittleCMS
 
 The Little Color Management System.
 
 ```sh
-curl https://downloads.sourceforge.net/lcms/lcms2-2.12.tar.gz -o /sources/lcms2-2.12.tar.gz &&
+wget https://downloads.sourceforge.net/lcms/lcms2-2.12.tar.gz -P /sources &&
 
 tar xzvf /sources/lcms2-2.12.tar.gz &&
 cd        lcms2-2.12                &&
@@ -657,13 +637,39 @@ cd .. &&
 rm -rf lcms2-2.12
 ```
 
+## ImageMagick
+
+```sh
+wget https://download.imagemagick.org/ImageMagick/download/releases/ImageMagick-7.0.11-13.tar.gz -P /sources/ &&
+
+tar xzvf /sources/ImageMagick-7.0.11-13.tar.gz &&
+cd        ImageMagick-7.0.11-13                &&
+
+./configure --prefix=/usr     \
+            --sysconfdir=/etc \
+            --enable-hdri     \
+            --with-modules    \
+            --with-perl       \
+            --with-gslib      \
+            --with-rsvg       \
+            --with-gvc        \
+            --disable-static &&
+
+make                                                                   &&
+make -k check                                                          &&
+sudo make DOCUMENTATION_PATH=/usr/share/doc/imagemagick-7.0.11 install &&
+
+cd .. &&
+sudo rm -rf ImageMagick-7.0.11-13
+```
+
 ## sassc
 
 CSS preprocessor.
 
 ```sh
-curl https://github.com/sass/sassc/archive/3.6.2/sassc-3.6.2.tar.gz -o /sources/sassc-3.6.2.tar.gz &&
-curl https://github.com/sass/libsass/archive/3.6.5/libsass-3.6.5.tar.gz -o /sources/libsass-3.6.5.tar.gz &&
+wget https://github.com/sass/sassc/archive/3.6.2/sassc-3.6.2.tar.gz -P /sources &&
+wget https://github.com/sass/libsass/archive/3.6.5/libsass-3.6.5.tar.gz -P /sources &&
 
 tar xzvf /sources/libsass-3.6.5.tar.gz &&
 cd        libsass-3.6.5                &&
@@ -700,16 +706,16 @@ Libraries for rendering postscript.
 We remove vendored libraries since we have newer versions of these already installed.
 
 ```sh
-curl https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9533/ghostscript-9.53.3.tar.xz -o /sources/ghostscript-9.53.3.tar.xz &&
-curl http://www.linuxfromscratch.org/patches/blfs/10.1/ghostscript-9.53.3-freetype_fix-1.patch -o /sources/ghostscript-9.53.3-freetype_fix-1.patch &&
-curl https://downloads.sourceforge.net/gs-fonts/ghostscript-fonts-std-8.11.tar.gz -o /sources/ghostscript-fonts-std-8.11.tar.gz &&
-curl https://downloads.sourceforge.net/gs-fonts/gnu-gs-fonts-other-6.0.tar.gz -o /sources/gnu-gs-fonts-other-6.0.tar.gz &&
+wget https://github.com/ArtifexSoftware/ghostpdl-downloads/releases/download/gs9533/ghostscript-9.53.3.tar.xz -P /sources &&
+wget http://www.linuxfromscratch.org/patches/blfs/10.1/ghostscript-9.53.3-freetype_fix-1.patch -P /sources/patches &&
+wget https://downloads.sourceforge.net/gs-fonts/ghostscript-fonts-std-8.11.tar.gz -P /sources &&
+wget https://downloads.sourceforge.net/gs-fonts/gnu-gs-fonts-other-6.0.tar.gz -P /sources &&
 
 tar xvf /sources/ghostscript-9.53.3.tar.xz &&
 cd       ghostscript-9.53.3                &&
 
-rm -rf freetype jpeg libpng openjpeg zlib                      &&
-patch -Np1 -i /sources/ghostscript-9.53.3-freetype_fix-1.patch &&
+rm -rf freetype jpeg libpng openjpeg zlib                              &&
+patch -Np1 -i /sources/patches/ghostscript-9.53.3-freetype_fix-1.patch &&
 
 ./configure --prefix=/usr           \
             --disable-compile-inits \

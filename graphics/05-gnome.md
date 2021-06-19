@@ -1,252 +1,9 @@
 # GNOME desktop
 
-Create a separate directory for GNOME:
-
-```sh
-mkdir -pv /sources/gnome
-```
-
-## libepoxy
-
-```sh
-curl https://github.com/anholt/libepoxy/releases/download/1.5.8/libepoxy-1.5.8.tar.xz -o /sources/gnome/libepoxy-1.5.8.tar.xz &&
-
-tar xvf /sources/gnome/libepoxy-1.5.8.tar.xz &&
-cd       libepoxy-1.5.8                      &&
-
-mkdir build &&
-cd    build &&
-
-meson --prefix=/usr \
-      --buildtype=release .. &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-rm -rf libepoxy-1.5.8
-```
-
-## ATK
-
-```sh
-curl https://download.gnome.org/sources/atk/2.36/atk-2.36.0.tar.xz -o /sources/gnome/atk-2.36.0.tar.xz &&
-
-tar xvf /sources/gnome/atk-2.36.0.tar.xz &&
-cd       atk-2.36.0                      &&
-
-mkdir build &&
-cd    build &&
-
-meson --prefix=/usr \
-      --buildtype=release .. &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-rm -rf atk-2.36.0
-```
-
-## at-spi2-core
-
-```sh
-curl https://download.gnome.org/sources/at-spi2-core/2.40/at-spi2-core-2.40.2.tar.xz -o /sources/gnome/at-spi2-core-2.40.2.tar.xz &&
-
-tar xvf /sources/gnome/at-spi2-core-2.40.2.tar.xz &&
-cd       at-spi2-core-2.40.2                      &&
-
-mkdir build &&
-cd    build &&
-
-meson --prefix=/usr \
-      --buildtype=release .. &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-rm -rf at-spi2-core-2.40.2
-```
-
-## at-spi2-atk
-
-```sh
-curl https://download.gnome.org/sources/at-spi2-atk/2.38/at-spi2-atk-2.38.0.tar.xz -o /sources/gnome/at-spi2-atk-2.38.0.tar.xz &&
-
-tar xvf /sources/gnome/at-spi2-atk-2.38.0.tar.xz &&
-cd       at-spi2-atk-2.38.0                      &&
-
-mkdir build &&
-cd build &&
-
-meson --prefix=/usr \
-      --buildtype=release .. &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-rm -rf at-spi2-atk-2.38.0
-```
-
-## gtk-doc
-
-```sh
-curl https://download.gnome.org/sources/gtk-doc/1.33/gtk-doc-1.33.2.tar.xz -o /sources/gnome/gtk-doc-1.33.2.tar.xz &&
-
-tar xvf /sources/gnome/gtk-doc-1.33.2.tar.xz &&
-cd       gtk-doc-1.33.2                      &&
-
-autoreconf -fiv           &&
-./configure --prefix=/usr &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf gtk-doc-1.33.2
-```
-
-## JSON-Glib
-
-```sh
-curl https://download.gnome.org/sources/json-glib/1.6/json-glib-1.6.2.tar.xz -o /sources/gnome/json-glib-1.6.2.tar.xz &&
-
-tar xvf /sources/gnome/json-glib-1.6.2.tar.xz &&
-cd       json-glib-1.6.2                      &&
-
-mkdir build &&
-cd    build &&
-
-meson --prefix=/usr \
-      --buildtype=release .. &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-sudo rm -rf json-glib-1.6.2
-```
-
-## ISO Codes
-
-```sh
-curl http://anduin.linuxfromscratch.org/BLFS/iso-codes/iso-codes-4.6.0.tar.xz -o /sources/gnome/iso-codes-4.6.0.tar.xz &&
-
-tar xvf /sources/gnome/iso-codes-4.6.0.tar.xz &&
-cd       iso-codes-4.6.0                      &&
-
-./configure --prefix=/usr &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf iso-codes-4.6.0
-```
-
-## GTK+-3
-
-```sh
-curl https://download.gnome.org/sources/gtk+/3.24/gtk+-3.24.29.tar.xz -o /sources/gnome/gtk+-3.24.29.tar.xz &&
-
-tar xvf /sources/gnome/gtk+-3.24.29.tar.xz &&
-cd       gtk+-3.24.29                      &&
-
-./configure --prefix=/usr              \
-            --sysconfdir=/etc          \
-            --enable-broadway-backend  \
-            --enable-x11-backend       \
-            --enable-wayland-backend   &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf gtk+-3.24.29
-```
-
-## GTK4
-
-```sh
-curl https://download.gnome.org/sources/gtk/4.2/gtk-4.2.1.tar.xz -o /sources/gnome/gtk-4.2.1.tar.xz &&
-
-tar xvf /sources/gnome/gtk-4.2.1.tar.xz &&
-cd       gtk-4.2.1                      &&
-
-mkdir build &&
-cd    build &&
-
-meson --prefix=/usr       \
-      --buildtype=release \
-      -Dbroadway_backend=true .. &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-rm -rf gtk-4.2.1
-```
-
-## tk
-
-After installing this, you can rebuild `Python` to include the `TKinter` graphics toolkit.
-
-```sh
-curl https://downloads.sourceforge.net/tcl/tk8.6.11.1-src.tar.gz -o /sources/tk8.6.11-1-src.tar.gz &&
-
-tar xzvf /sources/tk8.6.11-1-src.tar.gz &&
-cd        tk8.6.11                      &&
-
-cd unix &&
-./configure --prefix=/usr \
-            --mandir=/usr/share/man \
-            $([ $(uname -m) = x86_64 ] && echo --enable-64bit) &&
-
-make &&
-
-sed -e "s@^\(TK_SRC_DIR='\).*@\1/usr/include'@" \
-    -e "/TK_B/s@='\(-L\)\?.*unix@='\1/usr/lib@" \
-    -i tkConfig.sh
-
-sudo make install                      &&
-sudo make install-private-headers      &&
-sudo ln -v -sf wish8.6 /usr/bin/wish   &&
-sudo chmod -v 755 /usr/lib/libtk8.6.so &&
-
-cd ../.. &&
-rm -rf tk8.6.11
-```
-
-## gcr
-
-```sh
-curl https://download.gnome.org/sources/gcr/3.40/gcr-3.40.0.tar.xz -o /sources/gnome/gcr-3.40.0.tar.xz &&
-
-tar xvf /sources/gnome/gcr-3.40.0.tar.xz &&
-cd       gcr-3.40.0                      &&
-
-sed -i 's:"/desktop:"/org:' schema/*.xml &&
-
-mkdir build &&
-cd    build &&
-
-meson --prefix=/usr       \
-      --buildtype=release \
-      -Dgtk_doc=false .. &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-rm -rf gcr-3.40.0
-```
-
 ## gsettings-desktop-schemas
 
 ```sh
-curl https://download.gnome.org/sources/gsettings-desktop-schemas/40/gsettings-desktop-schemas-40.0.tar.xz -o /sources/gnome/gsettings-desktop-schemas-40.0.tar.xz &&
+wget https://download.gnome.org/sources/gsettings-desktop-schemas/40/gsettings-desktop-schemas-40.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gsettings-desktop-schemas-40.0.tar.xz &&
 cd       gsettings-desktop-schemas-40.0                      &&
@@ -265,131 +22,10 @@ cd ../.. &&
 rm -rf gsettings-desktop-schemas-40.0
 ```
 
-## libsecret
-
-```sh
-curl https://download.gnome.org/sources/libsecret/0.20/libsecret-0.20.4.tar.xz -o /sources/gnome/libsecret-0.20.4.tar.xz &&
-
-tar xvf /sources/gnome/libsecret-0.20.4.tar.xz &&
-cd       libsecret-0.20.4                      &&
-
-mkdir bld &&
-cd bld &&
-
-meson --prefix=/usr \
-      --buildtype=release \
-      -Dgtk_doc=false .. &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-rm -rf libsecret-0.20.4
-```
-
-## glib-networking
-
-```sh
-curl https://download.gnome.org/sources/glib-networking/2.68/glib-networking-2.68.1.tar.xz -o /sources/gnome/glib-networking-2.68.1.tar.xz &&
-
-tar xvf /sources/gnome/glib-networking-2.68.1.tar.xz &&
-cd       glib-networking-2.68.1                      &&
-
-mkdir build &&
-cd    build &&
-
-meson --prefix=/usr          \
-      --buildtype=release    \
-      -Dlibproxy=disabled .. &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-rm -rf glib-networking-2.68.1
-```
-
-## rest
-
-```sh
-curl https://download.gnome.org/sources/rest/0.8/rest-0.8.1.tar.xz -o /sources/gnome/rest-0.8.1.tar.xz &&
-
-tar xvf /sources/gnome/rest-0.8.1.tar.xz &&
-cd       rest-0.8.1                      &&
-
-./configure --prefix=/usr \
-    --with-ca-certificates=/etc/pki/tls/certs/ca-bundle.crt &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf rest-0.8.1
-```
-
-## VTE
-
-```sh
-curl https://gitlab.gnome.org/GNOME/vte/-/archive/0.64.2/vte-0.64.2.tar.gz -o /sources/gnome/vte-0.64.2.tar.gz &&
-
-tar xzvf /sources/gnome/vte-0.64.2.tar.gz &&
-cd        vte-0.64.2                      &&
-
-mkdir build &&
-cd    build &&
-
-meson --prefix=/usr \
-      --buildtype=release \
-      -Dfribidi=false .. &&
-
-ninja              &&
-sudo ninja install &&
-
-sudo rm -v /etc/profile.d/vte.* &&
-
-cd ../.. &&
-rm -rf vte-0.64.2
-```
-
-## yelp-xsl
-
-```sh
-curl https://download.gnome.org/sources/yelp-xsl/40/yelp-xsl-40.2.tar.xz -o /sources/gnome/yelp-xsl-40.2.tar.xz &&
-
-tar xvf /sources/gnome/yelp-xsl-40.2.tar.xz &&
-cd       yelp-xsl-40.2                      &&
-
-./configure --prefix=/usr &&
-
-sudo make install &&
-
-cd .. &&
-rm -rf yelp-xsl-40.2
-```
-
-## dbus-glib
-
-```sh
-curl https://dbus.freedesktop.org/releases/dbus-glib/dbus-glib-0.112.tar.gz -o /sources/gnome/dbus-glib-0.112.tar.gz &&
-
-tar xzvf /sources/gnome/dbus-glib-0.112.tar.gz &&
-cd        dbus-glib-0.112                      &&
-
-./configure --prefix=/usr     \
-            --sysconfdir=/etc \
-            --disable-static &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf dbus-glib-0.112
-```
-
 ## GConf
 
 ```sh
-curl https://download.gnome.org/sources/GConf/3.2/GConf-3.2.6.tar.xz -o /sources/gnome/GConf-3.2.6.tar.xz &&
+wget https://download.gnome.org/sources/GConf/3.2/GConf-3.2.6.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/GConf-3.2.6.tar.xz &&
 cd       GConf-3.2.6                      &&
@@ -410,7 +46,7 @@ rm -rf GConf-3.2.6
 ## gnome-autoar
 
 ```sh
-curl https://download.gnome.org/sources/gnome-autoar/0.3/gnome-autoar-0.3.3.tar.xz -o /sources/gnome/gnome-autoar-0.3.3.tar.xz &&
+wget https://download.gnome.org/sources/gnome-autoar/0.3/gnome-autoar-0.3.3.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-autoar-0.3.3.tar.xz &&
 cd       gnome-autoar-0.3.3                      &&
@@ -429,7 +65,7 @@ rm -rf gnome-autoar-0.3.3
 ## gnome-desktop
 
 ```sh
-curl https://download.gnome.org/sources/gnome-desktop/40/gnome-desktop-40.2.tar.xz -o /sources/gnome/gnome-desktop-40.2.tar.xz &&
+wget https://download.gnome.org/sources/gnome-desktop/40/gnome-desktop-40.2.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-desktop-40.2.tar.xz &&
 cd       gnome-desktop-40.2                      &&
@@ -451,7 +87,7 @@ sudo rm -rf gnome-desktop-40.2
 ## gnome-menus
 
 ```sh
-curl https://download.gnome.org/sources/gnome-menus/3.36/gnome-menus-3.36.0.tar.xz -o /sources/gnome/gnome-menus-3.36.0.tar.xz &&
+wget https://download.gnome.org/sources/gnome-menus/3.36/gnome-menus-3.36.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-menus-3.36.0.tar.xz &&
 cd       gnome-menus-3.36.0                      &&
@@ -470,7 +106,7 @@ rm -rf gnome-menus-3.36.0
 ## gnome-video-effects
 
 ```sh
-curl https://download.gnome.org/sources/gnome-video-effects/0.5/gnome-video-effects-0.5.0.tar.xz -o /sources/gnome/gnome-video-effects-0.5.0.tar.xz &&
+wget https://download.gnome.org/sources/gnome-video-effects/0.5/gnome-video-effects-0.5.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-video-effects-0.5.0.tar.xz &&
 cd       gnome-video-effects-0.5.0 &&
@@ -487,113 +123,10 @@ cd ../.. &&
 rm -rf gnome-video-effects-0.5.0
 ```
 
-## libwpe
-
-```sh
-curl http://wpewebkit.org/releases/libwpe-1.10.0.tar.xz -o /sources/gnome/libwpe-1.10.0.tar.xz &&
-
-tar xvf /sources/gnome/libwpe-1.10.0.tar.xz &&
-cd       libwpe-1.10.0                      &&
-
-mkdir build &&
-cd    build &&
-
-meson --prefix=/usr \
-      --buildtype=release .. &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-rm -rf libwpe-1.10.0
-```
-
-## wpebackend-fdo
-
-```sh
-curl https://wpewebkit.org/releases/wpebackend-fdo-1.10.0.tar.xz -o /sources/gnome/wpebackend-fdo-1.10.0.tar.xz &&
-
-tar xvf /sources/gnome/wpebackend-fdo-1.10.0.tar.xz &&
-cd       wpebackend-fdo-1.10.0                      &&
-
-mkdir build &&
-cd    build &&
-
-meson --prefix=/usr \
-      --buildtype=release ..
-
-ninja              &&
-sudo ninja install &&
-
-
-cd ../.. &&
-rm -rf wpebackend-fdo-1.10.0
-```
-
-## libnotify
-
-```sh
-curl https://download.gnome.org/sources/libnotify/0.7/libnotify-0.7.9.tar.xz -o /sources/gnome/libnotify-0.7.9.tar.xz &&
-
-tar xvf /sources/gnome/libnotify-0.7.9.tar.xz &&
-cd       libnotify-0.7.9                      &&
-
-mkdir build &&
-cd    build &&
-
-meson --prefix=/usr       \
-      --buildtype=release \
-      -Dgtk_doc=false     \
-      -Dman=false .. &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-rm -rf libnotify-0.7.9
-```
-
-## WebKitGTK
-
-```sh
-curl https://webkitgtk.org/releases/webkitgtk-2.32.1.tar.xz -o /sources/gnome/webkitgtk-2.32.1.tar.xz &&
-
-tar xvf /sources/gnome/webkitgtk-2.32.1.tar.xz &&
-cd       webkitgtk-2.32.1                      &&
-
-mkdir -vp build &&
-cd        build &&
-
-cmake -DCMAKE_BUILD_TYPE=Release  \
-      -DCMAKE_INSTALL_PREFIX=/usr \
-      -DCMAKE_SKIP_RPATH=ON       \
-      -DPORT=GTK                  \
-      -DLIB_INSTALL_DIR=/usr/lib  \
-      -DUSE_LIBHYPHEN=OFF         \
-      -DENABLE_GAMEPAD=OFF        \
-      -DENABLE_MINIBROWSER=ON     \
-      -DUSE_WOFF2=OFF             \
-      -DUSE_WPE_RENDERER=ON       \
-      -DENABLE_BUBBLEWRAP_SANDBOX=OFF \
-      -Wno-dev -G Ninja ..        &&
-
-ninja              &&
-sudo ninja install &&
-
-sudo install -vdm755 /usr/share/gtk-doc/html/webkit{2,dom}gtk-4.0 &&
-sudo install -vm644  ../Documentation/webkit2gtk-4.0/html/*   \
-                     /usr/share/gtk-doc/html/webkit2gtk-4.0       &&
-sudo install -vm644  ../Documentation/webkitdomgtk-4.0/html/* \
-                     /usr/share/gtk-doc/html/webkitdomgtk-4.0     &&
-
-cd ../.. &&
-rm -rf webkitgtk-2.32.1
-```
-
 ## Gnome Online Accounts
 
 ```sh
-curl https://download.gnome.org/sources/gnome-online-accounts/3.40/gnome-online-accounts-3.40.0.tar.xz -o /sources/gnome/gnome-online-accounts-3.40.0.tar.xz &&
+wget https://download.gnome.org/sources/gnome-online-accounts/3.40/gnome-online-accounts-3.40.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-online-accounts-3.40.0.tar.xz &&
 cd       gnome-online-accounts-3.40.0                      &&
@@ -613,7 +146,7 @@ rm -rf gnome-online-accounts-3.40.0
 ## totem-pl-parser
 
 ```sh
-curl https://download.gnome.org/sources/totem-pl-parser/3.26/totem-pl-parser-3.26.5.tar.xz -o /sources/gnome/totem-pl-parser-3.26.5.tar.xz &&
+wget https://download.gnome.org/sources/totem-pl-parser/3.26/totem-pl-parser-3.26.5.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/totem-pl-parser-3.26.5.tar.xz &&
 cd       totem-pl-parser-3.26.5                      &&
@@ -634,7 +167,7 @@ rm -rf totem-pl-parser-3.26.5
 ## grilo
 
 ```sh
-curl https://download.gnome.org/sources/grilo/0.3/grilo-0.3.13.tar.xz -o /sources/gnome/grilo-0.3.13.tar.xz &&
+wget https://download.gnome.org/sources/grilo/0.3/grilo-0.3.13.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/grilo-0.3.13.tar.xz &&
 cd       grilo-0.3.13                      &&
@@ -656,7 +189,7 @@ rm -rf grilo-0.3.13
 ## cogl
 
 ```sh
-curl https://download.gnome.org/sources/cogl/1.22/cogl-1.22.8.tar.xz -o /sources/gnome/cogl-1.22.8.tar.xz &&
+wget https://download.gnome.org/sources/cogl/1.22/cogl-1.22.8.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/cogl-1.22.8.tar.xz &&
 cd       cogl-1.22.8                      &&
@@ -677,7 +210,7 @@ rm -rf cogl-1.22.8
 ## clutter
 
 ```sh
-curl https://download.gnome.org/sources/clutter/1.26/clutter-1.26.4.tar.xz -o /sources/gnome/clutter-1.26.4.tar.xz &&
+wget https://download.gnome.org/sources/clutter/1.26/clutter-1.26.4.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/clutter-1.26.4.tar.xz &&
 cd       clutter-1.26.4                      &&
@@ -699,7 +232,7 @@ rm -rf clutter-1.26.4
 ## libgudev
 
 ```sh
-curl https://download.gnome.org/sources/libgudev/236/libgudev-236.tar.xz -o /sources/gnome/libgudev-236.tar.xz &&
+wget https://download.gnome.org/sources/libgudev/236/libgudev-236.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/libgudev-236.tar.xz &&
 cd      libgudev-236                       &&
@@ -720,7 +253,7 @@ rm -rf libgudev-236
 ## clutter-gst
 
 ```sh
-curl https://download.gnome.org/sources/clutter-gst/3.0/clutter-gst-3.0.27.tar.xz -o /sources/gnome/clutter-gst-3.0.27.tar.xz &&
+wget https://download.gnome.org/sources/clutter-gst/3.0/clutter-gst-3.0.27.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/clutter-gst-3.0.27.tar.xz &&
 cd       clutter-gst-3.0.27                      &&
@@ -737,7 +270,7 @@ rm -rf clutter-gst-3.0.27
 ## clutter-gtk
 
 ```sh
-curl https://download.gnome.org/sources/clutter-gtk/1.8/clutter-gtk-1.8.4.tar.xz -o /sources/gnome/clutter-gtk-1.8.4.tar.xz &&
+wget https://download.gnome.org/sources/clutter-gtk/1.8/clutter-gtk-1.8.4.tar.xz -P /sources/gnome/ &&
 
 tar xvf /sources/gnome/clutter-gtk-1.8.4.tar.xz &&
 cd       clutter-gtk-1.8.4                      &&
@@ -754,7 +287,7 @@ rm -rf clutter-gtk-1.8.4
 ## glibusb
 
 ```sh
-curl https://github.com/hughsie/libgusb/archive/0.3.7/libgusb-0.3.7.tar.gz -o /sources/gnome/libgusb-0.3.7.tar.gz &&
+wget https://github.com/hughsie/libgusb/archive/0.3.7/libgusb-0.3.7.tar.gz -P /sources/gnome &&
 
 tar xzvf /sources/gnome/libgusb-0.3.7.tar.gz &&
 cd        libgusb-0.3.7                      &&
@@ -786,7 +319,7 @@ sudo useradd  -c "Color Daemon Owner" -d /var/lib/colord -u 71 \
 Then build and install.
 
 ```sh
-curl https://www.freedesktop.org/software/colord/releases/colord-1.4.5.tar.xz -o /sources/gnome/colord-1.4.5.tar.xz &&
+wget https://www.freedesktop.org/software/colord/releases/colord-1.4.5.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/colord-1.4.5.tar.xz &&
 cd       colord-1.4.5                      &&
@@ -820,7 +353,7 @@ rm -rf colord-1.4.5
 GTK+ bindings for colord.
 
 ```sh
-curl https://www.freedesktop.org/software/colord/releases/colord-gtk-0.2.0.tar.xz -o /sources/gnome/colord-gtk-0.2.0.tar.xz &&
+wget https://www.freedesktop.org/software/colord/releases/colord-gtk-0.2.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/colord-gtk-0.2.0.tar.xz &&
 cd       colord-gtk-0.2.0                      &&
@@ -846,7 +379,7 @@ rm -rf colord-gtk-0.2.0
 Widget for displaying maps.
 
 ```sh
-curl https://download.gnome.org/sources/libchamplain/0.12/libchamplain-0.12.20.tar.xz -o /sources/gnome/libchamplain-0.12.20.tar.xz &&
+wget https://download.gnome.org/sources/libchamplain/0.12/libchamplain-0.12.20.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/libchamplain-0.12.20.tar.xz &&
 cd       libchamplain-0.12.20                      &&
@@ -866,8 +399,10 @@ rm -rf libchamplain-0.12.20
 
 ## libgdata
 
+`GNOME` libraries for accessing remote data APIs, especially Google accounts.
+
 ```sh
-curl https://download.gnome.org/sources/libgdata/0.18/libgdata-0.18.1.tar.xz -o /sources/gnome/libgdata-0.18.1.tar.xz &&
+wget https://download.gnome.org/sources/libgdata/0.18/libgdata-0.18.1.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/libgdata-0.18.1.tar.xz &&
 cd       libgdata-0.18.1                      &&
@@ -892,7 +427,7 @@ rm -rf libgdata-0.18.1
 GObject based interfaces for common data structures.
 
 ```sh
-curl https://download.gnome.org/sources/libgee/0.20/libgee-0.20.4.tar.xz -o /sources/gnome/libgee-0.20.4.tar.xz &&
+wget https://download.gnome.org/sources/libgee/0.20/libgee-0.20.4.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/libgee-0.20.4.tar.xz &&
 cd       libgee-0.20.4                      &&
@@ -911,7 +446,7 @@ rm -rf libgee-0.20.4
 `GNOME`'s graphical version of `top`.
 
 ```sh
-curl https://download.gnome.org/sources/libgtop/2.40/libgtop-2.40.0.tar.xz -o /sources/gnome/libgtop-2.40.0.tar.xz &&
+wget https://download.gnome.org/sources/libgtop/2.40/libgtop-2.40.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/libgtop-2.40.0.tar.xz &&
 cd       libgtop-2.40.0                      &&
@@ -931,7 +466,7 @@ rm -rf libgtop-2.40.0
 Library for Place Finder API to convert an address to lat/lon coordinates.
 
 ```sh
-curl https://download.gnome.org/sources/geocode-glib/3.26/geocode-glib-3.26.2.tar.xz -o /sources/gnome/geocode-glib-3.26.2.tar.xz &&
+wget https://download.gnome.org/sources/geocode-glib/3.26/geocode-glib-3.26.2.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/geocode-glib-3.26.2.tar.xz &&
 cd       geocode-glib-3.26.2                      &&
@@ -955,7 +490,7 @@ rm -rf geocode-glib-3.26.2
 Libraries for accessing remote weather service APIs.
 
 ```sh
-curl https://download.gnome.org/sources/libgweather/40/libgweather-40.0.tar.xz -o /sources/gnome/libgweather-40.0.tar.xz &&
+wget https://download.gnome.org/sources/libgweather/40/libgweather-40.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/libgweather-40.0.tar.xz &&
 cd       libgweather-40.0                      &&
@@ -978,7 +513,7 @@ rm -rf libgweather-40.0
 JavaScript bindings for `GNOME`.
 
 ```sh
-curl https://download.gnome.org/sources/gjs/1.68/gjs-1.68.1.tar.xz -o /sources/gnome/gjs-1.68.1.tar.xz &&
+wget https://download.gnome.org/sources/gjs/1.68/gjs-1.68.1.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gjs-1.68.1.tar.xz &&
 cd       gjs-1.68.1                      &&
@@ -1003,7 +538,7 @@ rm -rf gjs-1.68.1
 Plugin engine for `GNOME` so applications can create their own extensions.
 
 ```sh
-curl https://download.gnome.org/sources/libpeas/1.30/libpeas-1.30.0.tar.xz -o /sources/gnome/libpeas-1.30.0.tar.xz &&
+wget https://download.gnome.org/sources/libpeas/1.30/libpeas-1.30.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/libpeas-1.30.0.tar.xz &&
 cd       libpeas-1.30.0                      &&
@@ -1026,7 +561,7 @@ rm -rf libpeas-1.30.0
 The Window Navigator Construction Kit.
 
 ```sh
-curl https://download.gnome.org/sources/libwnck/40/libwnck-40.0.tar.xz -o /sources/gnome/libwnck-40.0.tar.xz &&
+wget https://download.gnome.org/sources/libwnck/40/libwnck-40.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/libwnck-40.0.tar.xz &&
 cd       libwnck-40.0                      &&
@@ -1053,7 +588,7 @@ sudo rm -fv /usr/lib/systemd/user/evolution-*.service
 ```
 
 ```sh
-curl https://download.gnome.org/sources/evolution-data-server/3.40/evolution-data-server-3.40.2.tar.xz -o /sources/gnome/evolution-data-server-3.40.2.tar.xz &&
+wget https://download.gnome.org/sources/evolution-data-server/3.40/evolution-data-server-3.40.2.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/evolution-data-server-3.40.2.tar.xz &&
 cd       evolution-data-server-3.40.2                      &&
@@ -1092,7 +627,7 @@ General Setup --->
 ```
 
 ```sh
-curl https://gitlab.freedesktop.org/upower/upower/uploads/93cfe7c8d66ed486001c4f3f55399b7a/upower-0.99.11.tar.xz -o /sources/gnome/upower-0.99.11.tar.xz &&
+wget https://gitlab.freedesktop.org/upower/upower/uploads/93cfe7c8d66ed486001c4f3f55399b7a/upower-0.99.11.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/upower-0.99.11.tar.xz &&
 cd       upower-0.99.11                      &&
@@ -1117,7 +652,7 @@ rm -rf upower-0.99.11
 The `GNOME` file indexing and search service.
 
 ```sh
-curl https://download.gnome.org/sources/tracker/3.1/tracker-3.1.1.tar.xz -o /sources/gnome/tracker-3.1.1.tar.xz &&
+wget https://download.gnome.org/sources/tracker/3.1/tracker-3.1.1.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/tracker-3.1.1.tar.xz &&
 cd       tracker-3.1.1                      &&
@@ -1142,7 +677,7 @@ rm -rf tracker-3.1.1
 `GNOME` wrapper for `exiv2` library.
 
 ```sh
-curl https://download.gnome.org/sources/gexiv2/0.12/gexiv2-0.12.2.tar.xz -o /sources/gnome/gexiv2-0.12.2.tar.xz &&
+wget https://download.gnome.org/sources/gexiv2/0.12/gexiv2-0.12.2.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gexiv2-0.12.2.tar.xz &&
 cd       gexiv2-0.12.2                      &&
@@ -1165,8 +700,8 @@ rm -rf gexiv2-0.12.2
 Libraries for manipulating RSS and ATOM feeds.
 
 ```sh
-curl https://download.gnome.org/sources/libgrss/0.7/libgrss-0.7.0.tar.xz -o /sources/gnome/libgrss-0.7.0.tar.xz &&
-curl https://www.linuxfromscratch.org/patches/blfs/svn/libgrss-0.7.0-bugfixes-1.patch -o /sources/patches/libgrss-0.7.0-bugfixes-1.patch &&
+wget https://download.gnome.org/sources/libgrss/0.7/libgrss-0.7.0.tar.xz -P /sources/gnome &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/libgrss-0.7.0-bugfixes-1.patch -P /sources/patches &&
 
 tar xvf /sources/gnome/libgrss-0.7.0.tar.xz &&
 cd       libgrss-0.7.0                      &&
@@ -1189,7 +724,7 @@ rm -rf libgrss-0.7.0
 Libraries for manipulating xps documents.
 
 ```sh
-curl https://download.gnome.org/sources/libgxps/0.3/libgxps-0.3.2.tar.xz -o /sources/gnome/libgxps-0.3.2.tar.xz &&
+wget https://download.gnome.org/sources/libgxps/0.3/libgxps-0.3.2.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/libgxps-0.3.2.tar.xz &&
 cd       libgxps-0.3.2                      &&
@@ -1210,7 +745,7 @@ rm -rf libgxps-0.3.2
 ## libgsf
 
 ```sh
-curl https://download.gnome.org/sources/libgsf/1.14/libgsf-1.14.47.tar.xz -o /sources/gnome/libgsf-1.14.47.tar.xz &&
+wget https://download.gnome.org/sources/libgsf/1.14/libgsf-1.14.47.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/libgsf-1.14.47.tar.xz &&
 cd       libgsf-1.14.47                      &&
@@ -1230,7 +765,7 @@ rm -rf libgsf-1.14.47
 Backend for editing `GNOME` settings.
 
 ```sh
-curl https://download.gnome.org/sources/dconf/0.40/dconf-0.40.0.tar.xz -o /sources/gnome/dconf-0.40.0.tar.xz &&
+wget https://download.gnome.org/sources/dconf/0.40/dconf-0.40.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/dconf-0.40.0.tar.xz &&
 cd       dconf-0.40.0                      &&
@@ -1249,6 +784,28 @@ cd ../.. &&
 rm -rf dconf-0.40.0
 ```
 
+## DConf Editor
+
+```sh
+wget https://download.gnome.org/sources/dconf-editor/3.38/dconf-editor-3.38.3.tar.xz -P /sources/gnome &&
+
+tar xvf /sources/gnome/dconf-editor-3.38.3.tar.xz &&
+cd       dconf-editor-3.38.3                      &&
+
+mkdir build &&
+cd    build &&
+
+meson --prefix=/usr       \
+      --buildtype=release \
+      -Dbash_completion=false .. &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf dconf-editor-3.38.3
+```
+
 ## Tracker Miners
 
 Data extractors for `tracker`.
@@ -1262,7 +819,7 @@ sudo rm -v /etc/xdg/autostart/tracker-miner-*
 Then install the current version.
 
 ```sh
-curl https://download.gnome.org/sources/tracker-miners/3.1/tracker-miners-3.1.1.tar.xz -o /sources/gnome/tracker-miners-3.1.1.tar.xz &&
+wget https://download.gnome.org/sources/tracker-miners/3.1/tracker-miners-3.1.1.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/tracker-miners-3.1.1.tar.xz &&
 cd       tracker-miners-3.1.1                      &&
@@ -1286,7 +843,7 @@ rm -rf tracker-miners-3.1.1
 Library for playing system sounds.
 
 ```sh
-curl https://download.gnome.org/sources/gsound/1.0/gsound-1.0.2.tar.xz -o /sources/gnome/gsound-1.0.2.tar.xz &&
+wget https://download.gnome.org/sources/gsound/1.0/gsound-1.0.2.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gsound-1.0.2.tar.xz &&
 cd       gsound-1.0.2                      &&
@@ -1306,7 +863,7 @@ rm -rf gsound-1.0.2
 Framework and example files for desktop wallpaper.
 
 ```sh
-curl https://download.gnome.org/sources/gnome-backgrounds/40/gnome-backgrounds-40.1.tar.xz -o /sources/gnome/gnome-backgrounds-40.1.tar.xz &&
+wget https://download.gnome.org/sources/gnome-backgrounds/40/gnome-backgrounds-40.1.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-backgrounds-40.1.tar.xz &&
 cd       gnome-backgrounds-40.1                      &&
@@ -1328,7 +885,7 @@ rm -rf gnome-backgrounds-40.1
 `GNOME`'s userspace virtual filesystem.
 
 ```sh
-curl https://download.gnome.org/sources/gvfs/1.48/gvfs-1.48.1.tar.xz -o /sources/gnome/gvfs-1.48.1.tar.xz &&
+wget https://download.gnome.org/sources/gvfs/1.48/gvfs-1.48.1.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gvfs-1.48.1.tar.xz &&
 cd       gvfs-1.48.1                      &&
@@ -1360,7 +917,7 @@ rm -rf gvfs-1.48.1
 GTK widgets for user interfaces.
 
 ```sh
-curl https://download.gnome.org/sources/libhandy/1.2/libhandy-1.2.2.tar.xz -o /sources/gnome/libhandy-1.2.2.tar.xz &&
+wget https://download.gnome.org/sources/libhandy/1.2/libhandy-1.2.2.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/libhandy-1.2.2.tar.xz &&
 cd       libhandy-1.2.2                      &&
@@ -1383,7 +940,7 @@ rm -rf libhandy-1.2.2
 Libraries used to manipulate desktop entries.
 
 ```sh
-curl https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.26.tar.xz -o /sources/gnome/desktop-file-utils-0.26.tar.xz &&
+wget https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.26.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/desktop-file-utils-0.26.tar.xz &&
 cd       desktop-file-utils-0.26                      &&
@@ -1406,7 +963,7 @@ rm -rf desktop-file-utils-0.26
 For manipulating flatpak portals.
 
 ```sh
-curl https://github.com/flatpak/libportal/releases/download/0.4/libportal-0.4.tar.xz -o /sources/gnome/libportal-0.4.tar.xz &&
+wget https://github.com/flatpak/libportal/releases/download/0.4/libportal-0.4.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/libportal-0.4.tar.xz &&
 cd       libportal-0.4                      &&
@@ -1430,7 +987,7 @@ rm -rf libportal-0.4
 The `GNOME` file manager.
 
 ```sh
-curl https://download.gnome.org/sources/nautilus/40/nautilus-40.2.tar.xz -o /sources/gnome/nautilus-40.2.tar.xz &&
+wget https://download.gnome.org/sources/nautilus/40/nautilus-40.2.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/nautilus-40.2.tar.xz &&
 cd       nautilus-40.2                      &&
@@ -1460,7 +1017,7 @@ rm -rf nautilus-40.2
 Dialog boxes.
 
 ```sh
-curl https://download.gnome.org/sources/zenity/3.32/zenity-3.32.0.tar.xz -o /sources/gnome/zenity-3.32.0.tar.xz &&
+wget https://download.gnome.org/sources/zenity/3.32/zenity-3.32.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/zenity-3.32.0.tar.xz &&
 cd       zenity-3.32.0                      &&
@@ -1479,7 +1036,7 @@ rm -rf zenity-3.32.0
 Manipulate Bluetooth devices from the `GNOME` desktop.
 
 ```sh
-curl https://download.gnome.org/sources/gnome-bluetooth/3.34/gnome-bluetooth-3.34.5.tar.xz -o /sources/gnome/gnome-bluetooth-3.34.5.tar.xz &&
+wget https://download.gnome.org/sources/gnome-bluetooth/3.34/gnome-bluetooth-3.34.5.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-bluetooth-3.34.5.tar.xz &&
 cd       gnome-bluetooth-3.34.5                      &&
@@ -1502,7 +1059,7 @@ rm -rf gnome-bluetooth-3.34.5
 Desktop secrets management.
 
 ```sh
-curl https://download.gnome.org/sources/gnome-keyring/40/gnome-keyring-40.0.tar.xz -o /sources/gnome/gnome-keyring-40.0.tar.xz &&
+wget https://download.gnome.org/sources/gnome-keyring/40/gnome-keyring-40.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-keyring-40.0.tar.xz &&
 cd       gnome-keyring-40.0                      &&
@@ -1524,7 +1081,7 @@ rm -rf gnome-keyring-40.0
 Enables creation of location-aware applications.
 
 ```sh
-curl https://gitlab.freedesktop.org/geoclue/geoclue/-/archive/2.5.7/geoclue-2.5.7.tar.bz2 -o /sources/gnome/geoclue-2.5.7.tar.bz2 &&
+wget https://gitlab.freedesktop.org/geoclue/geoclue/-/archive/2.5.7/geoclue-2.5.7.tar.bz2 -P /sources/gnome &&
 
 tar xvf /sources/gnome/geoclue-2.5.7.tar.bz2 &&
 cd       geoclue-2.5.7                       &&
@@ -1549,7 +1106,7 @@ rm -rf geoclue-2.5.7
 
 ## CUPS
 
-Not part of `GNOME`, but in an era where printing has been obsolete for a decade and I don't own a printer, the `GNOME` settings daemon will refuse to build if this is not present.
+Not part of `GNOME`, but the `GNOME` settings daemon will refuse to build if this is not present.
 
 Kernel drivers are required if you want to actually use a printer.
 
@@ -1569,10 +1126,10 @@ sudo groupadd -g 19 lpadmin
 ```
 
 ```sh
-curl https://github.com/OpenPrinting/cups/releases/download/v2.3.3op2/cups-2.3.3op2-source.tar.gz -o /sources/gnome/cups-2.3.3op2-source.tar.gz &&
+wget https://github.com/OpenPrinting/cups/releases/download/v2.3.3op2/cups-2.3.3op2-source.tar.gz -P /sources &&
 
-tar xzvf /sources/gnome/cups-2.3.3op2-source.tar.gz &&
-cd        cups-2.3.3op2                             &&
+tar xzvf /sources/cups-2.3.3op2-source.tar.gz &&
+cd        cups-2.3.3op2                       &&
 
 sed -e "s/-Wno-format-truncation//" \
     -i configure \
@@ -1611,10 +1168,10 @@ exit
 
 ## ModemManager
 
-Also not a part of `GNOME`, but gnome-settings-daemon will also refuse to build without this. If you're reading this 25 years in the past and have a modem, cheers.
+Also not a part of `GNOME`, but gnome-settings-daemon will also refuse to build without this.
 
 ```sh
-curl https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.6.tar.xz -o /sources/gnome/ModemManager-1.16.6.tar.xz &&
+wget https://www.freedesktop.org/software/ModemManager/ModemManager-1.16.6.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/ModemManager-1.16.6.tar.xz &&
 cd       ModemManager-1.16.6                      &&
@@ -1635,7 +1192,7 @@ cd .. &&
 rm -rf ModemManager-1.16.6
 ```
 
-## NetworkManager
+## NetworkManager and dependencies
 
 Unfortunately, gnome-settings-daemon will also refuse to build without this, even though it is not needed. `NetworkManager` provides a convenient graphical display for managing network connections, but `systemd-networkd` works fine and was already configured to set up the base system.
 
@@ -1646,10 +1203,10 @@ First, `NetworkManager` has its own dependencies we would not otherwise need.
 Another JSON library.
 
 ```sh
-curl https://digip.org/jansson/releases/jansson-2.13.1.tar.gz -o /sources/gnome/jansson-2.13.1.tar.gz &&
+wget https://digip.org/jansson/releases/jansson-2.13.1.tar.gz -P /sources &&
 
-tar xzvf /sources/gnome/jansson-2.13.1.tar.gz &&
-cd        jansson-2.13.1                      &&
+tar xzvf /sources/jansson-2.13.1.tar.gz &&
+cd        jansson-2.13.1                &&
 
 ./configure --prefix=/usr \
             --disable-static &&
@@ -1666,10 +1223,10 @@ rm -rf jansson-2.13.1
 IPv6 neighbor discovery protocol.
 
 ```sh
-curl http://libndp.org/files/libndp-1.8.tar.gz -o /sources/gnome/libndp-1.8.tar.gz &&
+wget http://libndp.org/files/libndp-1.8.tar.gz -P /sources &&
 
-tar xzvf /sources/gnome/libndp-1.8.tar.gz &&
-cd        libndp-1.8                      &&
+tar xzvf /sources/libndp-1.8.tar.gz &&
+cd        libndp-1.8                &&
 
 ./configure --prefix=/usr        \
             --sysconfdir=/etc    \
@@ -1688,10 +1245,10 @@ rm -rf libndp-1.8
 Scripting language for embedding into applications.
 
 ```sh
-curl https://www.jedsoft.org/releases/slang/slang-2.3.2.tar.bz2 -o /sources/gnome/slang-2.3.2.tar.bz2 &&
+wget https://www.jedsoft.org/releases/slang/slang-2.3.2.tar.bz2 -P /sources &&
 
-tar xvf /sources/gnome/slang-2.3.2.tar.bz2 &&
-cd       slang-2.3.2                       &&
+tar xvf /sources/slang-2.3.2.tar.bz2 &&
+cd       slang-2.3.2                 &&
 
 ./configure --prefix=/usr \
             --sysconfdir=/etc \
@@ -1714,15 +1271,15 @@ sudo rm -rf slang-2.3.2
 Libraries for building a text user interface.
 
 ```sh
-curl https://releases.pagure.org/newt/newt-0.52.21.tar.gz -o /sources/gnome/newt-0.52.21.tar.gz &&
+wget https://releases.pagure.org/newt/newt-0.52.21.tar.gz -P /sources &&
 
-tar xzvf /sources/gnome/newt-0.52.21.tar.gz &&
-cd        newt-0.52.21                      &&
+tar xzvf /sources/newt-0.52.21.tar.gz &&
+cd        newt-0.52.21                &&
 
 sed -e 's/^LIBNEWT =/#&/'                   \
     -e '/install -m 644 $(LIBNEWT)/ s/^/#/' \
     -e 's/$(LIBNEWT)/$(LIBNEWTSONAME)/g'    \
-    -i Makefile.in                          &&
+    -i Makefile.in &&
 
 ./configure --prefix=/usr           \
             --with-gpm-support      \
@@ -1735,10 +1292,10 @@ cd .. &&
 rm -rf newt-0.52.21
 ```
 
-Now install `NetworkManager`.
+### NetworkManager
 
 ```sh
-curl https://download.gnome.org/sources/NetworkManager/1.30/NetworkManager-1.30.4.tar.xz -o /sources/gnome/NetworkManager-1.30.4.tar.xz &&
+wget https://download.gnome.org/sources/NetworkManager/1.30/NetworkManager-1.30.4.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/NetworkManager-1.30.4.tar.xz &&
 cd       NetworkManager-1.30.4                      &&
@@ -1777,7 +1334,7 @@ Consult documentation from Beyond Linux From Scratch or the wonderful Arch Wiki 
 ## GNOME Settings Daemon
 
 ```sh
-curl https://download.gnome.org/sources/gnome-settings-daemon/40/gnome-settings-daemon-40.0.1.tar.xz -o /sources/gnome/gnome-settings-daemon-40.0.1.tar.xz &&
+wget https://download.gnome.org/sources/gnome-settings-daemon/40/gnome-settings-daemon-40.0.1.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-settings-daemon-40.0.1.tar.xz &&
 cd       gnome-settings-daemon-40.0.1                      &&
@@ -1800,7 +1357,7 @@ rm -rf gnome-settings-daemon-40.0.1
 The `GNOME` window manager.
 
 ```sh
-curl https://download.gnome.org/sources/mutter/40/mutter-40.2.tar.xz -o /sources/gnome/mutter-40.2.tar.xz &&
+wget https://download.gnome.org/sources/mutter/40/mutter-40.2.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/mutter-40.2.tar.xz &&
 cd       mutter-40.2                      &&
@@ -1823,7 +1380,7 @@ rm -rf mutter-40.2
 ## Sound Theme FreeDesktop
 
 ```sh
-curl https://people.freedesktop.org/~mccann/dist/sound-theme-freedesktop-0.8.tar.bz2 -o /sources/gnome/sound-theme-freedesktop-0.8.tar.bz2 &&
+wget https://people.freedesktop.org/~mccann/dist/sound-theme-freedesktop-0.8.tar.bz2 -P /sources/gnome &&
 
 tar xvf /sources/gnome/sound-theme-freedesktop-0.8.tar.bz2 &&
 cd       sound-theme-freedesktop-0.8                       &&
@@ -1840,7 +1397,7 @@ rm -rf sound-theme-freedesktop-0.8
 ## adwaita icon theme
 
 ```sh
-curl https://download.gnome.org/sources/adwaita-icon-theme/40/adwaita-icon-theme-40.1.1.tar.xz -o /sources/gnome/adwaita-icon-theme-40.1.1.tar.xz &&
+wget https://download.gnome.org/sources/adwaita-icon-theme/40/adwaita-icon-theme-40.1.1.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/adwaita-icon-theme-40.1.1.tar.xz &&
 cd       adwaita-icon-theme-40.1.1                      &&
@@ -1859,7 +1416,7 @@ rm -rf adwaita-icon-theme-40.1.1
 GUI libraries for `NetworkManager`.
 
 ```sh
-curl https://download.gnome.org/sources/libnma/1.8/libnma-1.8.30.tar.xz -o /sources/gnome/libnma-1.8.30.tar.xz &&
+wget https://download.gnome.org/sources/libnma/1.8/libnma-1.8.30.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/libnma-1.8.30.tar.xz &&
 cd       libnma-1.8.30                      &&
@@ -1882,7 +1439,7 @@ rm -rf libnma-1.8.30
 ## NetworkManager Applet
 
 ```sh
-curl https://download.gnome.org/sources/network-manager-applet/1.22/network-manager-applet-1.22.0.tar.xz -o /sources/gnome/network-manager-applet-1.22.0.tar.xz &&
+wget https://download.gnome.org/sources/network-manager-applet/1.22/network-manager-applet-1.22.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/network-manager-applet-1.22.0.tar.xz &&
 cd       network-manager-applet-1.22.0                      &&
@@ -1904,8 +1461,10 @@ rm -rf network-manager-applet-1.22.0
 
 ## polkit GNOME
 
+Provides the framework for pop-up privilege escalation allowing ordinary users to perform administrative tasks without need to use `sudo` at the command line by automatically wrapping the underlying calls with `pexec`.
+
 ```sh
-curl https://download.gnome.org/sources/polkit-gnome/0.105/polkit-gnome-0.105.tar.xz -o /sources/gnome/polkit-gnome-0.105.tar.xz &&
+wget https://download.gnome.org/sources/polkit-gnome/0.105/polkit-gnome-0.105.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/polkit-gnome-0.105.tar.xz &&
 cd       polkit-gnome-0.105                      &&
@@ -1957,8 +1516,8 @@ Device Drivers  --->
 ```
 
 ```sh
-curl https://download.gnome.org/sources/cheese/3.38/cheese-3.38.0.tar.xz -o /sources/gnome/cheese-3.38.0.tar.xz &&
-curl https://www.linuxfromscratch.org/patches/blfs/svn/cheese-3.38.0-upstream_fixes-1.patch -o /sources/patches/cheese-3.38.0-upstream_fixes-1.patch &&
+wget https://download.gnome.org/sources/cheese/3.38/cheese-3.38.0.tar.xz -P /sources/gnome &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/cheese-3.38.0-upstream_fixes-1.patch -P /sources/patches &&
 
 tar xvf /sources/gnome/cheese-3.38.0.tar.xz &&
 cd       cheese-3.38.0                      &&
@@ -1982,34 +1541,11 @@ sudo rm -rf cheese-3.38.0
 
 ## ibus
 
-Not a part of `GNOME`, but required by GNOME Control Center. This unfortunately requires GTK-2, so we now need 3 different versions of GTK.
-
-### GTK+-2
+Not a part of `GNOME`, but required by GNOME Control Center. Requires `GTK+-2`.
 
 ```sh
-curl https://download.gnome.org/sources/gtk+/2.24/gtk+-2.24.33.tar.xz -o /sources/gnome/gtk+-2.24.33.tar.xz &&
-
-tar xvf /sources/gnome/gtk+-2.24.33.tar.xz &&
-cd       gtk+-2.24.33                      &&
-
-sed -e 's#l \(gtk-.*\).sgml#& -o \1#' \
-    -i docs/{faq,tutorial}/Makefile.in      &&
-
-./configure --prefix=/usr \
-            --sysconfdir=/etc &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf gtk+-2.24.33
-```
-
-Now we can install `ibus`.
-
-```sh
-curl https://github.com/ibus/ibus/releases/download/1.5.24/ibus-1.5.24.tar.gz -o /sources/gnome/ibus-1.5.24.tar.gz &&
-curl https://www.unicode.org/Public/zipped/13.0.0/UCD.zip -o /sources/UCD.zip &&
+wget https://github.com/ibus/ibus/releases/download/1.5.24/ibus-1.5.24.tar.gz -P /sources/gnome &&
+wget https://www.unicode.org/Public/zipped/13.0.0/UCD.zip -P /sources/UCD.zip &&
 
 tar xzvf /sources/gnome/ibus-1.5.24.tar.gz &&
 cd        ibus-1.5.24                      &&
@@ -2035,7 +1571,7 @@ cd .. &&
 rm -rf ibus-1.5.24
 ```
 
-## Samba
+## Samba and dependencies
 
 GNOME Control Center requires `smbclient` and you will want this to be able to read from Windows network directories. `samba` itself has a few dependencies we need to grab.
 
@@ -2044,7 +1580,7 @@ GNOME Control Center requires `smbclient` and you will want this to be able to r
 A key-value store.
 
 ```sh
-curl https://github.com/LMDB/lmdb/archive/LMDB_0.9.29.tar.gz -o /sources/LMDB_0.9.29.tar.gz &&
+wget https://github.com/LMDB/lmdb/archive/LMDB_0.9.29.tar.gz -P /sources &&
 
 tar xzvf /sources/LMDB_0.9.29.tar.gz &&
 cd        lmdb-LMDB_0.9.29                &&
@@ -2062,7 +1598,7 @@ rm -rf lmdb-LMDB_0.9.29
 ### rpcsvc-proto
 
 ```sh
-curl https://github.com/thkukuk/rpcsvc-proto/releases/download/v1.4.2/rpcsvc-proto-1.4.2.tar.xz -o /sources/rpcsvc-proto-1.4.2.tar.xz &&
+wget https://github.com/thkukuk/rpcsvc-proto/releases/download/v1.4.2/rpcsvc-proto-1.4.2.tar.xz -P /sources &&
 
 tar xvf /sources/rpcsvc-proto-1.4.2.tar.xz &&
 cd       rpcsvc-proto-1.4.2                &&
@@ -2079,7 +1615,7 @@ rm -rf rpcsvc-proto-1.4.2
 ### YAPP Perl module
 
 ```sh
-curl https://www.cpan.org/authors/id/W/WB/WBRASWELL/Parse-Yapp-1.21.tar.gz -o /sources/Parse-Yapp-1.21.tar.gz &&
+wget https://www.cpan.org/authors/id/W/WB/WBRASWELL/Parse-Yapp-1.21.tar.gz -P /sources &&
 
 tar xzvf /sources/Parse-Yapp-1.21.tar.gz &&
 cd        Parse-Yapp-1.21                &&
@@ -2095,10 +1631,10 @@ rm -rf Parse-Yapp-1.21
 ### python-iso8601
 
 ```sh
-curl https://github.com/micktwomey/pyiso8601/archive/refs/tags/0.1.14.tar.gz -o /sources/python/python-iso8601-0.1.14.tar.gz &&
+wget https://github.com/micktwomey/pyiso8601/archive/refs/tags/0.1.14.tar.gz -P /sources/python &&
 
-tar xzvf /sources/python/python-iso8601-0.1.14.tar.gz &&
-cd        pyiso8601-0.1.14                            &&
+tar xzvf /sources/python/pyiso8601-0.1.14.tar.gz &&
+cd        pyiso8601-0.1.14                       &&
 
 sudo python3 setup.py install --optimize=1 &&
 
@@ -2109,7 +1645,7 @@ rm -rf pyiso8601-0.1.14
 ### python-setuptools_rust
 
 ```sh
-curl https://files.pythonhosted.org/packages/12/22/6ba3031e7cbd6eb002e13ffc7397e136df95813b6a2bd71ece52a8f89613/setuptools-rust-0.12.1.tar.gz -o /sources/python/setuptools_rust-0.12.1.tar.gz &&
+wget https://files.pythonhosted.org/packages/12/22/6ba3031e7cbd6eb002e13ffc7397e136df95813b6a2bd71ece52a8f89613/setuptools-rust-0.12.1.tar.gz -P /sources/python &&
 
 tar xzvf /sources/python/setuptools_rust-0.12.1.tar.gz &&
 cd        setuptools-rust-0.12.1                       &&
@@ -2124,10 +1660,10 @@ sudo rm -rf setuptools-rust-0.12.1
 ### python-cryptography
 
 ```sh
-curl https://github.com/pyca/cryptography/archive/refs/tags/3.4.7.tar.gz -o /sources/python/python-cryptography-3.4.7.tar.gz &&
+wget https://github.com/pyca/cryptography/archive/refs/tags/3.4.7.tar.gz -P /sources/python &&
 
-tar xzvf /sources/python/python-cryptography-3.4.7.tar.gz &&
-cd        cryptography-3.4.7                              &&
+tar xzvf /sources/python/cryptography-3.4.7.tar.gz &&
+cd        cryptography-3.4.7                       &&
 
 python3 setup.py build                     &&
 sudo python3 setup.py install --optimize=1 &&
@@ -2139,7 +1675,7 @@ sudo rm -rf cryptography-3.4.7
 ### python-asn1
 
 ```sh
-curl https://files.pythonhosted.org/packages/a4/db/fffec68299e6d7bad3d504147f9094830b704527a7fc098b721d38cc7fa7/pyasn1-0.4.8.tar.gz -o /sources/python/pyasn1-0.4.8.tar.gz &&
+wget https://files.pythonhosted.org/packages/a4/db/fffec68299e6d7bad3d504147f9094830b704527a7fc098b721d38cc7fa7/pyasn1-0.4.8.tar.gz -P /sources/python &&
 
 tar xzvf /sources/python/pyasn1-0.4.8.tar.gz &&
 cd        pyasn1-0.4.8                       &&
@@ -2151,10 +1687,10 @@ cd .. &&
 sudo rm -rf pyasn1-0.4.8
 ```
 
-Now we can install `samba`.
+### samba
 
 ```sh
-curl https://www.samba.org/ftp/samba/stable/samba-4.14.5.tar.gz -o /sources/samba-4.14.5.tar.gz &&
+wget https://www.samba.org/ftp/samba/stable/samba-4.14.5.tar.gz -P /sources &&
 
 tar xzvf /sources/samba-4.14.5.tar.gz &&
 cd        samba-4.14.5                &&
@@ -2191,7 +1727,7 @@ rm -rf samba-4.14.5
 ## GNOME Control Center
 
 ```sh
-curl https://download.gnome.org/sources/gnome-control-center/40/gnome-control-center-40.0.tar.xz -o /sources/gnome/gnome-control-center-40.0.tar.xz &&
+wget https://download.gnome.org/sources/gnome-control-center/40/gnome-control-center-40.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-control-center-40.0.tar.xz &&
 cd       gnome-control-center-40.0                      &&
@@ -2214,7 +1750,7 @@ rm -rf gnome-control-center-40.0
 The heart of the desktop itself.
 
 ```sh
-curl https://download.gnome.org/sources/gnome-shell/40/gnome-shell-40.2.tar.xz -o /sources/gnome/gnome-shell-40.2.tar.xz &&
+wget https://download.gnome.org/sources/gnome-shell/40/gnome-shell-40.2.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-shell-40.2.tar.xz &&
 cd       gnome-shell-40.2                      &&
@@ -2235,7 +1771,7 @@ rm -rf gnome-shell-40.2
 ## GNOME Shell Extensions
 
 ```sh
-curl https://download.gnome.org/sources/gnome-shell-extensions/40/gnome-shell-extensions-40.2.tar.xz -o /sources/gnome/gnome-shell-extensions-40.2.tar.xz &&
+wget https://download.gnome.org/sources/gnome-shell-extensions/40/gnome-shell-extensions-40.2.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-shell-extensions-40.2.tar.xz &&
 cd       gnome-shell-extensions-40.2                      &&
@@ -2254,7 +1790,7 @@ rm -rf gnome-shell-extensions-40.2
 ## GNOME Session
 
 ```sh
-curl https://download.gnome.org/sources/gnome-session/40/gnome-session-40.1.1.tar.xz -o /sources/gnome/gnome-session-40.1.1.tar.xz &&
+wget https://download.gnome.org/sources/gnome-session/40/gnome-session-40.1.1.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-session-40.1.1.tar.xz &&
 cd       gnome-session-40.1.1                      &&
@@ -2292,7 +1828,7 @@ sudo passwd   -ql gdm
 Then build and install.
 
 ```sh
-curl https://download.gnome.org/sources/gdm/40/gdm-40.0.tar.xz -o /sources/gnome/gdm-40.0.tar.xz &&
+wget https://download.gnome.org/sources/gdm/40/gdm-40.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gdm-40.0.tar.xz &&
 cd       gdm-40.0                      &&
@@ -2349,7 +1885,7 @@ Everything else is not strictly needed for a graphical desktop, but will make th
 ## GNOME User Documentation
 
 ```sh
-curl https://download.gnome.org/sources/gnome-user-docs/40/gnome-user-docs-40.1.tar.xz -o /sources/gnome/gnome-user-docs-40.1.tar.xz &&
+wget https://download.gnome.org/sources/gnome-user-docs/40/gnome-user-docs-40.1.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-user-docs-40.1.tar.xz &&
 cd       gnome-user-docs-40.1                      &&
@@ -2368,7 +1904,7 @@ rm -rf gnome-user-docs-40.1
 Stylesheets to format the `GNOME` help pages.
 
 ```sh
-curl https://download.gnome.org/sources/yelp-xsl/40/yelp-xsl-40.2.tar.xz -o /sources/gnome/yelp-xsl-40.2.tar.xz &&
+wget https://download.gnome.org/sources/yelp-xsl/40/yelp-xsl-40.2.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/yelp-xsl-40.2.tar.xz &&
 cd       yelp-xsl-40.2                      &&
@@ -2386,7 +1922,7 @@ rm -rf yelp-xsl-40.2
 The `GNOME` help browser.
 
 ```sh
-curl https://download.gnome.org/sources/yelp/40/yelp-40.2.tar.xz -o /sources/gnome/yelp-40.2.tar.xz &&
+wget https://download.gnome.org/sources/yelp/40/yelp-40.2.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/yelp-40.2.tar.xz &&
 cd       yelp-40.2                      &&
@@ -2406,7 +1942,7 @@ rm -rf yelp-40.2
 ## GNOME Themes Extra
 
 ```sh
-curl https://download.gnome.org/sources/gnome-themes-extra/3.28/gnome-themes-extra-3.28.tar.xz -o /sources/gnome/gnome-themes-extra-3.28.tar.xz &&
+wget https://download.gnome.org/sources/gnome-themes-extra/3.28/gnome-themes-extra-3.28.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-themes-extra-3.28.tar.xz &&
 cd       gnome-themes-extra-3.28                      &&
@@ -2425,7 +1961,7 @@ rm -rf  gnome-themes-extra-3.28
 Deprecated, but required by `GNOME`'s icon naming utils.
 
 ```sh
-curl https://www.cpan.org/authors/id/G/GR/GRANTM/XML-Simple-2.25.tar.gz -o /sources/XML-Simple-2.25.tar.gz &&
+wget https://www.cpan.org/authors/id/G/GR/GRANTM/XML-Simple-2.25.tar.gz -P /sources &&
 
 tar xzvf /sources/XML-Simple-2.25.tar.gz &&
 cd        XML-Simple-2.25                &&
@@ -2441,7 +1977,7 @@ rm -rf XML-Simple-2.25
 ## Icon Naming Utils
 
 ```sh
-curl http://tango.freedesktop.org/releases/icon-naming-utils-0.8.90.tar.bz2 -o /sources/gnome/icon-naming-utils-0.8.90.tar.bz2 &&
+wget http://tango.freedesktop.org/releases/icon-naming-utils-0.8.90.tar.bz2 -P /sources/gnome &&
 
 tar xvf /sources/gnome/icon-naming-utils-0.8.90.tar.bz2 &&
 cd       icon-naming-utils-0.8.90                       &&
@@ -2458,7 +1994,7 @@ rm -rf icon-naming-utils-0.8.90
 ## HiColor Icon Theme
 
 ```sh
-curl https://icon-theme.freedesktop.org/releases/hicolor-icon-theme-0.17.tar.xz -o /sources/gnome/hicolor-icon-theme-0.17.tar.xz &&
+wget https://icon-theme.freedesktop.org/releases/hicolor-icon-theme-0.17.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/hicolor-icon-theme-0.17.tar.xz &&
 cd       hicolor-icon-theme-0.17                      &&
@@ -2474,7 +2010,7 @@ rm -rf hicolor-icon-theme-0.17
 ## GNOME Icon Theme
 
 ```sh
-curl https://download.gnome.org/sources/gnome-icon-theme/3.12/gnome-icon-theme-3.12.0.tar.xz -o /sources/gnome/gnome-icon-theme-3.12.0.tar.xz &&
+wget https://download.gnome.org/sources/gnome-icon-theme/3.12/gnome-icon-theme-3.12.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-icon-theme-3.12.0.tar.xz &&
 cd       gnome-icon-theme-3.12.0                      &&
@@ -2491,7 +2027,7 @@ rm -rf gnome-icon-theme-3.12.0
 ## GNOME Icon Theme Extras
 
 ```sh
-curl https://download.gnome.org/sources/gnome-icon-theme-extras/3.12/gnome-icon-theme-extras-3.12.0.tar.xz -o /sources/gnome/gnome-icon-theme-extras-3.12.0.tar.xz &&
+wget https://download.gnome.org/sources/gnome-icon-theme-extras/3.12/gnome-icon-theme-extras-3.12.0.tar.xz -P /sources/gnome &&
 
 tar xvf /sources/gnome/gnome-icon-theme-extras-3.12.0.tar.xz &&
 cd       gnome-icon-theme-extras-3.12.0                      &&

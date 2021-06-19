@@ -48,26 +48,27 @@ These are not ordered. Libraries are presented first because many tools in later
 
 ### Graphical desktop
 
-This focuses on building the `GNOME` desktop, which is enormous and takes a very long time, but I just like the way it looks and have gotten used to it. Support for using `NVIDIA` proprietary drivers and libraries is also included here.
+This focuses on building the `GNOME` desktop, which is enormous and takes a very long time, but I like the way it looks and have gotten used to it. Support for using `NVIDIA` proprietary drivers and libraries is also included here.
 
 1. [Drivers](graphics/01-drivers.md)
 2. [XOrg](graphics/02-xorg.md)
 3. [Audio and video libraries](graphics/03-audio-video.md)
-4. [GNOME desktop](graphics/04-gnome.md)
-5. [Desktop applications](graphics/05-applications.md)
+4. [Graphics libraries](graphics/04-libraries.md)
+5. [GNOME desktop environment](graphics/05-gnome.md)
+6. [Desktop applications](graphics/05-applications.md)
 
 ### Scientific and Statistical Computing
 
 1. [Additional native libraries](scicomp/01-libraries.md)
 2. [Python scientific computing stack](scicomp/02-python.md)
 3. [Alternative scientific and statistical toolchains](scicomp/03-alternatives.md)
+4. [GPU computing and deep learning](scicomp/04-gpu.md)
 
 ### Running a hypervisor
 
 1. [Kernel configuration](hypervisor/01-kernel.md)
 2. [QEMU and libvirt](hypervisor/02-qemu.md)
 3. [Graphical guest managers](hypervisor/03-graphical-mgr.md)
-4. [Terraform libvirt provider](hypervisor/04-terraform.md)
 
 ### Container tools
 

@@ -5,7 +5,7 @@
 Adds image quantization features to `PILLOW`.
 
 ```sh
-curl https://github.com/ImageOptim/libimagequant/archive/refs/tags/2.15.1.zip -o /sources/libimagequant-2.15.1.zip &&
+wget https://github.com/ImageOptim/libimagequant/archive/refs/tags/2.15.1.zip -P /sources &&
 
 unzip /sources/libimagequant-2.15.1.zip &&
 cd     libimagequant-2.15.1             &&
@@ -25,7 +25,7 @@ rm -rf libimagequant-2.15.1
 Extremely fast compression.
 
 ```sh
-curl https://github.com/lz4/lz4/archive/refs/tags/v1.9.3.tar.gz -o /sources/lz4-1.9.3.tar.gz &&
+wget https://github.com/lz4/lz4/archive/refs/tags/v1.9.3.tar.gz -P /sources &&
 
 tar xzvf /sources/lz4-1.9.3.tar.gz &&
 cd        lz4-1.9.3                &&
@@ -43,7 +43,7 @@ rm -rf lz4-1.9.3
 Hierarchical data format.
 
 ```sh
-curl "https://www.hdfgroup.org/package/hdf5-1-12-0-tar-gz/?wpdmdl=14582&refresh=60ca8587d16d31623885191" -o /sources/hdf5-1.12.0.tar.gz &&
+wget "https://www.hdfgroup.org/package/hdf5-1-12-0-tar-gz/?wpdmdl=14582&refresh=60ca8587d16d31623885191" -O /sources/hdf5-1.12.0.tar.gz &&
 
 tar xzvf /sources/hdf5-1.12.0.tar.gz    &&
 cd        hdf5-1.12.0                   &&

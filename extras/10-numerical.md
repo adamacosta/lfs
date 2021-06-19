@@ -2,31 +2,6 @@
 
 Many packages listed here are `Fortran` libraries, so require that you build `gcc` with support for the `Fortran` language first.
 
-## LAPACK
-
-Linear Algebra Package.
-
-```sh
-curl https://github.com/Reference-LAPACK/lapack/archive/refs/tags/v3.9.1.tar.gz -o /sources/lapack-3.9.1.tar.gz &&
-
-tar xzvf /sources/lapack-3.9.1.tar.gz &&
-cd        lapack-3.9.1                &&
-
-mkdir build &&
-cd    build &&
-
-cmake -DCMAKE_INSTALL_PREFIX=/usr \
-      -DCMAKE_BUILD_TYPE=Release  \
-      -DBUILD_SHARED_LIBS=ON      \
-      .. &&
-
-make              &&
-sudo make install &&
-
-cd ../.. &&
-rm -rf lapack-3.9.1
-```
-
 ## ATLAS
 
 Automatically Tuned Linear Algebra Subsystem.
@@ -34,7 +9,7 @@ Automatically Tuned Linear Algebra Subsystem.
 Note that, in my example here, I am using the latest developer version. The `ATLAS` documentation claims this is up to twice as fast as the last stable release from 2016, but of course do so at your own risk. You are probably not building Linux From Scratch for a production environment where numerical accuracy is absolutely critical, so have fun.
 
 ```sh
-curl https://sourceforge.net/projects/math-atlas/files/Developer%20%28unstable%29/3.11.41/atlas3.11.41.tar.bz2/download -o /sources/atlas-3.11.41.tar.bz2 &&
+wget https://sourceforge.net/projects/math-atlas/files/Developer%20%28unstable%29/3.11.41/atlas3.11.41.tar.bz2/download -O /sources/atlas-3.11.41.tar.bz2 &&
 
 mkdir atlas-3.11.41 &&
 tar xvf /sources/atlas-3.11.41.tar.bz2 -C atlas-3.11.41 --strip-components=1
@@ -95,7 +70,7 @@ This is an alternative optimized `BLAS` for environments where `ATLAS` is not fe
 Note that for both `ATLAS` and `OpenBLAS` we do not disable static libraries, in spite of what Linux From Scratch generally does for system libs. That is because `BLAS` libraries have traditionally been statically linked into executables that use them and shared library support is still considered experimental for most implementations.
 
 ```sh
-curl https://github.com/xianyi/OpenBLAS/releases/download/v0.3.15/OpenBLAS-0.3.15.tar.gz -o /sources/OpenBLAS-0.3.15.tar.gz &&
+wget https://github.com/xianyi/OpenBLAS/releases/download/v0.3.15/OpenBLAS-0.3.15.tar.gz -P /sources &&
 
 tar xzvf /sources/OpenBLAS-0.3.15.tar.gz &&
 cd        OpenBLAS-0.3.15                &&
@@ -115,28 +90,54 @@ cd ../.. &&
 rm -rf OpenBLAS-0.3.15
 ```
 
-## ARPACK
+## LAPACK
 
-`Fortran` libraries for solving sparse matrices. This is quite ancient code and will not compile under f95 or later and does not support shared libraries, but downstream geospatial libraries claim to add features if it is present.
+Linear Algebra Package.
 
 ```sh
-curl https://www.caam.rice.edu/software/ARPACK/SRC/arpack96.tar.gz -o /sources/arpack96.tar.gz &&
-curl https://www.caam.rice.edu/software/ARPACK/SRC/patch.tar.gz -o /sources/arpack96-patch.tar.gz &&
+wget https://github.com/Reference-LAPACK/lapack/archive/refs/tags/v3.9.1.tar.gz -P /sources &&
 
-tar xzvf /sources/arpack96.tar.gz        &&
-tar xzvf /sources/arpack96-patch.tar.gz  &&
-cd        ARPACK                         &&
+tar xzvf /sources/lapack-3.9.1.tar.gz &&
+cd        lapack-3.9.1                &&
 
-sed -i 's/home = \$(HOME)\/ARPACK/home = \/sources\/build_dir\/ARPACK/' ARmake.inc &&
-sed -i 's/PLAT = SUN4/PLAT = x86_64-gnu-linux/' ARmake.inc                         &&
-sed -i 's/FC      = f77/FC      = gfortran/' ARmake.inc                            &&
-sed -i 's/^FFLAGS.*/FFLAGS  = -O -ff2c -std=legacy -fPIC/' ARmake.inc              &&
+mkdir build &&
+cd    build &&
 
-make lib                                                               &&
-sudo install -vDm755 libarpack_x86_64-gnu-linux.a /usr/lib/libarpack.a &&
+cmake -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_BUILD_TYPE=Release  \
+      -DBUILD_SHARED_LIBS=ON      \
+      -DUSE_OPTIMIZED_BLAS=ON     \
+      .. &&
 
-cd .. &&
-rm -rf ARPACK
+make              &&
+sudo make install &&
+
+cd ../.. &&
+rm -rf lapack-3.9.1
+```
+
+## ARPACK-NG
+
+`Fortran` libraries for solving sparse matrices. Modern replacement for the original `ARPACK`, which has not been maintained for 20 years.
+
+```sh
+wget https://github.com/opencollab/arpack-ng/archive/refs/tags/3.8.0.tar.gz -O /sources/arpack-ng-3.8.0.tar.gz &&
+
+tar xzvf /sources/arpack-ng-3.8.0.tar.gz &&
+cd        arpack-ng-3.8.0                &&
+
+mkdir build &&
+cd    build &&
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr \
+      -DBUILD_SHARED_LIBS=ON      \
+      -DMPI=ON .. &&
+
+make              &&
+sudo make install &&
+
+cd ../.. &&
+rm -rf arpack-ng-3.8.0
 ```
 
 ## SuperLU
@@ -144,7 +145,7 @@ rm -rf ARPACK
 `SuperLU` is a general purpose library for the direct solution of large, sparse, nonsymmetric systems of linear equations.
 
 ```sh
-curl https://portal.nersc.gov/project/sparse/superlu/superlu_5.2.2.tar.gz -o /sources/superlu_5.2.2.tar.gz &&
+wget https://portal.nersc.gov/project/sparse/superlu/superlu_5.2.2.tar.gz -P /sources &&
 
 tar xzvf /sources/superlu_5.2.2.tar.gz &&
 cd        superlu-5.2.2                &&
@@ -170,7 +171,7 @@ rm -rf superlu-5.2.2
 Linear algebra libraries beyond the BLAS.
 
 ```sh
-curl http://sourceforge.net/projects/arma/files/armadillo-10.5.1.tar.xz -o /sources/armadillo-10.5.1.tar.xz &&
+wget http://sourceforge.net/projects/arma/files/armadillo-10.5.1.tar.xz -P /sources &&
 
 tar xvf /sources/armadillo-10.5.1.tar.xz &&
 cd       armadillo-10.5.1                &&
@@ -179,7 +180,7 @@ mkdir build &&
 cd    build &&
 
 cmake -DCMAKE_INSTALL_PREFIX=/usr \
-      -DBUILD_SHARED_LIBS=on      \
+      -DBUILD_SHARED_LIBS=ON      \
       -DCMAKE_BUILD_TYPE=Release .. &&
 
 make              &&
@@ -194,7 +195,7 @@ rm -rf armadillo-10.5.1
 C++ template library for matrices.
 
 ```sh
-curl https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.gz -o /sources/eigen-3.3.9.tar.gz &&
+wget https://gitlab.com/libeigen/eigen/-/archive/3.3.9/eigen-3.3.9.tar.gz -P /sources &&
 
 tar xzvf /sources/eigen-3.3.9.tar.gz &&
 cd        eigen-3.3.9                &&
@@ -217,7 +218,7 @@ rm -rf eigen-3.3.9
 Library to convert between different coordinate systems.
 
 ```sh
-curl https://download.osgeo.org/proj/proj-8.0.1.tar.gz -o /sources/proj-8.0.1.tar.gz &&
+wget https://download.osgeo.org/proj/proj-8.0.1.tar.gz -P /sources &&
 
 tar xzvf /sources/proj-8.0.1.tar.gz &&
 cd        proj-8.0.1                &&
@@ -246,7 +247,7 @@ sudo projsync --system-directory --all
 Augmentation of the TIFF image format that includes geolocation metadata.
 
 ```sh
-curl https://github.com/OSGeo/libgeotiff/releases/download/1.6.0/libgeotiff-1.6.0.tar.gz -o /sources/libgeotiff-1.6.0.tar.gz &&
+wget https://github.com/OSGeo/libgeotiff/releases/download/1.6.0/libgeotiff-1.6.0.tar.gz -P /sources &&
 
 tar xzvf /sources/libgeotiff-1.6.0.tar.gz &&
 cd        libgeotiff-1.6.0                &&
@@ -266,7 +267,7 @@ rm -rf libgeotiff-1.6.0
 Geospatial data library.
 
 ```sh
-curl https://github.com/OSGeo/gdal/releases/download/v3.3.0/gdal-3.3.0.tar.gz -o /sources/gdal-3.3.0.tar.gz &&
+wget https://github.com/OSGeo/gdal/releases/download/v3.3.0/gdal-3.3.0.tar.gz -P /sources &&
 
 tar xzvf /sources/gdal-3.3.0.tar.gz &&
 cd        gdal-3.3.0                &&

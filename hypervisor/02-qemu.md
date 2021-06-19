@@ -16,16 +16,18 @@ curl https://download.qemu-project.org/qemu-6.0.0.tar.xz -o /sources/qemu-6.0.0.
 tar xvf /sources/qemu-6.0.0.tar.xz &&
 cd       qemu-6.0.0                &&
 
-mkdir -vp build &&
-cd        build &&
+mkdir build &&
+cd    build &&
 
 ../configure --prefix=/usr                \
              --sysconfdir=/etc            \
              --target-list=x86_64-softmmu \
              --audio-drv-list=alsa,pa     \
+             --enable-lto                 \
              --docdir=/usr/share/doc/qemu-6.0.0 &&
 
 make              &&
+ninja test        &&
 sudo make install &&
 
 cd ../.. &&
@@ -48,6 +50,18 @@ Change the permissions and ownership of a helper script and add a convenience li
 sudo chgrp kvm  /usr/libexec/qemu-bridge-helper &&
 sudo chmod 4750 /usr/libexec/qemu-bridge-helper &&
 sudo ln -sv qemu-system-`uname -m` /usr/bin/qemu
+```
+
+Provide the `kvm` convenenience script that provides a shortcut to launch `kvm`-accelerated guests with `QEMU`.
+
+```sh
+sudo su -
+cat > /usr/bin/kvm <<"EOF" &&
+#!/bin/sh
+exec qemu-system-x86_64 -enable-kvm "$@"
+EOF
+chmod 0755 /usr/bin/kvm
+exit
 ```
 
 ## libnfnetlink
@@ -191,9 +205,40 @@ cd .. &&
 rm -rf dmidecode-3.3
 ```
 
+## yajl2
+
+"Yet another JSON library." Required by `libvirt` in order to support `QEMU` as a driver.
+
+```sh
+curl https://github.com/lloyd/yajl/archive/2.1.0.tar.gz -o /sources/yajl-2.1.0.tar.gz &&
+
+tar xzvf /sources/yajl-2.1.0.tar.gz &&
+cd        yajl-2.1.0                &&
+
+mkdir build &&
+cd    build &&
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_BUILD_TYPE=Release .. &&
+
+make              &&
+sudo make install &&
+
+sudo rm /usr/lib/libyajl_s.a &&
+
+cd ../.. &&
+rm -rf yajl-2.1.0
+```
+
 ## libvirt
 
 A portable, long-term stable C API for managing virtualization systems on many operating systems, including `QEMU` and `KVM` on Linux.
+
+Create a user to own the socket:
+
+```sh
+sudo groupadd libvirt
+```
 
 ```sh
 curl https://libvirt.org/sources/libvirt-7.4.0.tar.xz -o /sources/libvirt-7.4.0.tar.xz &&
@@ -204,53 +249,52 @@ cd       libvirt-7.4.0                &&
 mkdir build &&
 cd    build &&
 
-meson --prefix=/usr                         \
-      --sysconfdir=/etc                     \
-      --docdir=/usr/share/doc/libvirt-7.4.0 \
-      --buildtype=release                   \
-      --libexecdir=lib/libvirt              \
-      -Db_lto=true                          \
-      -Drunstatedir=/run                    \
+meson --prefix=/usr            \
+      --sysconfdir=/etc        \
+      --buildtype=release      \
+      --libexecdir=lib/libvirt \
+      -Db_lto=true             \
+      -Drunstatedir=/run       \
+      -Ddriver_qemu=enabled    \
       -Dqemu_group=kvm .. &&
 
 ninja              &&
+ninja test         &&
 sudo ninja install &&
+
+sudo mv /usr/share/doc/libvirt /usr/share/doc/libvirt-7.4.0 &&
 
 cd ../.. &&
 rm -rf libvirt-7.4.0
 ```
 
-To enable the daemon:
+Fix some permissions and create a default configuration:
 
 ```sh
-sudo systemctl enable libvirtd
+sudo su -
+echo "z /var/lib/libvirt/qemu 0751" > /usr/lib/tmpfiles.d/libvirt.conf
+chmod 600 /etc/libvirt/nwfilter/*.xml \
+    /etc/libvirt/qemu/networks/default.xml
+cat >> /etc/libvirt/libvirtd.conf <<"EOF"
+uri_default = "qemu:///system"
+unix_sock_group = "libvirt"
+unix_sock_ro_perms = "0777" # set to 0770 to deny non-group libvirt users
+unix_sock_rw_perms = "0770"
+auth_unix_ro = "none"
+auth_unix_rw = "none"
+EOF
+exit
 ```
 
+Add any users you want to manage the socket to the new group:
 
+```sh
+usermod -a -G libvirt <user>
+```
 
+To enable the libvirt daemon and logging daemon:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```sh
+sudo systemctl enable libvirtd &&
+sudo systemctl enable virtlogd
+```

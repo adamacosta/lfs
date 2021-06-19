@@ -491,7 +491,7 @@ rm -rf liblinear-242
 Reference implementation of the Open Message Passing Interface.
 
 ```sh
-curl https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz -o /sources/openmpi-4.1.1.tar.gz &&
+wget https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.1.tar.gz -P /sources &&
 
 tar xzvf /sources/openmpi-4.1.1.tar.gz &&
 cd        openmpi-4.1.1                &&
@@ -500,10 +500,11 @@ cd        openmpi-4.1.1                &&
             --sysconfdir=/etc                     \
             --localstatedir=/var                  \
             --docdir=/usr/share/doc/openmpi-4.1.1 \
+            --enable-mpi-fortran                  \
             --enable-mpi-cxx &&
 
 make              &&
-make check        &&
+make -k check     &&
 sudo make install &&
 
 cd .. &&
@@ -600,33 +601,6 @@ sudo make install &&
 
 cd ../.. &&
 rm -rf exiv2-0.27.3-Source
-```
-
-## TBB
-
-Threading building blocks for C++. Theoretically, this should build on supported architectures other than Intel processors, but I haven't gotten it to build on Threadripper.
-
-```sh
-curl https://github.com/oneapi-src/oneTBB/archive/refs/tags/v2021.2.0.tar.gz -o /sources/tbb-2021.2.0.tgz &&
-
-tar xzvf /sources/tbb-2021.2.0.tgz &&
-cd        oneTBB-2021.2.0          &&
-
-mkdir build &&
-cd    build &&
-
-CFLAGS="-mtune=generic -march=x86-64"   \
-CXXFLAGS="-mtune=generic -march=x86-64" \
-cmake -DCMAKE_INSTALL_PREFIX=/usr       \
-      -DBUILD_SHARED_LIBS=on            \
-      -DCMAKE_BUILD_TYPE=Release        \
-      .. &&
-
-make              &&
-sudo make install &&
-
-cd ../.. &&
-rm -rf oneTBB-2021.2.0
 ```
 
 ## GLib

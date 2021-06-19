@@ -895,6 +895,8 @@ meson --prefix=/usr .. &&
 ninja              &&
 sudo ninja install &&
 
+sudo mv /usr/share/doc/libvdpau /usr/share/doc/libvdpau-1.4 &&
+
 cd ../.. &&
 rm -rf libvdpau-1.4
 ```
