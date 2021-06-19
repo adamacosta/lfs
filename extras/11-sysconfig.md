@@ -124,7 +124,7 @@ Now is a good time to reboot the system and see that everything starts up as exp
 Install the psf fonts from `TerminusFont`.
 
 ```sh
-curl http://sourceforge.net/projects/terminus-font/files/terminus-font-4.49/terminus-font-4.49.1.tar.gz/download -o /sources/terminus-font-4.49.1.tar.gz &&
+wget http://sourceforge.net/projects/terminus-font/files/terminus-font-4.49/terminus-font-4.49.1.tar.gz/download -P /sources/terminus-font-4.49.1.tar.gz &&
 
 tar xzvf /sources/terminus-font-4.49.1.tar.gz &&
 cd        terminus-font-4.49.1                &&

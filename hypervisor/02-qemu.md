@@ -11,7 +11,7 @@ sudo usermod -a -G kvm <username>
 Note that I have chosen to enable support for both `alsa` and `PulseAudio`, contra Beyond Linux From Scratch.
 
 ```sh
-curl https://download.qemu-project.org/qemu-6.0.0.tar.xz -o /sources/qemu-6.0.0.tar.xz &&
+wget https://download.qemu-project.org/qemu-6.0.0.tar.xz -P /sources/qemu-6.0.0.tar.xz &&
 
 tar xvf /sources/qemu-6.0.0.tar.xz &&
 cd       qemu-6.0.0                &&
@@ -67,7 +67,7 @@ exit
 ## libnfnetlink
 
 ```sh
-curl https://www.netfilter.org/pub/libnfnetlink/libnfnetlink-1.0.1.tar.bz2 -o /sources/libnfnetlink-1.0.1.tar.bz2 &&
+wget https://www.netfilter.org/pub/libnfnetlink/libnfnetlink-1.0.1.tar.bz2 -P /sources/libnfnetlink-1.0.1.tar.bz2 &&
 
 tar xvf /sources/libnfnetlink-1.0.1.tar.bz2 &&
 cd       libnfnetlink-1.0.1                 &&
@@ -84,7 +84,7 @@ rm -rf libnfnetlink-1.0.1
 ## libmnl
 
 ```sh
-curl https://www.netfilter.org/pub/libmnl/libmnl-1.0.4.tar.bz2 -o /sources/libmnl-1.0.4.tar.bz2 &&
+wget https://www.netfilter.org/pub/libmnl/libmnl-1.0.4.tar.bz2 -P /sources/libmnl-1.0.4.tar.bz2 &&
 
 tar xvf /sources/libmnl-1.0.4.tar.bz2 &&
 cd       libmnl-1.0.4                 &&
@@ -101,7 +101,7 @@ rm -rf libmnl-1.0.4
 ## libnetfilter_conntrack
 
 ```sh
-curl https://www.netfilter.org/pub/libnetfilter_conntrack/libnetfilter_conntrack-1.0.8.tar.bz2 -o /sources/libnetfilter_conntrack-1.0.8.tar.bz2 &&
+wget https://www.netfilter.org/pub/libnetfilter_conntrack/libnetfilter_conntrack-1.0.8.tar.bz2 -P /sources/libnetfilter_conntrack-1.0.8.tar.bz2 &&
 
 tar xvf /sources/libnetfilter_conntrack-1.0.8.tar.bz2 &&
 cd       libnetfilter_conntrack-1.0.8                 &&
@@ -118,7 +118,7 @@ rm -rf libnetfilter_conntrack-1.0.8
 ## libnftnl
 
 ```sh
-curl https://www.netfilter.org/pub/libnftnl/libnftnl-1.2.0.tar.bz2 -o /sources/libnftnl-1.2.0.tar.bz2 &&
+wget https://www.netfilter.org/pub/libnftnl/libnftnl-1.2.0.tar.bz2 -P /sources/libnftnl-1.2.0.tar.bz2 &&
 
 tar xvf /sources/libnftnl-1.2.0.tar.bz2 &&
 cd       libnftnl-1.2.0                 &&
@@ -135,7 +135,7 @@ rm -rf libnftnl-1.2.0
 ## nftables
 
 ```sh
-curl https://www.netfilter.org/pub/nftables/nftables-0.9.9.tar.bz2 -o /sources/nftables-0.9.9.tar.bz2 &&
+wget https://www.netfilter.org/pub/nftables/nftables-0.9.9.tar.bz2 -P /sources/nftables-0.9.9.tar.bz2 &&
 
 tar xvf /sources/nftables-0.9.9.tar.bz2 &&
 cd       nftables-0.9.9                 &&
@@ -156,7 +156,7 @@ rm -rf nftables-0.9.9
 ## iptables
 
 ```sh
-curl http://www.netfilter.org/projects/iptables/files/iptables-1.8.7.tar.bz2 -o /sources/iptables-1.8.7.tar.bz2 &&
+wget http://www.netfilter.org/projects/iptables/files/iptables-1.8.7.tar.bz2 -P /sources/iptables-1.8.7.tar.bz2 &&
 
 tar xvf /sources/iptables-1.8.7.tar.bz2 &&
 cd       iptables-1.8.7                 &&
@@ -191,7 +191,7 @@ Additional kernel settings are needed to control netfilter:
 Desktop management interface decoder. Read information straight from the hardware.
 
 ```sh
-curl https://download.savannah.nongnu.org/releases/dmidecode/dmidecode-3.3.tar.xz -o /sources/dmidecode-3.3.tar.xz &&
+wget https://download.savannah.nongnu.org/releases/dmidecode/dmidecode-3.3.tar.xz -P /sources/dmidecode-3.3.tar.xz &&
 
 tar xvf /sources/dmidecode-3.3.tar.xz &&
 cd       dmidecode-3.3                &&
@@ -210,7 +210,7 @@ rm -rf dmidecode-3.3
 "Yet another JSON library." Required by `libvirt` in order to support `QEMU` as a driver.
 
 ```sh
-curl https://github.com/lloyd/yajl/archive/2.1.0.tar.gz -o /sources/yajl-2.1.0.tar.gz &&
+wget https://github.com/lloyd/yajl/archive/2.1.0.tar.gz -P /sources/yajl-2.1.0.tar.gz &&
 
 tar xzvf /sources/yajl-2.1.0.tar.gz &&
 cd        yajl-2.1.0                &&
@@ -241,7 +241,7 @@ sudo groupadd libvirt
 ```
 
 ```sh
-curl https://libvirt.org/sources/libvirt-7.4.0.tar.xz -o /sources/libvirt-7.4.0.tar.xz &&
+wget https://libvirt.org/sources/libvirt-7.4.0.tar.xz -P /sources/libvirt-7.4.0.tar.xz &&
 
 tar xvf /sources/libvirt-7.4.0.tar.xz &&
 cd       libvirt-7.4.0                &&

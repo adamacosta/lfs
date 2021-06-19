@@ -7,8 +7,8 @@
 Used by the Linux kernel and subsequently adopted by most Linux projects. `go` packages somewhat depend on it.
 
 ```sh
-curl https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.32.0.tar.xz -o /sources/git-2.32.0.tar.xz &&
-curl https://mirrors.edge.kernel.org/pub/software/scm/git/git-manpages-2.32.0.tar.xz -o /sources/git-manpages-2.32.0.tar.xz &&
+wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-2.32.0.tar.xz -P /sources/git-2.32.0.tar.xz &&
+wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-manpages-2.32.0.tar.xz -P /sources/git-manpages-2.32.0.tar.xz &&
 
 tar xvf /sources/git-2.32.0.tar.xz &&
 cd       git-2.32.0                &&
@@ -41,7 +41,7 @@ sudo cp -Rv gdb/doc/doxy /usr/share/doc/gdb-10.2
 ```
 
 ```sh
-curl https://ftp.gnu.org/gnu/gdb/gdb-10.2.tar.xz -o /sources/gdb-10.2.tar.xz &&
+wget https://ftp.gnu.org/gnu/gdb/gdb-10.2.tar.xz -P /sources/gdb-10.2.tar.xz &&
 
 tar xvf /sources/gdb-10.2.tar.xz &&
 cd       gdb-10.2                &&
@@ -77,7 +77,7 @@ rm -rf gdb-10.2
 Dynamic analyzer for native code. Finds memory bugs that compilers can't flag, especially memory leaks.
 
 ```sh
-curl https://sourceware.org/ftp/valgrind/valgrind-3.17.0.tar.bz2 -o /sources/valgrind-3.17.0.tar.bz2 &&
+wget https://sourceware.org/ftp/valgrind/valgrind-3.17.0.tar.bz2 -P /sources/valgrind-3.17.0.tar.bz2 &&
 
 tar xvf /sources/valgrind-3.17.0.tar.bz2 &&
 cd       valgrind-3.17.0                 &&
@@ -101,7 +101,7 @@ rm -rf valgrind-3.17.0
 Note that the BLFS lists `libarchive` as optional, but unless you edit the input files to the `bootstrap` script, it will fail, saying it is required. To install it:
 
 ```sh
-curl https://github.com/libarchive/libarchive/releases/download/3.5.1/libarchive-3.5.1.tar.xz -o /sources/libarchive-3.5.1.tar.xz &&
+wget https://github.com/libarchive/libarchive/releases/download/3.5.1/libarchive-3.5.1.tar.xz -P /sources/libarchive-3.5.1.tar.xz &&
 
 tar xvf /sources/libarchive-3.5.1.tar.xz &&
 cd       libarchive-3.5.1                &&
@@ -119,7 +119,7 @@ rm -rf libarchive-3.5.1
 Building the documentation requires `Sphinx` to build the html documentation. This can be installed or the build can just be run in a `Python` virtualenv as is shown here.
 
 ```sh
-curl https://cmake.org/files/v3.20/cmake-3.20.4.tar.gz -o /sources/cmake-3.20.4.tar.gz &&
+wget https://cmake.org/files/v3.20/cmake-3.20.4.tar.gz -P /sources/cmake-3.20.4.tar.gz &&
 
 tar xzvf /sources/cmake-3.20.4.tar.gz &&
 cd        cmake-3.20.4                &&
@@ -153,8 +153,8 @@ rm -rf cmake-3.20.4
 The Netwide Assembler. Required by `libass`.
 
 ```sh
-curl http://www.nasm.us/pub/nasm/releasebuilds/2.15.05/nasm-2.15.05.tar.xz -o /sources/nasm-2.15.05.tar.xz &&
-curl http://www.nasm.us/pub/nasm/releasebuilds/2.15.05/nasm-2.15.05-xdoc.tar.xz -o /sources/nasm-2.15.05-xdoc.tar.xz &&
+wget http://www.nasm.us/pub/nasm/releasebuilds/2.15.05/nasm-2.15.05.tar.xz -P /sources/nasm-2.15.05.tar.xz &&
+wget http://www.nasm.us/pub/nasm/releasebuilds/2.15.05/nasm-2.15.05-xdoc.tar.xz -P /sources/nasm-2.15.05-xdoc.tar.xz &&
 
 tar xvf /sources/nasm-2.15.05.tar.xz                           &&
 tar xvf /sources/nasm-2.15.05-xdoc.tar.xz --strip-components=1 &&
@@ -176,7 +176,7 @@ rm -rf nasm-2.15.05
 Iteration on `nasm`, used by `FFmpeg`.
 
 ```sh
-curl http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz -o /sources/yasm-1.3.0.tar.gz &&
+wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz -P /sources/yasm-1.3.0.tar.gz &&
 
 tar xzvf /sources/yasm-1.3.0.tar.gz &&
 cd        yasm-1.3.0                &&
@@ -198,7 +198,7 @@ rm -rf yasm-1.3.0
 `go` needs to be bootstrapped from `go-1.4`, the last version that was still written in C, so we first need to download and build that.
 
 ```sh
-curl https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz -o /sources/go1.4-bootstrap-20171003.tar.gz &&
+wget https://dl.google.com/go/go1.4-bootstrap-20171003.tar.gz -P /sources/go1.4-bootstrap-20171003.tar.gz &&
 
 tar xzvf /sources/go1.4-bootstrap-20171003.tar.gz &&
 cd        go/src                                  &&
@@ -211,7 +211,7 @@ cd ../..
 Now we can build the latest stable `go` using `go-1.4`:
 
 ```sh
-curl https://go.googlesource.com/go/+archive/refs/tags/go1.16.5.tar.gz -o /sources/go1.16.5.tar.gz &&
+wget https://go.googlesource.com/go/+archive/refs/tags/go1.16.5.tar.gz -P /sources/go1.16.5.tar.gz &&
 
 mkdir -v go1.16.5                             &&
 tar xzvf /sources/go1.16.5.tar.gz -C go1.16.5 &&
@@ -246,9 +246,9 @@ sudo rm -rf go*
 At least `Rust` requires `LLVM` as it targets it as an IR to generate machine code from. `Firefox` developers prefer building with `Clang` to use the same compiler across all platforms, though `gcc` may work, possibly with tweaks to Mozilla's build defaults.
 
 ```sh
-curl https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/llvm-12.0.0.src.tar.xz -o /sources/llvm-12.0.0.src.tar.xz &&
-curl https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang-12.0.0.src.tar.xz -o /sources/clang-12.0.0.src.tar.xz &&
-curl https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/compiler-rt-12.0.0.src.tar.xz -o /sources/compiler-rt-12.0.0.src.tar.xz &&
+wget https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/llvm-12.0.0.src.tar.xz -P /sources/llvm-12.0.0.src.tar.xz &&
+wget https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/clang-12.0.0.src.tar.xz -P /sources/clang-12.0.0.src.tar.xz &&
+wget https://github.com/llvm/llvm-project/releases/download/llvmorg-12.0.0/compiler-rt-12.0.0.src.tar.xz -P /sources/compiler-rt-12.0.0.src.tar.xz &&
 
 tar xvf /sources/llvm-12.0.0.src.tar.xz &&
 cd       llvm-12.0.0.src                &&
@@ -288,7 +288,7 @@ rm -rf llvm-12.0.0.src
 ```sh
 mkdir -pv ~/.ghcup/bin &&
 
-curl https://downloads.haskell.org/~ghcup/0.1.14/x86_64-linux-ghcup-0.1.14 -o ~/.ghcup/bin/ghcup &&
+wget https://downloads.haskell.org/~ghcup/0.1.14/x86_64-linux-ghcup-0.1.14 -P ~/.ghcup/bin/ghcup &&
 chmod +x ~/.ghcup/bin/ghcup          &&
 ~/.ghcup/bin/ghcup install ghc-9.0.1 &&
 ~/.ghcup/bin/ghcup set 9.0.1
@@ -301,8 +301,8 @@ Beware that `ghc` applies heavy optimizations unless you tell it not to, so this
 To build html documentation, `sphinx-build` is required, which can be installed by running `pip install [--user] sphinx` if you did not already do that earlier, or it can be installed in a virtualenv used only for the build.
 
 ```sh
-curl https://downloads.haskell.org/~ghc/9.0.1/ghc-9.0.1-src.tar.xz -o /sources/ghc-9.0.1.src.tar.xz       &&
-curl https://downloads.haskell.org/~ghc/9.0.1/ghc-9.0.1-testsuite.tar.xz -o /sources/ghc-9.0.1-testsuite.tar.xz &&
+wget https://downloads.haskell.org/~ghc/9.0.1/ghc-9.0.1-src.tar.xz -P /sources/ghc-9.0.1.src.tar.xz       &&
+wget https://downloads.haskell.org/~ghc/9.0.1/ghc-9.0.1-testsuite.tar.xz -P /sources/ghc-9.0.1-testsuite.tar.xz &&
 
 tar xvf /sources/ghc-9.0.1.src.tar.xz       &&
 tar xvf /sources/ghc-9.0.1-testsuite.tar.xz &&
@@ -340,7 +340,7 @@ cat > hackage-build.sh << EOF
 set -e
 
 download() {
-    curl https://hackage.haskell.org/packages/archive/\${1}/\${2}/\${1}-\${2}.tar.gz -o \${1}-\${2}.tar.gz
+    wget https://hackage.haskell.org/packages/archive/\${1}/\${2}/\${1}-\${2}.tar.gz -P \${1}-\${2}.tar.gz
     tar xzf \${1}-\${2}.tar.gz
     rm \${1}-\${2}.tar.gz
 }
@@ -480,8 +480,8 @@ The build below takes up roughly 15 GB on disk when completed. The installation 
 To start, first we'll grab some patches from the folks at `Arch Linux`:
 
 ```sh
-curl https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/rust/trunk/0001-bootstrap-Change-libexec-dir.patch -o /sources/patches/rustc-bootstrap-change-libexec-dir.patch &&
-curl https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/rust/trunk/0001-cargo-Change-libexec-dir.patch -o /sources/patches/cargo-change-libexec-dir.patch
+wget https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/rust/trunk/0001-bootstrap-Change-libexec-dir.patch -P /sources/patches/rustc-bootstrap-change-libexec-dir.patch &&
+wget https://raw.githubusercontent.com/archlinux/svntogit-packages/packages/rust/trunk/0001-cargo-Change-libexec-dir.patch -P /sources/patches/cargo-change-libexec-dir.patch
 ```
 
 Now download the `rustc` tarball itself, apply the patches, and create the build config for `cargo`.
@@ -491,7 +491,7 @@ Note that Beyond Linux From Scratch recommends installing into `/opt` and creati
 I have not been able to get `miri` to build with latest `rustc`, which is the reason for enumerating exactly which tools we want and allowing failed tool creation in the dist stage. It appears to be looking for git metadata that does not exist in the release tarball. In addition to the reduced toolset and installation prefix, the other change from Beyond Linux From Scratch is to use the installed versions. This avoids downloading the nightly `rustc`, `cargo`, and `rustfmt` when they are already present. If you're building `rust` for the first time, this will not work and you will need to allow the embedded downloader to grab them from the Internet.
 
 ```sh
-curl https://static.rust-lang.org/dist/rustc-1.53.0-src.tar.gz -o /sources/rustc-1.53.0-src.tar.gz &&
+wget https://static.rust-lang.org/dist/rustc-1.53.0-src.tar.gz -P /sources/rustc-1.53.0-src.tar.gz &&
 
 tar xzvf /sources/rustc-1.53.0-src.tar.gz &&
 cd        rustc-1.53.0-src                &&
@@ -598,7 +598,7 @@ cat > /tmp/conftest.rs << EOF
 pub extern fn hello() { println!("Hello world"); }
 EOF
 
-/usr/bin/rustc --crate-type staticlib --target=x86_64-unknown-linux-gnu -o /tmp/conftest.rlib /tmp/conftest.rs
+/usr/bin/rustc --crate-type staticlib --target=x86_64-unknown-linux-gnu -P /tmp/conftest.rlib /tmp/conftest.rs
 ```
 
 This is roughly the test run by the `js78` `mozbuild` `configure` tool, so if it works, building `js78` and `firefox` should work.
@@ -616,7 +616,7 @@ rm -rf rustc-1.53.0-src
 Generate C bindings for rust. Needed to compile Firefox.
 
 ```sh
-curl https://github.com/eqrion/cbindgen/archive/v0.19.0/cbindgen-0.19.0.tar.gz -o /sources/cbindgen-0.19.0.tar.gz &&
+wget https://github.com/eqrion/cbindgen/archive/v0.19.0/cbindgen-0.19.0.tar.gz -P /sources/cbindgen-0.19.0.tar.gz &&
 
 tar xzvf /sources/cbindgen-0.19.0.tar.gz &&
 cd        cbindgen-0.19.0                &&
@@ -634,8 +634,8 @@ rm -rf cbindgen-0.19.0
 Scripting language commonly used to embed scripting capabilities into other applications.
 
 ```sh
-curl http://www.lua.org/ftp/lua-5.4.3.tar.gz -o /sources/lua-5.4.3.tar.gz &&
-curl https://www.linuxfromscratch.org/patches/blfs/svn/lua-5.4.3-shared_library-1.patch -o /sources/lua-5.4.3-shared_library-1.patch &&
+wget http://www.lua.org/ftp/lua-5.4.3.tar.gz -P /sources/lua-5.4.3.tar.gz &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/lua-5.4.3-shared_library-1.patch -P /sources/lua-5.4.3-shared_library-1.patch &&
 
 tar xzvf /sources/lua-5.4.3.tar.gz &&
 cd        lua-5.4.3                &&
@@ -683,7 +683,7 @@ rm -rf lua-5.4.3
 Because we link the `ruby` interpreter dynamically against `libruby`, we'll apply the same trick from the Fedora maintainers to try getting a speedup from avoiding the PLT when functions from `libruby` call into other functions from `libruby`.
 
 ```sh
-curl https://cache.ruby-lang.org/pub/ruby/3.0/ruby-3.0.1.tar.gz -o /sources/ruby-3.0.1.tar.gz &&
+wget https://cache.ruby-lang.org/pub/ruby/3.0/ruby-3.0.1.tar.gz -P /sources/ruby-3.0.1.tar.gz &&
 
 tar xzvf /sources/ruby-3.0.1.tar.gz &&
 cd        ruby-3.0.1                &&
@@ -708,7 +708,7 @@ rm -rf ruby-3.0.1
 The Chrome V8 JavaScript engine allowing for JavaScript execution outside of a browser.
 
 ```sh
-curl https://github.com/nodejs/node/archive/refs/tags/v16.3.0.tar.gz -o /sources/node-v16.3.0.tar.gz &&
+wget https://github.com/nodejs/node/archive/refs/tags/v16.3.0.tar.gz -P /sources/node-v16.3.0.tar.gz &&
 
 tar xzvf /sources/node-v16.3.0.tar.gz &&
 cd        node-16.3.0                 &&
@@ -737,7 +737,7 @@ rm -rf node-16.3.0
 Autogenerate bindings for foreign function calls across many languages.
 
 ```sh
-curl https://downloads.sourceforge.net/swig/swig-4.0.2.tar.gz -o /sources/swig-4.0.2.tar.gz &&
+wget https://downloads.sourceforge.net/swig/swig-4.0.2.tar.gz -P /sources/swig-4.0.2.tar.gz &&
 
 tar xzvf /sources/swig-4.0.2.tar.gz &&
 cd        swig-4.0.2                &&
@@ -759,7 +759,7 @@ rm -rf swig-4.0.2
 #### docutils
 
 ```sh
-curl https://downloads.sourceforge.net/docutils/docutils-0.17.1.tar.gz -o /sources/python-docutils-0.17.1.tar.gz &&
+wget https://downloads.sourceforge.net/docutils/docutils-0.17.1.tar.gz -P /sources/python-docutils-0.17.1.tar.gz &&
 
 tar xzvf /sources/python-docutils-0.17.1.tar.gz &&
 cd        docutils-0.17.1                       &&
@@ -778,7 +778,7 @@ sudo rm -rf docutils-0.17.1
 #### PyCairo
 
 ```sh
-curl https://github.com/pygobject/pycairo/releases/download/v1.20.1/pycairo-1.20.1.tar.gz -o /sources/python-pycairo-1.20.1.tar.gz &&
+wget https://github.com/pygobject/pycairo/releases/download/v1.20.1/pycairo-1.20.1.tar.gz -P /sources/python-pycairo-1.20.1.tar.gz &&
 
 tar xzvf /sources/python-pycairo-1.20.1.tar.gz &&
 cd        pycairo-1.20.1                       &&
@@ -795,7 +795,7 @@ sudo rm -rf pycairo-1.20.1
 #### PyGObject
 
 ```sh
-curl https://download.gnome.org/sources/pygobject/3.40/pygobject-3.40.1.tar.xz -o /sources/python-pygobject-3.40.1.tar.xz &&
+wget https://download.gnome.org/sources/pygobject/3.40/pygobject-3.40.1.tar.xz -P /sources/python-pygobject-3.40.1.tar.xz &&
 
 tar xvf /sources/python-pygobject-3.40.1.tar.xz &&
 cd       pygobject-3.40.1                       &&
@@ -816,7 +816,7 @@ rm -rf pygobject-3.40.1
 #### d-bus
 
 ```sh
-curl https://dbus.freedesktop.org/releases/dbus-python/dbus-python-1.2.16.tar.gz -o /sources/dbus-python-1.2.16.tar.gz &&
+wget https://dbus.freedesktop.org/releases/dbus-python/dbus-python-1.2.16.tar.gz -P /sources/dbus-python-1.2.16.tar.gz &&
 
 tar xzvf /sources/dbus-python-1.2.16.tar.gz &&
 cd        dbus-python-1.2.16                &&
@@ -841,7 +841,7 @@ rm -rf dbus-python-1.2.16
 #### Pygments
 
 ```sh
-curl https://files.pythonhosted.org/packages/source/P/Pygments/Pygments-2.9.0.tar.gz -o /sources/python-Pygments-2.9.0.tar.gz &&
+wget https://files.pythonhosted.org/packages/source/P/Pygments/Pygments-2.9.0.tar.gz -P /sources/python-Pygments-2.9.0.tar.gz &&
 
 tar xzvf /sources/python-Pygments-2.9.0.tar.gz &&
 cd        Pygments-2.9.0                       &&
@@ -855,7 +855,7 @@ sudo rm -rf Pygments-2.9.0
 #### lxml
 
 ```sh
-curl https://files.pythonhosted.org/packages/source/l/lxml/lxml-4.6.3.tar.gz -o /sources/python-lxml-4.6.3.tar.gz &&
+wget https://files.pythonhosted.org/packages/source/l/lxml/lxml-4.6.3.tar.gz -P /sources/python-lxml-4.6.3.tar.gz &&
 
 tar xzvf /sources/python-lxml-4.6.3.tar.gz &&
 cd        lxml-4.6.3                       &&
@@ -870,7 +870,7 @@ sudo rm -rf lxml-4.6.3
 #### MarkupSafe
 
 ```sh
-curl https://files.pythonhosted.org/packages/source/M/MarkupSafe/MarkupSafe-2.0.1.tar.gz -o /sources/python-MarkupSafe-2.0.1.tar.gz &&
+wget https://files.pythonhosted.org/packages/source/M/MarkupSafe/MarkupSafe-2.0.1.tar.gz -P /sources/python-MarkupSafe-2.0.1.tar.gz &&
 
 tar xzvf /sources/python-MarkupSafe-2.0.1.tar.gz &&
 cd        MarkupSafe-2.0.1                       &&
@@ -885,7 +885,7 @@ sudo rm -rf MarkupSafe-2.0.1
 #### PyYAML
 
 ```sh
-curl https://pyyaml.org/download/pyyaml/PyYAML-5.3.1.tar.gz -o /sources/PyYAML-5.3.1.tar.gz &&
+wget https://pyyaml.org/download/pyyaml/PyYAML-5.3.1.tar.gz -P /sources/PyYAML-5.3.1.tar.gz &&
 
 tar xzvf /sources/PyYAML-5.3.1.tar.gz &&
 cd        PyYAML-5.3.1                &&
@@ -900,7 +900,7 @@ sudo rm -rf PyYAML-5.3.1
 #### Jinja2
 
 ```sh
-curl https://files.pythonhosted.org/packages/source/J/Jinja2/Jinja2-3.0.1.tar.gz -o /sources/python-Jinja2-3.0.1.tar.gz &&
+wget https://files.pythonhosted.org/packages/source/J/Jinja2/Jinja2-3.0.1.tar.gz -P /sources/python-Jinja2-3.0.1.tar.gz &&
 
 tar xzvf /sources/python-Jinja2-3.0.1.tar.gz &&
 cd        Jinja2-3.0.1                       &&
@@ -914,7 +914,7 @@ sudo rm -rf Jinja2-3.0.1
 #### Mako
 
 ```sh
-curl https://files.pythonhosted.org/packages/source/M/Mako/Mako-1.1.4.tar.gz -o /sources/python-Mako-1.1.4.tar.gz &&
+wget https://files.pythonhosted.org/packages/source/M/Mako/Mako-1.1.4.tar.gz -P /sources/python-Mako-1.1.4.tar.gz &&
 
 tar xzvf /sources/python-Mako-1.1.4.tar.gz &&
 cd        Mako-1.1.4                       &&

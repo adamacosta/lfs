@@ -154,7 +154,7 @@ wget https://download.gnome.org/sources/gtk+/2.24/gtk+-2.24.33.tar.xz -P /source
 tar xvf /sources/gnome/gtk+-2.24.33.tar.xz &&
 cd       gtk+-2.24.33                      &&
 
-sed -e 's#l \(gtk-.*\).sgml#& -o \1#' \
+sed -e 's#l \(gtk-.*\).sgml#& -P \1#' \
     -i docs/{faq,tutorial}/Makefile.in      &&
 
 ./configure --prefix=/usr \

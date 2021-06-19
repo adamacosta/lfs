@@ -281,8 +281,8 @@ make                          &&
 sudo make PREFIX=/usr install &&
 
 sudo rm -fv /usr/lib/libgif.a                      &&
-sudo find doc \( -name Makefile\* -o -name \*.1 \
-         -o -name \*.xml \) -exec rm -v {} \;      &&
+sudo find doc \( -name Makefile\* -P -name \*.1 \
+         -P -name \*.xml \) -exec rm -v {} \;      &&
 sudo install -v -dm755 /usr/share/doc/giflib-5.2.1 &&
 sudo cp -v -R doc/* /usr/share/doc/giflib-5.2.1    &&
 

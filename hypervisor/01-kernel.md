@@ -37,7 +37,7 @@ After the kernel is built with the required drivers, you will still need `bridge
 Create and manage bridge devices.
 
 ```sh
-curl https://www.kernel.org/pub/linux/utils/net/bridge-utils/bridge-utils-1.7.1.tar.xz -o /sources/bridge-utils-1.7.1.tar.xz &&
+wget https://www.kernel.org/pub/linux/utils/net/bridge-utils/bridge-utils-1.7.1.tar.xz -P /sources/bridge-utils-1.7.1.tar.xz &&
 
 tar xvf /sources/bridge-utils-1.7.1.tar.xz &&
 cd       bridge-utils-1.7.1                &&

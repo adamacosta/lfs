@@ -5,7 +5,7 @@
 JSON parsing library.
 
 ```sh
-curl https://github.com/kkos/oniguruma/releases/download/v6.9.7.1/onig-6.9.7.1.tar.gz -o /sources/onig-6.9.7.1.tar.gz &&
+wget https://github.com/kkos/oniguruma/releases/download/v6.9.7.1/onig-6.9.7.1.tar.gz -P /sources/onig-6.9.7.1.tar.gz &&
 
 tar xzvf /sources/onig-6.9.7.1.tar.gz &&
 cd        onig-6.9.7                  &&
@@ -24,7 +24,7 @@ rm -rf onig-6.9.7
 Query JSON text streams.
 
 ```sh
-curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-1.6.tar.gz -o /sources/jq-1.6.tar.gz &&
+wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-1.6.tar.gz -P /sources/jq-1.6.tar.gz &&
 
 tar xzvf /sources/jq-1.6.tar.gz &&
 cd        jq-1.6                &&
@@ -54,7 +54,7 @@ sudo chmod +x /usr/bin/yq
 If you opted to build and install the `go` compiler, you can build `yq` from source. Beware that, though there is a `Makefile`, you cannot run `make` and expect it to work, as this `Makefile` assumes it is being run from a `git` repo and also requires `docker`, which you may or may not have at this point. `go` has a fairly simple toolchain, so we'll just do it the hard way.
 
 ```sh
-curl https://github.com/mikefarah/yq/archive/refs/tags/v4.9.3.tar.gz -o /sources/yq-4.9.3.tar.gz &&
+wget https://github.com/mikefarah/yq/archive/refs/tags/v4.9.3.tar.gz -P /sources/yq-4.9.3.tar.gz &&
 
 tar xzvf /sources/yq-4.9.3.tar.gz &&
 cd        yq-4.9.3                &&
@@ -74,8 +74,8 @@ Beware that if you don't explicitly set `GOPATH`, it defaults to `~/go` and the 
 ## sgml
 
 ```sh
-curl https://sourceware.org/ftp/docbook-tools/new-trials/SOURCES/sgml-common-0.6.3.tgz -o /sources/sgml-common-0.6.3.tgz &&
-curl http://www.linuxfromscratch.org/patches/blfs/10.1/sgml-common-0.6.3-manpage-1.patch -o /sources/sgml-common-0.6.3-manpage-1.patch &&
+wget https://sourceware.org/ftp/docbook-tools/new-trials/SOURCES/sgml-common-0.6.3.tgz -P /sources/sgml-common-0.6.3.tgz &&
+wget http://www.linuxfromscratch.org/patches/blfs/10.1/sgml-common-0.6.3-manpage-1.patch -P /sources/sgml-common-0.6.3-manpage-1.patch &&
 
 tar xzvf /sources/sgml-common-0.6.3.tgz &&
 cd        sgml-common-0.6.3             &&
@@ -100,7 +100,7 @@ rm -rf sgml-common-0.6.3
 ## docbook-xml
 
 ```sh
-curl http://www.docbook.org/xml/4.5/docbook-xml-4.5.zip -o /sources/docbook-xml-4.5.zip &&
+wget http://www.docbook.org/xml/4.5/docbook-xml-4.5.zip -P /sources/docbook-xml-4.5.zip &&
 
 unzip /sources/docbook-xml-4.5.zip -d docbook-xml-4.5 &&
 cd     docbook-xml-4.5
@@ -230,8 +230,8 @@ sudo rm -rf docbook-xml-4.5
 ## docbook-xslt
 
 ```sh
-curl https://github.com/docbook/xslt10-stylesheets/releases/download/release/1.79.2/docbook-xsl-nons-1.79.2.tar.bz2 -o /sources/docbook-xsl-nons-1.79.2.tar.bz2 &&
-curl http://www.linuxfromscratch.org/patches/blfs/10.1/docbook-xsl-nons-1.79.2-stack_fix-1.patch -o /sources/docbook-xsl-nons-1.79.2-stack_fix-1.patch &&
+wget https://github.com/docbook/xslt10-stylesheets/releases/download/release/1.79.2/docbook-xsl-nons-1.79.2.tar.bz2 -P /sources/docbook-xsl-nons-1.79.2.tar.bz2 &&
+wget http://www.linuxfromscratch.org/patches/blfs/10.1/docbook-xsl-nons-1.79.2-stack_fix-1.patch -P /sources/docbook-xsl-nons-1.79.2-stack_fix-1.patch &&
 
 tar xvf /sources/docbook-xsl-nons-1.79.2.tar.bz2 &&
 cd       docbook-xsl-nons-1.79.2                 &&
@@ -287,7 +287,7 @@ sudo xmlcatalog --noout --add "rewriteURI" \
 ## libxslt
 
 ```sh
-curl http://xmlsoft.org/sources/libxslt-1.1.34.tar.gz -o /sources/libxslt-1.1.34.tar.gz &&
+wget http://xmlsoft.org/sources/libxslt-1.1.34.tar.gz -P /sources/libxslt-1.1.34.tar.gz &&
 
 tar xzvf /sources/libxslt-1.1.34.tar.gz &&
 cd        libxslt-1.1.34                &&
@@ -301,7 +301,7 @@ make &&
 
 sed -e 's@http://cdn.docbook.org/release/xsl@https://cdn.docbook.org/release/xsl-nons@' \
     -e 's@\$Date\$@31 October 2019@' -i doc/xsltproc.xml     &&
-xsltproc/xsltproc --nonet doc/xsltproc.xml -o doc/xsltproc.1 &&
+xsltproc/xsltproc --nonet doc/xsltproc.xml -P doc/xsltproc.1 &&
 sudo make install                                            &&
 
 cd .. &&
@@ -311,7 +311,7 @@ rm -rf libxslt-1.1.34
 ## itstool
 
 ```sh
-curl http://files.itstool.org/itstool/itstool-2.0.6.tar.bz2 -o /sources/itstool-2.0.6.tar.bz2 &&
+wget http://files.itstool.org/itstool/itstool-2.0.6.tar.bz2 -P /sources/itstool-2.0.6.tar.bz2 &&
 
 tar xvf /sources/itstool-2.0.6.tar.bz2 &&
 cd       itstool-2.0.6                 &&
@@ -328,7 +328,7 @@ rm -rf itstool-2.0.6
 ## xmlto
 
 ```sh
-curl https://releases.pagure.org/xmlto/xmlto-0.0.28.tar.bz2 -o /sources/xmlto-0.0.28.tar.bz2 &&
+wget https://releases.pagure.org/xmlto/xmlto-0.0.28.tar.bz2 -P /sources/xmlto-0.0.28.tar.bz2 &&
 
 tar xvf /sources/xmlto-0.0.28.tar.bz2 &&
 cd       xmlto-0.0.28                 &&
@@ -345,7 +345,7 @@ rm -rf xmlto-0.0.28
 ## shared-mime-info
 
 ```sh
-curl https://gitlab.freedesktop.org/xdg/shared-mime-info/uploads/0ee50652091363ab0d17e335e5e74fbe/shared-mime-info-2.1.tar.xz -o /sources/shared-mime-info-2.1.tar.xz &&
+wget https://gitlab.freedesktop.org/xdg/shared-mime-info/uploads/0ee50652091363ab0d17e335e5e74fbe/shared-mime-info-2.1.tar.xz -P /sources/shared-mime-info-2.1.tar.xz &&
 
 tar xvf /sources/shared-mime-info-2.1.tar.xz &&
 cd       shared-mime-info-2.1                &&

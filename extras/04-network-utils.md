@@ -5,7 +5,7 @@
 Implementation of HTTP/2.
 
 ```sh
-curl https://github.com/nghttp2/nghttp2/releases/download/v1.43.0/nghttp2-1.43.0.tar.xz -o /sources/nghttp2-1.43.0.tar.xz &&
+wget https://github.com/nghttp2/nghttp2/releases/download/v1.43.0/nghttp2-1.43.0.tar.xz -P /sources/nghttp2-1.43.0.tar.xz &&
 
 tar xvf /sources/nghttp2-1.43.0.tar.xz &&
 cd       nghttp2-1.43.0                &&
@@ -28,7 +28,7 @@ Building just the client provides the `dig` utility for querying DNS servers.
 
 
 ```sh
-curl ftp://ftp.isc.org/isc/bind9/9.16.16/bind-9.16.16.tar.xz -o /sources/bind-9.16.16.tar.xz &&
+curl ftp://ftp.isc.org/isc/bind9/9.16.16/bind-9.16.16.tar.xz -P /sources/bind-9.16.16.tar.xz &&
 
 tar xvf /sources/bind-9.16.16.tar.xz &&
 cd       bind-9.16.16                &&
@@ -55,7 +55,7 @@ rm -rf bind-9.16.16
 Trace the network hops of your packets.
 
 ```sh
-curl https://downloads.sourceforge.net/traceroute/traceroute-2.1.0.tar.gz -o /sources/traceroute-2.1.0.tar.gz &&
+wget https://downloads.sourceforge.net/traceroute/traceroute-2.1.0.tar.gz -P /sources/traceroute-2.1.0.tar.gz &&
 
 tar xzvf /sources/traceroute-2.1.0.tar.gz &&
 cd        traceroute-2.1.0                &&
@@ -75,7 +75,7 @@ rm -rf traceroute-2.1.0
 Query the domain registry database.
 
 ```sh
-curl https://github.com/rfc1036/whois/archive/v5.4.3/whois-5.4.3.tar.gz -o /sources/whois-5.4.3.tar.gz &&
+wget https://github.com/rfc1036/whois/archive/v5.4.3/whois-5.4.3.tar.gz -P /sources/whois-5.4.3.tar.gz &&
 
 tar xzvf /sources/whois-5.4.3.tar.gz &&
 cd        whois-5.4.3                &&
@@ -92,7 +92,7 @@ rm -rf whois-5.4.3
 Port scanning tool.
 
 ```sh
-curl http://nmap.org/dist/nmap-7.91.tar.bz2 -o /sources/nmap-7.91.tar.bz2 &&
+wget http://nmap.org/dist/nmap-7.91.tar.bz2 -P /sources/nmap-7.91.tar.bz2 &&
 
 tar xvf /sources/nmap-7.91.tar.bz2 &&
 cd       nmap-7.91                 &&
@@ -119,7 +119,7 @@ sudo ln -s ncat /usr/bin/nc
 Netscape Portable Runtime
 
 ```sh
-curl https://archive.mozilla.org/pub/nspr/releases/v4.31/src/nspr-4.31.tar.gz -o /sources/nspr-4.31.tar.gz &&
+wget https://archive.mozilla.org/pub/nspr/releases/v4.31/src/nspr-4.31.tar.gz -P /sources/nspr-4.31.tar.gz &&
 
 tar xzvf /sources/nspr-4.31.tar.gz &&
 cd        nspr-4.31                &&
@@ -145,8 +145,8 @@ rm -rf nspr-4.31
 Network Security Services.
 
 ```sh
-curl https://archive.mozilla.org/pub/security/nss/releases/NSS_3_67_RTM/src/nss-3.67.tar.gz -o /sources/nss-3.67.tar.gz &&
-curl -L http://www.linuxfromscratch.org/patches/blfs/svn/nss-3.67-standalone-1.patch -o /sources/nss-3.67-standalone-1.patch &&
+wget https://archive.mozilla.org/pub/security/nss/releases/NSS_3_67_RTM/src/nss-3.67.tar.gz -P /sources/nss-3.67.tar.gz &&
+curl -L http://www.linuxfromscratch.org/patches/blfs/svn/nss-3.67-standalone-1.patch -P /sources/nss-3.67-standalone-1.patch &&
 
 tar xzvf /sources/nss-3.67.tar.gz &&
 cd       nss-3.67                 &&
@@ -214,7 +214,7 @@ rm -rf curl-7.76.1
 Interact with wireless devices.
 
 ```sh
-curl https://www.kernel.org/pub/software/network/iw/iw-5.9.tar.xz -o /sources/iw-5.9.tar.xz &&
+wget https://www.kernel.org/pub/software/network/iw/iw-5.9.tar.xz -P /sources/iw-5.9.tar.xz &&
 
 tar xvf /sources/iw-5.9.tar.xz &&
 cd       iw-5.9                &&

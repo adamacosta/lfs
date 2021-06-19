@@ -9,7 +9,7 @@ mkdir -pv /sources/xorg
 ## util-macros
 
 ```sh
-curl https://www.x.org/pub/individual/util/util-macros-1.19.3.tar.bz2 -o /sources/xorg/util-macros-1.19.3.tar.bz2 &&
+wget https://www.x.org/pub/individual/util/util-macros-1.19.3.tar.bz2 -P /sources/xorg/util-macros-1.19.3.tar.bz2 &&
 
 tar xvf /sources/xorg/util-macros-1.19.3.tar.bz2 &&
 cd       util-macros-1.19.3                      &&
@@ -28,7 +28,7 @@ rm -rf util-macros-1.19.3
 ## xorg-proto
 
 ```sh
-curl https://xorg.freedesktop.org/archive/individual/proto/xorgproto-2021.4.tar.bz2 -o /sources/xorg/xorgproto-2021.4.tar.bz2 &&
+wget https://xorg.freedesktop.org/archive/individual/proto/xorgproto-2021.4.tar.bz2 -P /sources/xorg/xorgproto-2021.4.tar.bz2 &&
 
 tar xvf /sources/xorg/xorgproto-2021.4.tar.bz2 &&
 cd       xorgproto-2021.4                      &&
@@ -52,7 +52,7 @@ rm -rf xorgproto-2021.4
 ## libXau
 
 ```sh
-curl https://www.x.org/pub/individual/lib/libXau-1.0.9.tar.bz2 -o /sources/xorg/libXau-1.0.9.tar.bz2 &&
+wget https://www.x.org/pub/individual/lib/libXau-1.0.9.tar.bz2 -P /sources/xorg/libXau-1.0.9.tar.bz2 &&
 
 tar xvf /sources/xorg/libXau-1.0.9.tar.bz2 &&
 cd       libXau-1.0.9                      &&
@@ -72,7 +72,7 @@ rm -rf libXau-1.0.9
 ## libXdmcp
 
 ```sh
-curl https://www.x.org/pub/individual/lib/libXdmcp-1.1.3.tar.bz2 -o /sources/xorg/libXdmcp-1.1.3.tar.bz2 &&
+wget https://www.x.org/pub/individual/lib/libXdmcp-1.1.3.tar.bz2 -P /sources/xorg/libXdmcp-1.1.3.tar.bz2 &&
 
 tar xvf /sources/xorg/libXdmcp-1.1.3.tar.bz2 &&
 cd       libXdmcp-1.1.3                      &&
@@ -93,7 +93,7 @@ rm -rf libXdmcp-1.1.3
 ## xcb-proto
 
 ```sh
-curl https://xorg.freedesktop.org/archive/individual/proto/xcb-proto-1.14.1.tar.xz -o /sources/xorg/xcb-proto-1.14.1.tar.xz &&
+wget https://xorg.freedesktop.org/archive/individual/proto/xcb-proto-1.14.1.tar.xz -P /sources/xorg/xcb-proto-1.14.1.tar.xz &&
 
 tar xvf /sources/xorg/xcb-proto-1.14.1.tar.xz &&
 cd       xcb-proto-1.14.1                     &&
@@ -112,7 +112,7 @@ rm -rf xcb-proto-1.14.1
 ## libxcb
 
 ```sh
-curl https://xorg.freedesktop.org/archive/individual/lib/libxcb-1.14.tar.xz -o /sources/xorg/libxcb-1.14.tar.xz &&
+wget https://xorg.freedesktop.org/archive/individual/lib/libxcb-1.14.tar.xz -P /sources/xorg/libxcb-1.14.tar.xz &&
 
 tar xvf /sources/xorg/libxcb-1.14.tar.xz &&
 cd       libxcb-1.14                     &&
@@ -239,7 +239,7 @@ done
 ## xcb-util
 
 ```sh
-curl https://xcb.freedesktop.org/dist/xcb-util-0.4.0.tar.bz2 -o /sources/xorg/xcb-util-0.4.0.tar.bz2 &&
+wget https://xcb.freedesktop.org/dist/xcb-util-0.4.0.tar.bz2 -P /sources/xorg/xcb-util-0.4.0.tar.bz2 &&
 
 tar xvf /sources/xorg/xcb-util-0.4.0.tar.bz2 &&
 cd       xcb-util-0.4.0                      &&
@@ -259,7 +259,7 @@ rm -rf xcb-util-0.4.0
 ## xcb-util-image
 
 ```sh
-curl https://xcb.freedesktop.org/dist/xcb-util-image-0.4.0.tar.bz2 -o /sources/xorg/xcb-util-image-0.4.0.tar.bz2 &&
+wget https://xcb.freedesktop.org/dist/xcb-util-image-0.4.0.tar.bz2 -P /sources/xorg/xcb-util-image-0.4.0.tar.bz2 &&
 
 tar xvf /sources/xorg/xcb-util-image-0.4.0.tar.bz2 &&
 cd       xcb-util-image-0.4.0                      &&
@@ -279,7 +279,7 @@ rm -rf xcb-util-image-0.4.0
 ## xcb-util-keysyms
 
 ```sh
-curl https://xcb.freedesktop.org/dist/xcb-util-keysyms-0.4.0.tar.bz2 -o /sources/xorg/xcb-util-keysyms-0.4.0.tar.bz2 &&
+wget https://xcb.freedesktop.org/dist/xcb-util-keysyms-0.4.0.tar.bz2 -P /sources/xorg/xcb-util-keysyms-0.4.0.tar.bz2 &&
 
 tar xvf /sources/xorg/xcb-util-keysyms-0.4.0.tar.bz2 &&
 cd       xcb-util-keysyms-0.4.0                      &&
@@ -299,7 +299,7 @@ rm -rf xcb-util-keysyms-0.4.0
 ## xcb-util-renderutil
 
 ```sh
-curl https://xcb.freedesktop.org/dist/xcb-util-renderutil-0.3.9.tar.bz2 -o /sources/xorg/xcb-util-renderutil-0.3.9.tar.bz2 &&
+wget https://xcb.freedesktop.org/dist/xcb-util-renderutil-0.3.9.tar.bz2 -P /sources/xorg/xcb-util-renderutil-0.3.9.tar.bz2 &&
 
 tar xvf /sources/xorg/xcb-util-renderutil-0.3.9.tar.bz2 &&
 cd       xcb-util-renderutil-0.3.9                      &&
@@ -319,7 +319,7 @@ rm -rf xcb-util-renderutil-0.3.9
 ## xcb-util-wm
 
 ```sh
-curl https://xcb.freedesktop.org/dist/xcb-util-wm-0.4.1.tar.bz2 -o /sources/xorg/xcb-util-wm-0.4.1.tar.bz2 &&
+wget https://xcb.freedesktop.org/dist/xcb-util-wm-0.4.1.tar.bz2 -P /sources/xorg/xcb-util-wm-0.4.1.tar.bz2 &&
 
 tar xvf /sources/xorg/xcb-util-wm-0.4.1.tar.bz2 &&
 cd       xcb-util-wm-0.4.1                      &&
@@ -339,7 +339,7 @@ rm -rf xcb-util-wm-0.4.1
 ## xcb-util-cursor
 
 ```sh
-curl https://xcb.freedesktop.org/dist/xcb-util-cursor-0.1.3.tar.bz2 -o /sources/xorg/xcb-util-cursor-0.1.3.tar.bz2 &&
+wget https://xcb.freedesktop.org/dist/xcb-util-cursor-0.1.3.tar.bz2 -P /sources/xorg/xcb-util-cursor-0.1.3.tar.bz2 &&
 
 tar xvf /sources/xorg/xcb-util-cursor-0.1.3.tar.bz2 &&
 cd       xcb-util-cursor-0.1.3                      &&
@@ -359,7 +359,7 @@ rm -rf xcb-util-cursor-0.1.3
 ## libdrm
 
 ```sh
-curl https://dri.freedesktop.org/libdrm/libdrm-2.4.106.tar.xz -o /sources/xorg/libdrm-2.4.106.tar.xz &&
+wget https://dri.freedesktop.org/libdrm/libdrm-2.4.106.tar.xz -P /sources/xorg/libdrm-2.4.106.tar.xz &&
 
 tar xvf /sources/xorg/libdrm-2.4.106.tar.xz &&
 cd       libdrm-2.4.106                     &&
@@ -382,7 +382,7 @@ rm -rf libdrm-2.4.106
 ## Wayland
 
 ```sh
-curl https://wayland.freedesktop.org/releases/wayland-1.19.0.tar.xz -o /sources/wayland-1.19.0.tar.xz &&
+wget https://wayland.freedesktop.org/releases/wayland-1.19.0.tar.xz -P /sources/wayland-1.19.0.tar.xz &&
 
 tar xvf /sources/wayland-1.19.0.tar.xz &&
 cd       wayland-1.19.0                &&
@@ -400,7 +400,7 @@ rm -rf wayland-1.19.0
 ## Wayland Protocols
 
 ```sh
-curl https://wayland.freedesktop.org/releases/wayland-protocols-1.21.tar.xz -o /sources/wayland-protocols-1.21.tar.xz &&
+wget https://wayland.freedesktop.org/releases/wayland-protocols-1.21.tar.xz -P /sources/wayland-protocols-1.21.tar.xz &&
 
 tar xvf /sources/wayland-protocols-1.21.tar.xz &&
 cd       wayland-protocols-1.21                &&
@@ -417,7 +417,7 @@ rm -rf wayland-protocols-1.21
 ## Mesa
 
 ```sh
-curl https://mesa.freedesktop.org/archive/mesa-21.1.2.tar.xz -o /sources/xorg/mesa-21.1.2.tar.xz &&
+wget https://mesa.freedesktop.org/archive/mesa-21.1.2.tar.xz -P /sources/xorg/mesa-21.1.2.tar.xz &&
 
 tar xvf /sources/xorg/mesa-21.1.2.tar.xz &&
 cd       mesa-21.1.2                     &&
@@ -442,7 +442,7 @@ rm -rf mesa-21.1.2
 ## xbitmaps
 
 ```sh
-curl https://www.x.org/pub/individual/data/xbitmaps-1.1.2.tar.bz2 -o /sources/xorg/xbitmaps-1.1.2.tar.bz2 &&
+wget https://www.x.org/pub/individual/data/xbitmaps-1.1.2.tar.bz2 -P /sources/xorg/xbitmaps-1.1.2.tar.bz2 &&
 
 tar xvf /sources/xorg/xbitmaps-1.1.2.tar.bz2 &&
 cd       xbitmaps-1.1.2                      &&
@@ -545,7 +545,7 @@ done
 ## xcursor-themes
 
 ```sh
-curl https://www.x.org/pub/individual/data/xcursor-themes-1.0.6.tar.bz2 -o /sources/xorg/xcursor-themes-1.0.6.tar.bz2 &&
+wget https://www.x.org/pub/individual/data/xcursor-themes-1.0.6.tar.bz2 -P /sources/xorg/xcursor-themes-1.0.6.tar.bz2 &&
 
 tar xvf /sources/xorg/xcursor-themes-1.0.6.tar.bz2 &&
 cd       xcursor-themes-1.0.6                      &&
@@ -620,7 +620,7 @@ sudo ln -svfn /usr/share/fonts/X11/TTF /usr/share/fonts/X11-TTF
 ## XKeyboardConfig
 
 ```sh
-curl https://www.x.org/pub/individual/data/xkeyboard-config/xkeyboard-config-2.33.tar.bz2 -o /sources/xorg/xkeyboard-config-2.33.tar.bz2 &&
+wget https://www.x.org/pub/individual/data/xkeyboard-config/xkeyboard-config-2.33.tar.bz2 -P /sources/xorg/xkeyboard-config-2.33.tar.bz2 &&
 
 tar xvf /sources/xorg/xkeyboard-config-2.33.tar.bz2 &&
 cd       xkeyboard-config-2.33                      &&
@@ -641,7 +641,7 @@ rm -rf xkeyboard-config-2.33
 ## Xorg server
 
 ```sh
-curl https://www.x.org/pub/individual/xserver/xorg-server-1.20.11.tar.bz2 -o /sources/xorg/xorg-server-1.20.11.tar.bz2 &&
+wget https://www.x.org/pub/individual/xserver/xorg-server-1.20.11.tar.bz2 -P /sources/xorg/xorg-server-1.20.11.tar.bz2 &&
 
 tar xvf /sources/xorg/xorg-server-1.20.11.tar.bz2 &&
 cd       xorg-server-1.20.11                      &&
@@ -678,7 +678,7 @@ Device Drivers  --->
 ```
 
 ```sh
-curl https://www.freedesktop.org/software/libevdev/libevdev-1.11.0.tar.xz -o /sources/xorg/libevdev-1.11.0.tar.xz &&
+wget https://www.freedesktop.org/software/libevdev/libevdev-1.11.0.tar.xz -P /sources/xorg/libevdev-1.11.0.tar.xz &&
 
 tar xvf /sources/xorg/libevdev-1.11.0.tar.xz &&
 cd       libevdev-1.11.0                     &&
@@ -698,7 +698,7 @@ rm -rf libevdev-1.11.0
 ### Xorg evdev driver
 
 ```sh
-curl https://www.x.org/pub/individual/driver/xf86-input-evdev-2.10.6.tar.bz2 -o /sources/xorg/xf86-input-evdev-2.10.6.tar.bz2 &&
+wget https://www.x.org/pub/individual/driver/xf86-input-evdev-2.10.6.tar.bz2 -P /sources/xorg/xf86-input-evdev-2.10.6.tar.bz2 &&
 
 tar xvf /sources/xorg/xf86-input-evdev-2.10.6.tar.bz2 &&
 cd       xf86-input-evdev-2.10.6                      &&
@@ -718,7 +718,7 @@ rm -rf xf86-input-evdev-2.10.6
 ### libinput
 
 ```sh
-curl https://www.freedesktop.org/software/libinput/libinput-1.18.0.tar.xz -o /sources/xorg/libinput-1.18.0.tar.xz &&
+wget https://www.freedesktop.org/software/libinput/libinput-1.18.0.tar.xz -P /sources/xorg/libinput-1.18.0.tar.xz &&
 
 tar xvf /sources/xorg/libinput-1.18.0.tar.xz &&
 cd       libinput-1.18.0                     &&
@@ -744,7 +744,7 @@ rm -rf libinput-1.18.0
 ### Xorg libinput driver
 
 ```sh
-curl https://www.x.org/pub/individual/driver/xf86-input-libinput-1.0.1.tar.bz2 -o /sources/xorg/xf86-input-libinput-1.0.1.tar.bz2 &&
+wget https://www.x.org/pub/individual/driver/xf86-input-libinput-1.0.1.tar.bz2 -P /sources/xorg/xf86-input-libinput-1.0.1.tar.bz2 &&
 
 tar xvf /sources/xorg/xf86-input-libinput-1.0.1.tar.bz2 &&
 cd       xf86-input-libinput-1.0.1                      &&
@@ -764,7 +764,7 @@ rm -rf xf86-input-libinput-1.0.1
 ### libwacom
 
 ```sh
-curl https://github.com/linuxwacom/libwacom/releases/download/libwacom-1.10/libwacom-1.10.tar.bz2 -o /sources/xorg/libwacom-1.10.tar.bz2 &&
+wget https://github.com/linuxwacom/libwacom/releases/download/libwacom-1.10/libwacom-1.10.tar.bz2 -P /sources/xorg/libwacom-1.10.tar.bz2 &&
 
 tar xvf /sources/xorg/libwacom-1.10.tar.bz2 &&
 cd       libwacom-1.10                      &&
@@ -798,7 +798,7 @@ Device Drivers  --->
 ```
 
 ```sh
-curl https://github.com/linuxwacom/xf86-input-wacom/releases/download/xf86-input-wacom-0.40.0/xf86-input-wacom-0.40.0.tar.bz2 -o /sources/xorg/xf86-input-wacom-0.40.0.tar.bz2 &&
+wget https://github.com/linuxwacom/xf86-input-wacom/releases/download/xf86-input-wacom-0.40.0/xf86-input-wacom-0.40.0.tar.bz2 -P /sources/xorg/xf86-input-wacom-0.40.0.tar.bz2 &&
 
 tar xvf /sources/xorg/xf86-input-wacom-0.40.0.tar.bz2 &&
 cd       xf86-input-wacom-0.40.0                      &&
@@ -826,8 +826,8 @@ Device Drivers  --->
 ```
 
 ```sh
-curl https://anduin.linuxfromscratch.org/BLFS/gpm/gpm-1.20.7.tar.bz2 -o /sources/gpm-1.20.7.tar.bz2 &&
-curl https://www.linuxfromscratch.org/patches/blfs/svn/gpm-1.20.7-consolidated-1.patch -o /sources/patches/gpm-1.20.7-consolidated-1.patch &&
+wget https://anduin.linuxfromscratch.org/BLFS/gpm/gpm-1.20.7.tar.bz2 -P /sources/gpm-1.20.7.tar.bz2 &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/gpm-1.20.7-consolidated-1.patch -P /sources/patches/gpm-1.20.7-consolidated-1.patch &&
 
 tar xvf /sources/gpm-1.20.7.tar.bz2 &&
 cd       gpm-1.20.7                 &&
@@ -862,7 +862,7 @@ rm -rf gpm-1.20.7
 ### libva
 
 ```sh
-curl https://github.com/intel/libva/releases/download/2.11.0/libva-2.11.0.tar.bz2 -o /sources/xorg/libva-2.11.0.tar.bz2 &&
+wget https://github.com/intel/libva/releases/download/2.11.0/libva-2.11.0.tar.bz2 -P /sources/xorg/libva-2.11.0.tar.bz2 &&
 
 tar xvf /sources/xorg/libva-2.11.0.tar.bz2 &&
 cd       libva-2.11.0                      &&
@@ -882,7 +882,7 @@ rm -rf libva-2.11.0
 ### libvdpau
 
 ```sh
-curl https://gitlab.freedesktop.org/vdpau/libvdpau/-/archive/1.4/libvdpau-1.4.tar.bz2 -o /sources/xorg/libvdpau-1.4.tar.bz2 &&
+wget https://gitlab.freedesktop.org/vdpau/libvdpau/-/archive/1.4/libvdpau-1.4.tar.bz2 -P /sources/xorg/libvdpau-1.4.tar.bz2 &&
 
 tar xvf /sources/xorg/libvdpau-1.4.tar.bz2 &&
 cd       libvdpau-1.4                      &&
@@ -904,7 +904,7 @@ rm -rf libvdpau-1.4
 ### libvdpau_gl
 
 ```sh
-curl https://github.com/i-rinat/libvdpau-va-gl/archive/v0.4.0/libvdpau-va-gl-0.4.0.tar.gz -o /sources/xorg/libvdpau-va-gl-0.4.0.tar.gz &&
+wget https://github.com/i-rinat/libvdpau-va-gl/archive/v0.4.0/libvdpau-va-gl-0.4.0.tar.gz -P /sources/xorg/libvdpau-va-gl-0.4.0.tar.gz &&
 
 tar xzvf /sources/xorg/libvdpau-va-gl-0.4.0.tar.gz &&
 cd        libvdpau-va-gl-0.4.0                     &&
@@ -925,7 +925,7 @@ rm -rf libvdpau-va-gl-0.4.0
 ### GLU
 
 ```sh
-curl ftp://ftp.freedesktop.org/pub/mesa/glu/glu-9.0.1.tar.xz -o /sources/xorg/glu-9.0.1.tar.xz &&
+curl ftp://ftp.freedesktop.org/pub/mesa/glu/glu-9.0.1.tar.xz -P /sources/xorg/glu-9.0.1.tar.xz &&
 
 tar xvf /sources/xorg/glu-9.0.1.tar.xz &&
 cd       glu-9.0.1                     &&
@@ -943,7 +943,7 @@ rm -rf glu-9.0.1
 ## libxkbcommon
 
 ```sh
-curl https://xkbcommon.org/download/libxkbcommon-1.3.0.tar.xz -o /sources/xorg/libxkbcommon-1.3.0.tar.xz &&
+wget https://xkbcommon.org/download/libxkbcommon-1.3.0.tar.xz -P /sources/xorg/libxkbcommon-1.3.0.tar.xz &&
 
 tar xvf /sources/xorg/libxkbcommon-1.3.0.tar.xz &&
 cd       libxkbcommon-1.3.0                     &&
@@ -967,7 +967,7 @@ rm -rf libxkbcommon-1.3.0
 Library for notifying a user that an application is loading.
 
 ```sh
-curl https://www.freedesktop.org/software/startup-notification/releases/startup-notification-0.12.tar.gz -o /sources/xorg/startup-notification-0.12.tar.gz &&
+wget https://www.freedesktop.org/software/startup-notification/releases/startup-notification-0.12.tar.gz -P /sources/xorg/startup-notification-0.12.tar.gz &&
 
 tar xzvf /sources/xorg/startup-notification-0.12.tar.gz &&
 cd        startup-notification-0.12                     &&
@@ -989,7 +989,7 @@ rm -rf startup-notification-0.12
 Text interface web browser. Required by `xdg-utils`.
 
 ```sh
-curl http://links.twibright.com/download/links-2.23.tar.bz2 -o /sources/links-2.23.tar.bz2 &&
+wget http://links.twibright.com/download/links-2.23.tar.bz2 -P /sources/links-2.23.tar.bz2 &&
 
 tar xvf /sources/links-2.23.tar.bz2 &&
 cd       links-2.23                 &&
@@ -1011,7 +1011,7 @@ rm -rf links-2.23
 ## xclock
 
 ```sh
-curl https://www.x.org/pub/individual/app/xclock-1.0.9.tar.bz2 -o /sources/xorg/xclock-1.0.9.tar.bz2 &&
+wget https://www.x.org/pub/individual/app/xclock-1.0.9.tar.bz2 -P /sources/xorg/xclock-1.0.9.tar.bz2 &&
 
 tar xvf /sources/xorg/xclock-1.0.9.tar.bz2 &&
 cd       xclock-1.0.9                      &&
@@ -1031,7 +1031,7 @@ rm -rf xclock-1.0.9
 ## xterm
 
 ```sh
-curl https://invisible-mirror.net/archives/xterm/xterm-368.tgz -o /sources/xorg/xterm-368.tgz &&
+wget https://invisible-mirror.net/archives/xterm/xterm-368.tgz -P /sources/xorg/xterm-368.tgz &&
 
 tar xzvf /sources/xorg/xterm-368.tgz &&
 cd        xterm-368                  &&
@@ -1072,7 +1072,7 @@ exit
 ## Xinit
 
 ```sh
-curl https://www.x.org/pub/individual/app/xinit-1.4.1.tar.bz2 -o /sources/xorg/xinit-1.4.1.tar.bz2 &&
+wget https://www.x.org/pub/individual/app/xinit-1.4.1.tar.bz2 -P /sources/xorg/xinit-1.4.1.tar.bz2 &&
 
 tar xvf /sources/xorg/xinit-1.4.1.tar.bz2 &&
 cd       xinit-1.4.1                      &&
@@ -1096,7 +1096,7 @@ rm -rf xinit-1.4.1
 The Tiny Window Manager.
 
 ```sh
-curl https://www.x.org/pub/individual/app/twm-1.0.11.tar.xz -o /sources/xorg/twm-1.0.11.tar.xz &&
+wget https://www.x.org/pub/individual/app/twm-1.0.11.tar.xz -P /sources/xorg/twm-1.0.11.tar.xz &&
 
 tar xvf /sources/xorg/twm-1.0.11.tar.xz &&
 cd       twm-1.0.11                     &&
@@ -1117,7 +1117,7 @@ rm -rf twm-1.0.11
 ## xdg-utils
 
 ```sh
-curl https://portland.freedesktop.org/download/xdg-utils-1.1.3.tar.gz -o /sources/xorg/xdg-utils-1.1.3.tar.gz &&
+wget https://portland.freedesktop.org/download/xdg-utils-1.1.3.tar.gz -P /sources/xorg/xdg-utils-1.1.3.tar.gz &&
 
 tar xzvf /sources/xorg/xdg-utils-1.1.3.tar.gz &&
 cd        xdg-utils-1.1.3                     &&
@@ -1135,7 +1135,7 @@ rm -rf xdg-utils-1.1.3
 ## Xdg-user-dirs
 
 ```sh
-curl https://user-dirs.freedesktop.org/releases/xdg-user-dirs-0.17.tar.gz -o /sources/xorg/xdg-user-dirs-0.17.tar.gz &&
+wget https://user-dirs.freedesktop.org/releases/xdg-user-dirs-0.17.tar.gz -P /sources/xorg/xdg-user-dirs-0.17.tar.gz &&
 
 tar xzvf /sources/xorg/xdg-user-dirs-0.17.tar.gz &&
 cd        xdg-user-dirs-0.17                     &&
@@ -1167,7 +1167,7 @@ mkdir -pv /sources/fonts
 ### DejaVU Fonts
 
 ```sh
-curl https://sourceforge.net/projects/dejavu/files/dejavu/2.37/dejavu-fonts-ttf-2.37.tar.bz2/download/ -o /sources/fonts/dejavu-fonts-ttf-2.37.tar.bz2 &&
+wget https://sourceforge.net/projects/dejavu/files/dejavu/2.37/dejavu-fonts-ttf-2.37.tar.bz2/download/ -P /sources/fonts/dejavu-fonts-ttf-2.37.tar.bz2 &&
 
 tar xvf /sources/fonts/dejavu-fonts-ttf-2.37.tar.bz2 &&
 cd       dejavu-fonts-ttf-2.37                       &&
@@ -1183,7 +1183,7 @@ rm -rf dejavu-fonts-ttf-2.37
 ### Liberation Fonts
 
 ```sh
-curl https://github.com/liberationfonts/liberation-fonts/files/6418984/liberation-fonts-ttf-2.1.4.tar.gz -o /sources/fonts/liberation-fonts-ttf-2.1.4.tar.gz &&
+wget https://github.com/liberationfonts/liberation-fonts/files/6418984/liberation-fonts-ttf-2.1.4.tar.gz -P /sources/fonts/liberation-fonts-ttf-2.1.4.tar.gz &&
 
 tar xzvf /sources/fonts/liberation-fonts-ttf-2.1.4.tar.gz &&
 cd        liberation-fonts-ttf-2.1.4                      &&
@@ -1199,7 +1199,7 @@ rm -rf liberation-fonts-ttf-2.1.4
 ### Source Code Pro
 
 ```sh
-curl https://github.com/adobe-fonts/source-code-pro/releases/download/2.038R-ro%2F1.058R-it%2F1.018R-VAR/TTF-source-code-pro-2.038R-ro-1.058R-it.zip -o /sources/fonts/TTF-source-code-pro-2.038R-ro-1.05R-it.zip &&
+wget https://github.com/adobe-fonts/source-code-pro/releases/download/2.038R-ro%2F1.058R-it%2F1.018R-VAR/TTF-source-code-pro-2.038R-ro-1.058R-it.zip -P /sources/fonts/TTF-source-code-pro-2.038R-ro-1.05R-it.zip &&
 
 unzip -d source-code-pro /sources/fonts/TTF-source-code-pro-2.038R-ro-1.05R-it.zip &&
 cd       source-code-pro                                                           &&
