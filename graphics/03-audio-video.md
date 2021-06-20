@@ -803,6 +803,14 @@ cd ../.. &&
 rm -rf pipewire-0.3.30
 ```
 
+Various `systemd` services are provided and intended to be run per-user, like `PulseAudio`.
+
+```sh
+sudo systemctl --global enable pipewire.socket       &&
+sudo sysetmctl --global enable pipewire-pulse.socket &&
+sudo systemctl --global enable pipewire-media-session.service
+```
+
 ## libquicktime
 
 Decode quicktime video.
