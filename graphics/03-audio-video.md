@@ -548,10 +548,10 @@ rm -rf libical-3.0.10
 The Linux bluetooth stack.
 
 ```sh
-wget https://www.kernel.org/pub/linux/bluetooth/bluez-5.58.tar.xz -P /sources/bluez-5.58.tar.xz &&
+wget https://www.kernel.org/pub/linux/bluetooth/bluez-5.59.tar.xz -P /sources &&
 
-tar xvf /sources/bluez-5.58.tar.xz &&
-cd       bluez-5.58                &&
+tar xvf /sources/bluez-5.59.tar.xz &&
+cd       bluez-5.59                &&
 
 ./configure --prefix=/usr         \
             --sysconfdir=/etc     \
@@ -563,11 +563,11 @@ sudo make install                                            &&
 sudo ln -svf ../libexec/bluetooth/bluetoothd /usr/sbin       &&
 sudo install -v -dm755 /etc/bluetooth                        &&
 sudo install -v -m644 src/main.conf /etc/bluetooth/main.conf &&
-sudo install -v -dm755 /usr/share/doc/bluez-5.58             &&
-sudo install -v -m644 doc/*.txt /usr/share/doc/bluez-5.58    &&
+sudo install -v -dm755 /usr/share/doc/bluez-5.59             &&
+sudo install -v -m644 doc/*.txt /usr/share/doc/bluez-5.59    &&
 
 cd .. &&
-rm -rf bluez-5.58
+rm -rf bluez-5.59
 ```
 
 This also comes with two `systemd` services that will turn on daemons when Bluetooth devices are connected:
