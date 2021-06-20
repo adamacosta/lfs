@@ -570,6 +570,13 @@ cd .. &&
 rm -rf bluez-5.58
 ```
 
+This also comes with two `systemd` services that will turn on daemons when Bluetooth devices are connected:
+
+```sh
+sudo systemctl enable bluetooth &&
+sudo systemctl --global enable obex
+```
+
 ## SBC
 
 ```sh
