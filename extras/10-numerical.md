@@ -9,7 +9,7 @@ Automatically Tuned Linear Algebra Subsystem.
 Note that, in my example here, I am using the latest developer version. The `ATLAS` documentation claims this is up to twice as fast as the last stable release from 2016, but of course do so at your own risk. You are probably not building Linux From Scratch for a production environment where numerical accuracy is absolutely critical, so have fun.
 
 ```sh
-wget https://sourceforge.net/projects/math-atlas/files/Developer%20%28unstable%29/3.11.41/atlas3.11.41.tar.bz2/download -O /sources/atlas-3.11.41.tar.bz2 &&
+wget https://sourceforge.net/projects/math-atlas/files/Developer%20%28unstable%29/3.11.41/atlas3.11.41.tar.bz2/download -O /sources &&
 
 mkdir atlas-3.11.41 &&
 tar xvf /sources/atlas-3.11.41.tar.bz2 -C atlas-3.11.41 --strip-components=1
@@ -121,7 +121,7 @@ rm -rf lapack-3.9.1
 `Fortran` libraries for solving sparse matrices. Modern replacement for the original `ARPACK`, which has not been maintained for 20 years.
 
 ```sh
-wget https://github.com/opencollab/arpack-ng/archive/refs/tags/3.8.0.tar.gz -O /sources/arpack-ng-3.8.0.tar.gz &&
+wget https://github.com/opencollab/arpack-ng/archive/refs/tags/3.8.0.tar.gz -O /sources &&
 
 tar xzvf /sources/arpack-ng-3.8.0.tar.gz &&
 cd        arpack-ng-3.8.0                &&

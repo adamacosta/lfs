@@ -72,32 +72,9 @@ cd .. &&
 rm -rf vala-0.52.4
 ```
 
-## librsvg
-
-SVG library and toolset. For Hacker News street cred, written in Rust.
-
-```sh
-wget https://download.gnome.org/sources/librsvg/2.51/librsvg-2.51.3.tar.xz -P /sources &&
-
-tar xvf /sources/librsvg-2.51.3.tar.xz &&
-cd       librsvg-2.51.3                &&
-
-./configure --prefix=/usr    \
-            --enable-vala    \
-            --disable-static \
-            --docdir=/usr/share/doc/librsvg-2.51.3 &&
-
-make              &&
-make -k check      &&
-sudo make install &&
-
-cd .. &&
-rm -rf librsvg-2.51.3
-```
-
 ## LAME
 
-MP3 encoder. Build `libsndfile` first for optional audio sampling support
+MP3 encoder. Build `libsndfile` first for optional audio sampling support.
 
 ```sh
 wget https://downloads.sourceforge.net/lame/lame-3.100.tar.gz -P /sources/lame-3.100.tar.gz &&
@@ -305,6 +282,33 @@ cd ../.. &&
 rm -rf libvpx-1.9.0
 ```
 
+## libmpeg2
+
+Decode MPEG-2 and MPEG-1 video streams.
+
+```sh
+wget http://libmpeg2.sourceforge.net/files/libmpeg2-0.5.1.tar.gz -P /sources &&
+
+tar xzvf /sources/libmpeg2-0.5.1.tar.gz &&
+cd        libmpeg2-0.5.1                &&
+
+sed -i 's/static const/static/' libmpeg2/idct_mmx.c &&
+
+./configure --prefix=/usr    \
+            --enable-shared  \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+sudo install -v -m755 -d /usr/share/doc/mpeg2dec-0.5.1 &&
+sudo install -v -m644 README doc/libmpeg2.txt \
+                         /usr/share/doc/mpeg2dec-0.5.1 &&
+
+cd .. &&
+rm -rf libmpeg2-0.5.1
+```
+
 ## ALSA
 
 Advanced Linux Sound Architecture.
@@ -374,6 +378,43 @@ sudo install -v -m644 doc/doxygen/html/search/* \
 
 cd .. &&
 rm -rf alsa-lib-1.2.5
+```
+
+### alsa-utils
+
+```sh
+wget https://www.alsa-project.org/files/pub/utils/alsa-utils-1.2.5.tar.bz2 -P /sources/alsa-utils-1.2.5.tar.bz2 &&
+
+tar xvf /sources/alsa-utils-1.2.5.tar.bz2 &&
+cd       alsa-utils-1.2.5                 &&
+
+./configure --disable-alsaconf \
+            --disable-bat   \
+            --disable-xmlto \
+            --with-curses=ncursesw &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf alsa-utils-1.2.5
+```
+
+### alsa-oss
+
+```sh
+wget https://www.alsa-project.org/files/pub/oss-lib/alsa-oss-1.1.8.tar.bz2 -P /sources/alsa-oss-1.1.8.tar.bz2 &&
+
+tar xvf /sources/alsa-oss-1.1.8.tar.bz2 &&
+cd       alsa-oss-1.1.8                 &&
+
+./configure --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf alsa-oss-1.1.8
 ```
 
 ### FLAC
@@ -529,6 +570,24 @@ cd .. &&
 rm -rf bluez-5.58
 ```
 
+## SBC
+
+```sh
+wget https://www.kernel.org/pub/linux/bluetooth/sbc-1.5.tar.xz -P /sources &&
+
+tar xvf /sources/sbc-1.5.tar.xz &&
+cd       sbc-1.5                &&
+
+./configure --prefix=/usr    \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf sbc-1.5
+```
+
 ### v4l-utils
 
 Camera file handling.
@@ -566,8 +625,7 @@ cd    build &&
 
 meson --prefix=/usr       \
       --buildtype=release \
-      -Ddatabase=gdbm     \
-      -Dbluez5=false &&
+      -Ddatabase=gdbm
 
 ninja                                                   &&
 sudo ninja install                                      &&
@@ -577,7 +635,39 @@ cd ../.. &&
 rm -rf pulseaudio-14.2
 ```
 
+`PulseAudio` provides a `systemd` service that can be run on a per-user basis. To enable this for all users:
+
+```sh
+sudo systemctl --global enable pulseaudio.socket
+```
+
+### alsa-plugins
+
+Among other things, provides a compatibility shim for `PulseAudio` to work with `alsa-libs`.
+
+```sh
+wget https://www.alsa-project.org/files/pub/plugins/alsa-plugins-1.2.5.tar.bz2 -P /sources &&
+
+tar xvf /sources/alsa-plugins-1.2.5.tar.bz2 &&
+cd       alsa-plugins-1.2.5                 &&
+
+./configure --sysconfdir=/etc &&
+
+make              &&
+sudo make install &&
+
+sudo mv -fv /etc/alsa/conf.d/99-pulseaudio-default.conf.example     \
+            /usr/share/alsa/alsa.conf.d/99-pulseaudio-default.conf &&
+sudo ln -sv /usr/share/alsa/alsa.conf.d/99-pulseaudio-default.conf  \
+            /etc/alsa/conf.d/99-pulseaudio-default.conf            &&
+
+cd .. &&
+rm -rf alsa-plugins-1.2.5
+```
+
 ### libao
+
+Allows applications that want to use `ao` to work with `PulseAudio`.
 
 ```sh
 wget https://downloads.xiph.org/releases/ao/libao-1.2.0.tar.gz -P /sources &&
@@ -605,60 +695,6 @@ default_driver=alsa
 dev=default
 quiet
 EOF
-```
-
-### alsa-plugins
-
-```sh
-wget https://www.alsa-project.org/files/pub/plugins/alsa-plugins-1.2.5.tar.bz2 -P /sources &&
-
-tar xvf /sources/alsa-plugins-1.2.5.tar.bz2 &&
-cd       alsa-plugins-1.2.5                 &&
-
-./configure --sysconfdir=/etc &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf alsa-plugins-1.2.5
-```
-
-### alsa-utils
-
-```sh
-wget https://www.alsa-project.org/files/pub/utils/alsa-utils-1.2.5.tar.bz2 -P /sources/alsa-utils-1.2.5.tar.bz2 &&
-
-tar xvf /sources/alsa-utils-1.2.5.tar.bz2 &&
-cd       alsa-utils-1.2.5                 &&
-
-./configure --disable-alsaconf \
-            --disable-bat   \
-            --disable-xmlto \
-            --with-curses=ncursesw &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf alsa-utils-1.2.5
-```
-
-### alsa-oss
-
-```sh
-wget https://www.alsa-project.org/files/pub/oss-lib/alsa-oss-1.1.8.tar.bz2 -P /sources/alsa-oss-1.1.8.tar.bz2 &&
-
-tar xvf /sources/alsa-oss-1.1.8.tar.bz2 &&
-cd       alsa-oss-1.1.8                 &&
-
-./configure --disable-static &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf alsa-oss-1.1.8
 ```
 
 ## OpenCV
@@ -693,19 +729,6 @@ sudo make install &&
 
 cd ../.. &&
 rm -rf opencv-4.5.2
-```
-
-## Python OpenCV
-
-Python bindings for `OpenCV`.
-
-```sh
-wget https://github.com/opencv/opencv-python/archive/refs/tags/54.tar.gz -P /sources/python-opencv-4.5.2.54.tar.gz &&
-
-tar xzvf /sources/python-opencv-4.5.2.54.tar.gz &&
-cd        opencv-python-54               &&
-
-
 ```
 
 ## FFmpeg
@@ -780,10 +803,39 @@ cd ../.. &&
 rm -rf pipewire-0.3.30
 ```
 
+## libquicktime
+
+Decode quicktime video.
+
+```sh
+wget https://downloads.sourceforge.net/libquicktime/libquicktime-1.2.4.tar.gz -P /sources &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/libquicktime-1.2.4-ffmpeg4-1.patch -P /sources/patches
+
+tar xzvf /sources/libquicktime-1.2.4.tar.gz &&
+cd        libquicktime-1.2.4                &&
+
+patch -Np1 -i /sources/patches/libquicktime-1.2.4-ffmpeg4-1.patch &&
+
+./configure --prefix=/usr     \
+            --enable-gpl      \
+            --without-doxygen \
+            --docdir=/usr/share/doc/libquicktime-1.2.4 &&
+
+make              &&
+sudo make install &&
+
+sudo install -v -m755 -d /usr/share/doc/libquicktime-1.2.4 &&
+sudo install -v -m644    README doc/{*.txt,*.html,mainpage.incl} \
+                         /usr/share/doc/libquicktime-1.2.4 &&
+
+cd .. &&
+rm -rf libquicktime-1.2.4
+```
+
 ## gstreamer
 
 ```sh
-wget https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.18.4.tar.xz -P /sources/gstreamer-1.18.4.tar.xz &&
+wget https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.18.4.tar.xz -P /sources &&
 
 tar xvf /sources/gstreamer-1.18.4.tar.xz &&
 cd        gstreamer-1.18.4               &&
@@ -807,7 +859,7 @@ rm -rf gstreamer-1.18.4
 ## graphene
 
 ```sh
-wget https://github.com/ebassi/graphene/releases/download/1.10.6/graphene-1.10.6.tar.xz -P /sources/graphene-1.10.6.tar.xz &&
+wget https://github.com/ebassi/graphene/releases/download/1.10.6/graphene-1.10.6.tar.xz -P /sources &&
 
 tar xvf /sources/graphene-1.10.6.tar.xz &&
 cd       graphene-1.10.6                &&
@@ -828,7 +880,7 @@ rm -rf graphene-1.10.6
 ## gst-plugins-base
 
 ```sh
-wget https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.18.4.tar.xz -P /sources/gst-plugins-base-1.18.4.tar.xz &&
+wget https://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-1.18.4.tar.xz -P /sources &&
 
 tar xvf /sources/gst-plugins-base-1.18.4.tar.xz &&
 cd       gst-plugins-base-1.18.4                &&
@@ -851,33 +903,10 @@ cd ../.. &&
 rm -rf gst-plugins-base-1.18.4
 ```
 
-## gst-plugins-bad
-
-```sh
-wget https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.18.4.tar.xz -P /sources/gst-plugins-bad-1.18.4.tar.xz &&
-
-tar xvf /sources/gst-plugins-bad-1.18.4.tar.xz &&
-cd       gst-plugins-bad-1.18.4                &&
-
-mkdir build &&
-cd    build &&
-
-meson  --prefix=/usr       \
-       --buildtype=release \
-       -Dpackage-origin=https://www.linuxfromscratch.org/blfs/view/svn/ \
-       -Dpackage-name="GStreamer 1.18.4 BLFS" &&
-
-ninja              &&
-sudo ninja install &&
-
-cd ../.. &&
-rm -rf gst-plugins-bad-1.18.4
-```
-
 ## gst-plugins-good
 
 ```sh
-wget https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.18.4.tar.xz -P /sources/gst-plugins-good-1.18.4.tar.xz &&
+wget https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plugins-good-1.18.4.tar.xz -P /sources &&
 
 tar xvf /sources/gst-plugins-good-1.18.4.tar.xz &&
 cd       gst-plugins-good-1.18.4                &&
@@ -897,10 +926,56 @@ cd ../.. &&
 rm -rf gst-plugins-good-1.18.4
 ```
 
+## gst-plugins-bad
+
+```sh
+wget https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-1.18.4.tar.xz -P /sources &&
+
+tar xvf /sources/gst-plugins-bad-1.18.4.tar.xz &&
+cd       gst-plugins-bad-1.18.4                &&
+
+mkdir build &&
+cd    build &&
+
+meson  --prefix=/usr       \
+       --buildtype=release \
+       -Dpackage-origin=https://www.linuxfromscratch.org/blfs/view/svn/ \
+       -Dpackage-name="GStreamer 1.18.4 BLFS" &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf gst-plugins-bad-1.18.4
+```
+
+## gst-plugins-ugly
+
+```sh
+wget https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-1.18.4.tar.xz -P /sources &&
+
+tar xvf /sources/gst-plugins-ugly-1.18.4.tar.xz &&
+cd       gst-plugins-ugly-1.18.4                &&
+
+mkdir build &&
+cd    build &&
+
+meson  --prefix=/usr       \
+       --buildtype=release \
+       -Dpackage-origin=https://www.linuxfromscratch.org/blfs/view/svn/ \
+       -Dpackage-name="GStreamer 1.18.4 BLFS" &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf gst-plugins-ugly-1.18.4
+```
+
 ## gst-libav
 
 ```sh
-wget https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.18.4.tar.xz -P /sources/gst-libav-1.18.4.tar.xz &&
+wget https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.18.4.tar.xz -P /sources &&
 
 tar xvf /sources/gst-libav-1.18.4.tar.xz &&
 cd       gst-libav-1.18.4                &&
@@ -1036,4 +1111,49 @@ Libs: -L${libdir} -lmad
 Cflags: -I${includedir}
 EOF
 exit
+```
+
+## neon
+
+HTTP/1.1 and WebDAV client library.
+
+```sh
+wget https://notroj.github.io/neon/neon-0.31.2.tar.gz -P /sources &&
+
+tar xzvf /sources/neon-0.31.2.tar.gz &&
+cd        neon-0.31.2                &&
+
+./configure --prefix=/usr    \
+            --enable-shared  \
+            --disable-static \
+            --with-ssl=gnutls &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf neon-0.31.2
+```
+
+## libmusicbrainz
+
+Look up music track metadata via remote API.
+
+Note that, contrary to `CMake` conventions, this package only support in-tree builds.
+
+```sh
+wget https://github.com/metabrainz/libmusicbrainz/releases/download/release-5.1.0/libmusicbrainz-5.1.0.tar.gz -P /sources &&
+
+tar xzvf /sources/libmusicbrainz-5.1.0.tar.gz &&
+cd        libmusicbrainz-5.1.0                &&
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_BUILD_TYPE=Release  \
+      .. &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libmusicbrainz-5.1.0
 ```

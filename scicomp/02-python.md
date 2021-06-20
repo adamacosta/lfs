@@ -813,6 +813,23 @@ cd .. &&
 sudo rm -rf matplotlib-3.4.2
 ```
 
+## Python OpenCV
+
+Python bindings for `OpenCV`. I am not sure why they don't provide a source distribution for the latest 4.5.2 versions, but this seems to work.
+
+```sh
+wget https://files.pythonhosted.org/packages/bb/08/9dbc183a3ac6baa95fabf749ddb531bd26256edfff5b6c2195eca26258e9/opencv-python-4.5.1.48.tar.gz -P /sources/python &&
+ 
+tar xzvf /sources/python/opencv-python-4.5.1.48.tar.gz &&
+cd        opencv-python-4.5.1.48                       &&
+
+python setup.py build -j 64
+sudo python setup.py install --optimize==1 &&
+
+cd .. &&
+sudo rm -rf opencv-python-4.5.1.48
+```
+
 ## Data Analysis and Machine Learning Toolkits
 
 ### PyTables

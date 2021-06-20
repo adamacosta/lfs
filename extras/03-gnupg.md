@@ -3,7 +3,7 @@
 ## libgpgerror
 
 ```sh
-wget https://www.gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.42.tar.bz2 -P /sources/libgpg-error-1.42.tar.bz2 &&
+wget https://www.gnupg.org/ftp/gcrypt/libgpg-error/libgpg-error-1.42.tar.bz2 -P /sources &&
 
 tar xvf /sources/libgpg-error-1.42.tar.bz2 &&
 cd       libgpg-error-1.42                 &&
@@ -21,7 +21,7 @@ rm -rf libgpg-error-1.42
 ## libassuan
 
 ```sh
-wget https://www.gnupg.org/ftp/gcrypt/libassuan/libassuan-2.5.5.tar.bz2 -P /sources/libassuan-2.5.5.tar.bz2 &&
+wget https://www.gnupg.org/ftp/gcrypt/libassuan/libassuan-2.5.5.tar.bz2 -P /sources &&
 
 tar xvf /sources/libassuan-2.5.5.tar.bz2 &&
 cd       libassuan-2.5.5                 &&
@@ -48,7 +48,7 @@ rm -rf libassuan-2.5.5
 ## libgcrypt
 
 ```sh
-wget https://www.gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.9.3.tar.bz2 -P /sources/libgcrypt-1.9.3.tar.bz2 &&
+wget https://www.gnupg.org/ftp/gcrypt/libgcrypt/libgcrypt-1.9.3.tar.bz2 -P /sources &&
 
 tar xvf /sources/libgcrypt-1.9.3.tar.bz2 &&
 cd       libgcrypt-1.9.3                 &&
@@ -80,7 +80,7 @@ rm -rf libgcrypt-1.9.3
 ## libksba
 
 ```sh
-wget https://www.gnupg.org/ftp/gcrypt/libksba/libksba-1.6.0.tar.bz2 -P /sources/libksba-1.6.0.tar.bz2 &&
+wget https://www.gnupg.org/ftp/gcrypt/libksba/libksba-1.6.0.tar.bz2 -P /sources &&
 
 tar xvf /sources/libksba-1.6.0.tar.bz2 &&
 cd       libksba-1.6.0                 &&
@@ -97,7 +97,7 @@ rm -rf libksba-1.6.0
 ## NPth
 
 ```sh
-wget https://www.gnupg.org/ftp/gcrypt/npth/npth-1.6.tar.bz2 -P /sources/npth-1.6.tar.bz2 &&
+wget https://www.gnupg.org/ftp/gcrypt/npth/npth-1.6.tar.bz2 -P /sources &&
 
 tar xvf /sources/npth-1.6.tar.bz2 &&
 cd       npth-1.6                 &&
@@ -114,7 +114,7 @@ rm -rf npth-1.6
 ## pinentry
 
 ```sh
-wget https://www.gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.1.tar.bz2 -P /sources/pinentry-1.1.1.tar.bz2 &&
+wget https://www.gnupg.org/ftp/gcrypt/pinentry/pinentry-1.1.1.tar.bz2 -P /sources &&
 
 tar xvf /sources/pinentry-1.1.1.tar.bz2 &&
 cd       pinentry-1.1.1                 &&
@@ -132,7 +132,7 @@ rm -rf pinentry-1.1.1
 ## GnuPG
 
 ```sh
-wget https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.28.tar.bz2 -P /sources/gnupg-2.2.28.tar.bz2 &&
+wget https://www.gnupg.org/ftp/gcrypt/gnupg/gnupg-2.2.28.tar.bz2 -P /sources &&
 
 tar xvf /sources/gnupg-2.2.28.tar.bz2 &&
 cd       gnupg-2.2.28                 &&
@@ -161,7 +161,7 @@ rm -rf gnupg-2.2.28
 ## GPGME
 
 ```sh
-wget https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-1.15.1.tar.bz2 -P /sources/gpgme-1.15.1.tar.bz2 &&
+wget https://www.gnupg.org/ftp/gcrypt/gpgme/gpgme-1.15.1.tar.bz2 -P /sources &&
 
 tar xvf /sources/gpgme-1.15.1.tar.bz2 &&
 cd       gpgme-1.15.1                 &&

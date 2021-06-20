@@ -64,13 +64,15 @@ cd .. &&
 rm -rf gimp-2.10.24
 ```
 
-## VLC Player
+## VLC Player and dependencies
 
-Media player that recognizes virtually every format known to man. Does not yet support building with `lua-5.4`, so we need to install an older version first. Also requires `Qt5` for the graphical interface.
+### lua-5.2
+
+`VLC Player` does not yet support building with `lua-5.4`, so we need to install an older version first.
 
 ```sh
-wget https://www.lua.org/ftp/lua-5.2.4.tar.gz -P /sources/lua-5.2.4.tar.gz &&
-wget https://www.linuxfromscratch.org/patches/blfs/svn/lua-5.2.4-shared_library-1.patch -P /sources/patches/lua-5.2.4-shared_library-1.patch &&
+wget https://www.lua.org/ftp/lua-5.2.4.tar.gz -P /sources &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/lua-5.2.4-shared_library-1.patch -P /sources/patches &&
 
 tar xzvf /sources/lua-5.2.4.tar.gz &&
 cd        lua-5.2.4                &&
@@ -138,10 +140,10 @@ EOF
 exit
 ```
 
-Now intall `vlc-player`:
+### VLC Player
 
 ```sh
-wget https://download.videolan.org/vlc/3.0.15/vlc-3.0.15.tar.xz -P /sources/vlc-3.0.15.tar.xz &&
+wget https://download.videolan.org/vlc/3.0.15/vlc-3.0.15.tar.xz -P /sources &&
 
 tar xvf /sources/vlc-3.0.15.tar.xz &&
 cd       vlc-3.0.15                &&
@@ -171,17 +173,10 @@ sudo update-desktop-database -q
 ## Firefox
 
 ```sh
-wget https://archive.mozilla.org/pub/firefox/releases/89.0/source/firefox-89.0.source.tar.xz -P /sources/firefox-89.0.source.tar.xz &&
+wget https://archive.mozilla.org/pub/firefox/releases/89.0.1/source/firefox-89.0.1.source.tar.xz -P /sources &&
 
-tar xvf /sources/firefox-89.0.source.tar.xz &&
-cd       firefox-89.0                       &&
-```
-
-Beware that the `Firefox` tarball is jacked up and changes ownership of the directory it is run in and changes the sticky bit. To restore:
-
-```sh
-sudo chown lfs:lfs /sources/build_dir &&
-chmod      0755    /sources/build_dir
+tar xvf /sources/firefox-89.0.1.source.tar.xz &&
+cd       firefox-89.0.1                       &&
 ```
 
 `Firefox` requires a special build configuration file:
@@ -253,7 +248,7 @@ sudo ./mach install                        &&
 unset CC CXX MOZBUILD_STATE_PATH           &&
 
 cd .. &&
-rm -rf firefox-89.0
+rm -rf firefox-89.0.1
 ```
 
 Create the .desktop file for your desktop environment:
@@ -313,6 +308,3 @@ sudo install -Dvm644 browser/branding/official/content/about-logo@2x.png \
 sudo install -Dvm644 browser/branding/official/content/identity-icons-brand.svg \
     /usr/share/icons/hicolor/symbolic/apps/firefox-symbolic.svg
 ```
-
-
-

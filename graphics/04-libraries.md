@@ -6,51 +6,6 @@ Create a separate directory for GNOME:
 mkdir -pv /sources/gnome
 ```
 
-## neon
-
-HTTP/1.1 and WebDAV client library.
-
-```sh
-wget https://notroj.github.io/neon/neon-0.31.2.tar.gz -P /sources &&
-
-tar xzvf /sources/neon-0.31.2.tar.gz &&
-cd        neon-0.31.2                &&
-
-./configure --prefix=/usr    \
-            --enable-shared  \
-            --disable-static \
-            --with-ssl=gnutls &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf neon-0.31.2
-```
-
-## libmusicbrainz
-
-Look up music track metadata via remote API.
-
-Note that, contrary to `CMake` conventions, this package only support in-tree builds.
-
-```sh
-wget https://github.com/metabrainz/libmusicbrainz/releases/download/release-5.1.0/libmusicbrainz-5.1.0.tar.gz -P /sources &&
-
-tar xzvf /sources/libmusicbrainz-5.1.0.tar.gz &&
-cd        libmusicbrainz-5.1.0                &&
-
-cmake -DCMAKE_INSTALL_PREFIX=/usr \
-      -DCMAKE_BUILD_TYPE=Release  \
-      .. &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf libmusicbrainz-5.1.0
-```
-
 ## libepoxy
 
 ```sh
