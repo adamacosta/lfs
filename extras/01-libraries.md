@@ -597,13 +597,10 @@ rm -rf exempi-2.5.2
 Library and CLI for managing image and video metadata.
 
 ```sh
-wget https://www.exiv2.org/builds/exiv2-0.27.3-Source.tar.gz -P /sources &&
-wget https://www.linuxfromscratch.org/patches/blfs/svn/exiv2-0.27.3-security_fixes-1.patch -P /sources/patches &&
+wget https://www.exiv2.org/builds/exiv2-0.27.4-Source.tar.gz -P /sources &&
 
-tar xzvf /sources/exiv2-0.27.3-Source.tar.gz &&
-cd        exiv2-0.27.3-Source                &&
-
-patch -Np1 -i /sources/patches/exiv2-0.27.3-security_fixes-1.patch &&
+tar xzvf /sources/exiv2-0.27.4-Source.tar.gz &&
+cd        exiv2-0.27.4-Source                &&
 
 mkdir build &&
 cd    build &&
@@ -620,7 +617,7 @@ make              &&
 sudo make install &&
 
 cd ../.. &&
-rm -rf exiv2-0.27.3-Source
+rm -rf exiv2-0.27.4-Source
 ```
 
 ## GLib
