@@ -227,7 +227,7 @@ cd .. &&
 rm -rf openlibm-0.7.5
 ```
 
-### DSFMT
+### dSFMT
 
 Double precision SIMD-oriented Fast Mersenne Twister for pseudorandom number generation.
 
@@ -335,6 +335,8 @@ Note that `Julia` also depends upon the POSIX port of the Windows `7-Zip` tool, 
 
 A garbage-collected, dynamically-typed language specialized for numerical, scientific, and statistical computing, aiming to provide performance approaching that of statically-compiled native code via JIT-compiling and caching. `Julia` tries to solve the so-called "two-language" problem where researchers tend to run experiments and prototype systems using high-level languages like `MATLAB`, `R`, and `Python`, and then port performance-critical or possibly all of the code to lower-level `C++` and `Fortran` for production use.
 
+Beware that if you tell `Julia` to use any system libraries at all, you need to make sure you also set the `USE_SYSTEM_CSL=1` flag to tell it to use your `gcc` and `C++` libraries. Otherwise, it will fail to link because the vendored versions are a bit behind the latest.
+
 ```sh
 wget https://github.com/JuliaLang/julia/releases/download/v1.6.1/julia-1.6.1.tar.gz -P /sources && 
 
@@ -343,8 +345,8 @@ cd        julia-1.6.1                &&
 
 cat > Make.user <<"EOF"
 USE_SYSTEM_OPENLIBM=1
-USE_SYSTEM_DSFMT=1
 USE_SYSTEM_PCRE=1
+USE_SYSTEM_DSFMT=1
 USE_SYSTEM_BLAS=1
 USE_SYSTEM_LAPACK=1
 USE_SYSTEM_GMP=1
@@ -354,10 +356,13 @@ USE_SYSTEM_LIBSSH2=1
 USE_SYSTEM_NGHTTP2=1
 USE_SYSTEM_CURL=1
 USE_SYSTEM_MPFR=1
-USE_SYSTEM_LIBSUITESPARSE=1
+USE_SYSTEM_SUITESPARSE=1
 USE_SYSTEM_UTF8PROC=1
 USE_SYSTEM_ZLIB=1
+USE_SYSTEM_CSL=1
 MARCH=native
+LIBBLAS=-lopenblas
+LIBBLASNAME=libopenblas
 EOF
 
 make prefix=/usr sysconfdir=/etc              &&
@@ -366,21 +371,3 @@ sudo make prefix=/usr sysconfdir=/etc install &&
 cd .. &&
 rm -rf julia-1.6.1
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

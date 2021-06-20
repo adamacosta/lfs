@@ -67,7 +67,7 @@ It is important that not much else is happening on the machine while `ATLAS` bui
 
 This is an alternative optimized `BLAS` for environments where `ATLAS` is not feasible or will not work.
 
-Note that for both `ATLAS` and `OpenBLAS` we do not disable static libraries, in spite of what Linux From Scratch generally does for system libs. That is because `BLAS` libraries have traditionally been statically linked into executables that use them and shared library support is still considered experimental for most implementations.
+Note that for both `ATLAS` and `OpenBLAS` we do not disable static libraries, in spite of what Linux From Scratch generally does for system libs. That is because `BLAS` libraries have traditionally been statically linked into executables that use them and shared library support is still considered experimental for most implementations. 
 
 ```sh
 wget https://github.com/xianyi/OpenBLAS/releases/download/v0.3.15/OpenBLAS-0.3.15.tar.gz -P /sources &&
