@@ -556,7 +556,7 @@ rm -rf v4l-utils-1.20.0
 ### PulseAudio
 
 ```sh
-wget https://www.freedesktop.org/software/pulseaudio/releases/pulseaudio-14.2.tar.xz -P /sources/pulseaudio-14.2.tar.xz &&
+wget https://www.freedesktop.org/software/pulseaudio/releases/pulseaudio-14.2.tar.xz -P /sources &&
 
 tar xvf /sources/pulseaudio-14.2.tar.xz &&
 cd       pulseaudio-14.2                &&
@@ -577,10 +577,40 @@ cd ../.. &&
 rm -rf pulseaudio-14.2
 ```
 
+### libao
+
+```sh
+wget https://downloads.xiph.org/releases/ao/libao-1.2.0.tar.gz -P /sources &&
+
+tar xzvf /sources/libao-1.2.0.tar.gz &&
+cd        libao-1.2.0                &&
+
+./configure --prefix=/usr &&
+
+make              &&
+sudo make install &&
+
+sudo install -vm644 README /usr/share/doc/libao-1.2.0 &&
+
+cd .. &&
+rm -rf libao-1.2.0
+```
+
+Create the default config:
+
+```sh
+sudo su -
+cat > /etc/libao.conf <<EOF
+default_driver=alsa
+dev=default
+quiet
+EOF
+```
+
 ### alsa-plugins
 
 ```sh
-wget https://www.alsa-project.org/files/pub/plugins/alsa-plugins-1.2.5.tar.bz2 -P /sources/alsa-plugins-1.2.5.tar.bz2 &&
+wget https://www.alsa-project.org/files/pub/plugins/alsa-plugins-1.2.5.tar.bz2 -P /sources &&
 
 tar xvf /sources/alsa-plugins-1.2.5.tar.bz2 &&
 cd       alsa-plugins-1.2.5                 &&

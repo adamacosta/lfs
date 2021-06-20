@@ -337,13 +337,15 @@ A garbage-collected, dynamically-typed language specialized for numerical, scien
 
 Beware that if you tell `Julia` to use any system libraries at all, you need to make sure you also set the `USE_SYSTEM_CSL=1` flag to tell it to use your `gcc` and `C++` libraries. Otherwise, it will fail to link because the vendored versions are a bit behind the latest.
 
+Presently, at least four tests fail, two of which seem to be certificate issues attempting to make network connections to localhost.
+
 ```sh
 wget https://github.com/JuliaLang/julia/releases/download/v1.6.1/julia-1.6.1.tar.gz -P /sources && 
 
 tar xzvf /sources/julia-1.6.1.tar.gz &&
 cd        julia-1.6.1                &&
 
-cat > Make.user <<"EOF"
+cat > Make.user <<"EOF" &&
 USE_SYSTEM_OPENLIBM=1
 USE_SYSTEM_PCRE=1
 USE_SYSTEM_DSFMT=1
@@ -365,8 +367,13 @@ LIBBLAS=-lopenblas
 LIBBLASNAME=libopenblas
 EOF
 
-make prefix=/usr sysconfdir=/etc              &&
-sudo make prefix=/usr sysconfdir=/etc install &&
+make prefix=/usr \
+     sysconfdir=/etc &&
+make -k test         &&
+sudo make prefix=/usr                       \
+          sysconfdir=/etc                   \
+          docdir=/usr/share/doc/julia-1.6.1 \
+          install &&
 
 cd .. &&
 rm -rf julia-1.6.1

@@ -7,7 +7,7 @@ If you have an NVIDIA video card, you will likely want the proprietary drivers f
 As of now, the latest version is `465.31` and that is the link in the snippet.
 
 ```sh
-wget https://us.download.nvidia.com/XFree86/Linux-x86_64/465.31/NVIDIA-Linux-x86_64-465.31.run -P /sources/NVIDIA-Linux-x86_64-465.31.run &&
+wget https://us.download.nvidia.com/XFree86/Linux-x86_64/465.31/NVIDIA-Linux-x86_64-465.31.run -P /sources &&
 
 sh /sources/NVIDIA-Linux-x86_64-465.31.run --extract-only &&
 cd  NVIDIA-Linux-x86_64-465.31                            &&
