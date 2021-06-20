@@ -2721,15 +2721,15 @@ rm -rf btrfs-progs-v5.12.1
 If the device you are attempting to install Linux From Scratch onto only has network access through WiFi and not through Ethernet, then post-install steps requiring a network connection will not work unless you install tools allowing you to connect to WiFi. There are options such as `wpa_supplicant` available in Beyond Linux From Scratch, but the simplest tool available is `iwd`, which can be obtained from [https://mirrors.edge.kernel.org/pub/linux/network/wireless/](https://mirrors.edge.kernel.org/pub/linux/network/wireless/). To grab the present latest version, as well as the dependency `Embedded Linux Library` (from outside the chroot):
 
 ```sh
-wget https://mirrors.edge.kernel.org/pub/linux/libs/ell/ell-0.40.tar.xz -O $LFS/sources/ell-0.40.tar.xz
-wget https://mirrors.edge.kernel.org/pub/linux/network/wireless/iwd-1.14.tar.xz -O $LFS/sources/iwd-1.14.tar.xz
+wget https://mirrors.edge.kernel.org/pub/linux/libs/ell/ell-0.41.tar.xz -P $LFS/sources
+wget https://mirrors.edge.kernel.org/pub/linux/network/wireless/iwd-1.15.tar.xz -P $LFS/sources
 ```
 
 To build `ell`:
 
 ```sh
-tar xvf /sources/ell-0.40.tar.xz &&
-cd       ell-0.40                &&
+tar xvf /sources/ell-0.41.tar.xz &&
+cd       ell-0.41                &&
 
 ./configure --prefix=/usr &&
 
@@ -2738,14 +2738,14 @@ make check   &&
 make install &&
 
 cd .. &&
-rm -rf ell-0.40
+rm -rf ell-0.41
 ```
 
 To build `iwd`:
 
 ```sh
-tar xvf /sources/iwd-1.14.tar.xz &&
-cd       iwd-1.14                &&
+tar xvf /sources/iwd-1.15.tar.xz &&
+cd       iwd-1.15                &&
 
 ./configure --prefix=/usr             \
             --sysconfdir=/etc         \
@@ -2760,10 +2760,10 @@ cd       iwd-1.14                &&
 make                                                   &&
 make check                                             &&
 make install                                           &&
-install -Dvm 644 README /usr/share/doc/iwd-1.14/README &&
+install -Dvm 644 README /usr/share/doc/iwd-1.15/README &&
 
 cd .. &&
-rm -rf iwd-1.14
+rm -rf iwd-1.15
 ```
 
 To enable the service:
