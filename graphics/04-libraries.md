@@ -758,3 +758,48 @@ sudo ninja install &&
 cd ../.. &&
 rm -rf gtkmm-3.24.5
 ```
+
+## amtk
+
+```sh
+wget https://download.gnome.org/sources/amtk/5.3/amtk-5.3.1.tar.xz -P /sources/gnome &&
+
+tar xf /sources/gnome/amtk-5.3.1.tar.xz &&
+cd      amtk-5.3.1                      &&
+
+mkdir build &&
+cd    build &&
+
+meson --prefix=/usr       \
+      --buildtype=release \
+      -Db_lto=true ..
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf amtk-5.3.1
+```
+
+## tepl
+
+```sh
+wget https://download.gnome.org/sources/tepl/6.00/tepl-6.00.0.tar.xz -P /sources/gnome &&
+
+tar xf /sources/gnome/tepl-6.00.0.tar.xz &&
+cd      tepl-6.00.0                      &&
+
+mkdir build &&
+cd    build &&
+
+meson --prefix=/usr       \
+      --buildtype=release \
+      -Db_lto=true ..
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf tepl-6.00.0
+```
+

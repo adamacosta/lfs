@@ -78,6 +78,30 @@ rm -rf gnome-terminal-3.40.2
 
 Beware that the `LANG` environment variable has to be set to a UTF-8 value before `gnome-terminal` is launched or it will crash.
 
+## GEdit
+
+The `GNOME` text editor.
+
+```sh
+wget https://download.gnome.org/sources/gedit/40/gedit-40.1.tar.xz -P /sources/gnome &&
+
+tar xf /sources/gnome/gedit-40.1.tar.xz &&
+cd      gedit-40.1                      &&
+
+mkdir build &&
+cd    build &&
+
+meson --prefix=/usr       \
+      --buildtype=release \
+      -Db_lto=true .. &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf gedit-40.1
+```
+
 ## pnmixer
 
 Volume control with tray icon.
