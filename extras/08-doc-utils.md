@@ -5,7 +5,7 @@ If you wish to build `pandoc`, it requires a Haskell compiler, and `mdbook` requ
 ## asciidoc
 
 ```sh
-wget https://github.com/asciidoc/asciidoc-py3/releases/download/9.1.0/asciidoc-9.1.0.tar.gz -P /sources/asciidoc-9.1.0.tar.gz &&
+wget https://github.com/asciidoc/asciidoc-py3/releases/download/9.1.0/asciidoc-9.1.0.tar.gz -P /sources &&
 
 tar xzvf /sources/asciidoc-9.1.0.tar.gz &&
 cd        asciidoc-9.1.0                &&
@@ -28,7 +28,7 @@ rm -rf asciidoc-9.1.0
 ## Doxygen
 
 ```sh
-wget http://doxygen.nl/files/doxygen-1.9.1.src.tar.gz -P /sources/doxygen-1.9.1.src.tar.gz &&
+wget http://doxygen.nl/files/doxygen-1.9.1.src.tar.gz -P /sources &&
 
 tar xzvf /sources/doxygen-1.9.1.src.tar.gz &&
 cd        doxygen-1.9.1                    &&
@@ -59,9 +59,9 @@ rm -rf doxygen-1.9.1
 ### snowballstemmer
 
 ```sh
-wget https://files.pythonhosted.org/packages/a3/3d/d305c9112f35df6efb51e5acd0db7009b74d86f35580e033451b5994a0a9/snowballstemmer-2.1.0.tar.gz -P /sources/python-snowball-stemmer-2.1.0.tar.gz &&
+wget https://files.pythonhosted.org/packages/a3/3d/d305c9112f35df6efb51e5acd0db7009b74d86f35580e033451b5994a0a9/snowballstemmer-2.1.0.tar.gz -P /sources/python &&
 
-tar xzvf /sources/python-snowball-stemmer-2.1.0.tar.gz &&
+tar xzvf /sources/python/snowball-stemmer-2.1.0.tar.gz &&
 cd        snowballstemmer-2.1.0                        &&
 
 sudo python setup.py install --optimize=1 &&
@@ -73,10 +73,10 @@ sudo rm -rf snowballstemmer-2.1.0
 ### pytz
 
 ```sh
-wget https://files.pythonhosted.org/packages/b0/61/eddc6eb2c682ea6fd97a7e1018a6294be80dba08fa28e7a3570148b4612d/pytz-2021.1.tar.gz -P /sources/pytz-2021.1.tar.gz &&
+wget https://files.pythonhosted.org/packages/b0/61/eddc6eb2c682ea6fd97a7e1018a6294be80dba08fa28e7a3570148b4612d/pytz-2021.1.tar.gz -P /sources/python &&
 
-tar xzvf /sources/pytz-2021.1.tar.gz &&
-cd        pytz-2020.1                &&
+tar xzvf /sources/python/pytz-2021.1.tar.gz &&
+cd        pytz-2020.1                       &&
 
 sudo python setup.py install --optimize=1 &&
 
@@ -87,9 +87,9 @@ sudo rm -rf pytz-2020.1
 ### babel
 
 ```sh
-wget https://files.pythonhosted.org/packages/17/e6/ec9aa6ac3d00c383a5731cc97ed7c619d3996232c977bb8326bcbb6c687e/Babel-2.9.1.tar.gz -P /sources/python-babel-2.9.1.tar.gz &&
+wget https://files.pythonhosted.org/packages/17/e6/ec9aa6ac3d00c383a5731cc97ed7c619d3996232c977bb8326bcbb6c687e/Babel-2.9.1.tar.gz -P /sources/python &&
 
-tar xzvf /sources/python-babel-2.9.1.tar.gz &&
+tar xzvf /sources/python/Babel-2.9.1.tar.gz &&
 cd        Babel-2.9.1                       &&
 
 sudo python setup.py install --optimize=1 &&
@@ -101,9 +101,9 @@ sudo rm -rf Babel-2.9.1
 ### alabaster
 
 ```sh
-wget https://files.pythonhosted.org/packages/cc/b4/ed8dcb0d67d5cfb7f83c4d5463a7614cb1d078ad7ae890c9143edebbf072/alabaster-0.7.12.tar.gz -P /sources/python-alabaster-0.7.12.tar.gz &&
+wget https://files.pythonhosted.org/packages/cc/b4/ed8dcb0d67d5cfb7f83c4d5463a7614cb1d078ad7ae890c9143edebbf072/alabaster-0.7.12.tar.gz -P /sources/python &&
 
-tar xzvf /sources/python-alabaster-0.7.12.tar.gz &&
+tar xzvf /sources/python/alabaster-0.7.12.tar.gz &&
 cd        alabaster-0.7.12                       &&
 
 sudo python setup.py install --optimize=1 &&
@@ -115,9 +115,9 @@ sudo rm -rf alabaster-0.7.12
 ### imagesize
 
 ```sh
-wget https://files.pythonhosted.org/packages/e4/9f/0452b459c8ba97e07c3cd2bd243783936a992006cf4cd1353c314a927028/imagesize-1.2.0.tar.gz -P /sources/python-imagesize-1.2.0.tar.gz &&
+wget https://files.pythonhosted.org/packages/e4/9f/0452b459c8ba97e07c3cd2bd243783936a992006cf4cd1353c314a927028/imagesize-1.2.0.tar.gz -P /sources/python &&
 
-tar xzvf /sources/python-imagesize-1.2.0.tar.gz &&
+tar xzvf /sources/python/imagesize-1.2.0.tar.gz &&
 cd        imagesize-1.2.0                       &&
 
 sudo python setup.py install --optimize=1 &&
@@ -129,9 +129,9 @@ sudo rm -rf imagesize-1.2.0
 ### chardet
 
 ```sh
-wget https://files.pythonhosted.org/packages/ee/2d/9cdc2b527e127b4c9db64b86647d567985940ac3698eeabc7ffaccb4ea61/chardet-4.0.0.tar.gz -P /sources/python-chardet-4.0.0.tar.gz &&
+wget https://files.pythonhosted.org/packages/ee/2d/9cdc2b527e127b4c9db64b86647d567985940ac3698eeabc7ffaccb4ea61/chardet-4.0.0.tar.gz -P /sources/python &&
 
-tar xzvf /sources/python-chardet-4.0.0.tar.gz &&
+tar xzvf /sources/python/chardet-4.0.0.tar.gz &&
 cd        chardet-4.0.0                       &&
 
 sudo python setup.py install --optimize=1 &&
@@ -143,9 +143,9 @@ sudo rm -rf chardet-4.0.0
 ### idna
 
 ```sh
-wget https://files.pythonhosted.org/packages/cb/38/4c4d00ddfa48abe616d7e572e02a04273603db446975ab46bbcd36552005/idna-3.2.tar.gz -P /sources/python-idna-3.2.tar.gz &&
+wget https://files.pythonhosted.org/packages/cb/38/4c4d00ddfa48abe616d7e572e02a04273603db446975ab46bbcd36552005/idna-3.2.tar.gz -P /sources/python &&
 
-tar xzvf /sources/python-idna-3.2.tar.gz &&
+tar xzvf /sources/python/idna-3.2.tar.gz &&
 cd        idna-3.2                       &&
 
 sudo python setup.py install --optimize=1 &&
@@ -157,9 +157,9 @@ sudo rm -rf idna-3.2
 ### urllib3
 
 ```sh
-wget https://files.pythonhosted.org/packages/94/40/c396b5b212533716949a4d295f91a4c100d51ba95ea9e2d96b6b0517e5a5/urllib3-1.26.5.tar.gz -P /sources/python-urllib3-1.26.5.tar.gz &&
+wget https://files.pythonhosted.org/packages/94/40/c396b5b212533716949a4d295f91a4c100d51ba95ea9e2d96b6b0517e5a5/urllib3-1.26.5.tar.gz -P /sources/python &&
 
-tar xzvf /sources/python-urllib3-1.26.5.tar.gz &&
+tar xzvf /sources/python/urllib3-1.26.5.tar.gz &&
 cd        urllib3-1.26.5                       &&
 
 sudo python setup.py install --optimize=1 &&
@@ -171,9 +171,9 @@ sudo rm -rf urllib3-1.26.5
 ### certifi
 
 ```sh
-wget https://files.pythonhosted.org/packages/6d/78/f8db8d57f520a54f0b8a438319c342c61c22759d8f9a1cd2e2180b5e5ea9/certifi-2021.5.30.tar.gz -P /sources/python-certifi-2021.5.30.tar.gz &&
+wget https://files.pythonhosted.org/packages/6d/78/f8db8d57f520a54f0b8a438319c342c61c22759d8f9a1cd2e2180b5e5ea9/certifi-2021.5.30.tar.gz -P /sources/python &&
 
-tar xzvf /sources/python-certifi-2021.5.30.tar.gz &&
+tar xzvf /sources/python/certifi-2021.5.30.tar.gz &&
 cd        certifi-2021.5.30                       &&
 
 sudo python setup.py install --optimize=1 &&
@@ -185,9 +185,9 @@ sudo rm -rf certifi-2021.5.30
 ### requests
 
 ```sh
-wget https://files.pythonhosted.org/packages/6b/47/c14abc08432ab22dc18b9892252efaf005ab44066de871e72a38d6af464b/requests-2.25.1.tar.gz -P /sources/python-requests-2.25.1.tar.gz &&
+wget https://files.pythonhosted.org/packages/6b/47/c14abc08432ab22dc18b9892252efaf005ab44066de871e72a38d6af464b/requests-2.25.1.tar.gz -P /sources/python &&
 
-tar xzvf /sources/python-requests-2.25.1.tar.gz &&
+tar xzvf /sources/python/requests-2.25.1.tar.gz &&
 cd        requests-2.25.1                       &&
 
 sudo python setup.py install --optimize=1 &&
@@ -199,9 +199,9 @@ sudo rm -rf requests-2.25.1
 ### packaging
 
 ```sh
-wget https://files.pythonhosted.org/packages/86/3c/bcd09ec5df7123abcf695009221a52f90438d877a2f1499453c6938f5728/packaging-20.9.tar.gz -P /sources/python-packaging-20.9.tar.gz &&
+wget https://files.pythonhosted.org/packages/86/3c/bcd09ec5df7123abcf695009221a52f90438d877a2f1499453c6938f5728/packaging-20.9.tar.gz -P /sources/python &&
 
-tar xzvf /sources/python-packaging-20.9.tar.gz &&
+tar xzvf /sources/python/packaging-20.9.tar.gz &&
 cd        packaging-20.9                       &&
 
 sudo python setup.py install --optimize=1 &&
@@ -213,10 +213,10 @@ sudo rm -rf packaging-20.9
 Now install `sphinx` itself.
 
 ```sh
-wget https://files.pythonhosted.org/packages/8d/4d/8a80613d0ceefca5a84e2e30b29da7719d429b4adcdb793d86079fad3790/Sphinx-4.0.2.tar.gz -P /sources/sphinx-4.0.2.tar.gz &&
+wget https://files.pythonhosted.org/packages/8d/4d/8a80613d0ceefca5a84e2e30b29da7719d429b4adcdb793d86079fad3790/Sphinx-4.0.2.tar.gz -P /sources/python &&
 
-tar xzvf /sources/sphinx-4.0.2.tar.gz &&
-cd        Sphinx-4.0.2                &&
+tar xzvf /sources/python/Sphinx-4.0.2.tar.gz &&
+cd        Sphinx-4.0.2                       &&
 
 sudo python setup.py install --optimize=1 &&
 
@@ -366,7 +366,7 @@ sudo cabal install --lib                       \
 Convert markdown pages into book format. Used to generate the online `rust` tutorial books. 
 
 ```sh
-wget https://github.com/rust-lang/mdBook/archive/refs/tags/v0.4.10.tar.gz -P /sources/mdbook-0.4.10.tar.gz &&
+wget https://github.com/rust-lang/mdBook/archive/refs/tags/v0.4.10.tar.gz -P /sources &&
 
 tar xzvf /sources/mdbook-0.4.10.tar.gz &&
 cd        mdBook-0.4.10                &&

@@ -7,7 +7,7 @@ These are low-level libaries used by other libraries and tools.
 .ini file parser.
 
 ```sh
-wget https://github.com/benhoyt/inih/archive/r53/inih-r53.tar.gz -P /sources/inih-r53.tar.gz &&
+wget https://github.com/benhoyt/inih/archive/r53/inih-r53.tar.gz -P /sources &&
 
 tar xzvf /sources/inih-r53.tar.gz &&
 cd        inih-r53                &&
@@ -29,7 +29,7 @@ rm -rf inih-r53
 Command-line option parser. If `doxygen` is not installed, remove the calls to build and install the API documentation.
 
 ```sh
-wget http://ftp.rpm.org/popt/releases/popt-1.x/popt-1.18.tar.gz -P /sources/popt-1.18.tar.gz &&
+wget http://ftp.rpm.org/popt/releases/popt-1.x/popt-1.18.tar.gz -P /sources &&
 
 tar xzvf /sources/popt-1.18.tar.gz &&
 cd        popt-1.18                &&
@@ -54,7 +54,7 @@ rm -rf popt-1.18
 Interface to multitouch kernel events.
 
 ```sh
-wget https://bitmath.org/code/mtdev/mtdev-1.1.6.tar.bz2 -P /sources/mtdev-1.1.6.tar.bz2 &&
+wget https://bitmath.org/code/mtdev/mtdev-1.1.6.tar.bz2 -P /sources &&
 
 tar xvf /sources/mtdev-1.1.6.tar.bz2 &&
 cd       mtdev-1.1.6                 &&
@@ -74,7 +74,7 @@ rm -rf mtdev-1.1.6
 Userspace interface to the Linux kernel seccomp functions.
 
 ```sh
-wget https://github.com/seccomp/libseccomp/releases/download/v2.5.1/libseccomp-2.5.1.tar.gz -P /sources/libseccomp-2.5.1.tar.gz &&
+wget https://github.com/seccomp/libseccomp/releases/download/v2.5.1/libseccomp-2.5.1.tar.gz -P /sources &&
 
 tar xzvf /sources/libseccomp-2.5.1.tar.gz &&
 cd        libseccomp-2.5.1                &&
@@ -94,7 +94,7 @@ rm -rf libseccomp-2.5.1
 Packet capture.
 
 ```sh
-wget http://www.tcpdump.org/release/libpcap-1.10.0.tar.gz -P /sources/libpcap-1.10.0.tar.gz &&
+wget http://www.tcpdump.org/release/libpcap-1.10.0.tar.gz -P /sources &&
 
 tar xzvf /sources/libpcap-1.10.0.tar.gz &&
 cd        libpcap-1.10.0                &&
@@ -112,8 +112,8 @@ rm -rf libpcap-1.10.0
 ## libnl
 
 ```sh
-wget https://github.com/thom311/libnl/releases/download/libnl3_5_0/libnl-3.5.0.tar.gz -P /sources/libnl-3.5.0.tar.gz &&
-wget https://github.com/thom311/libnl/releases/download/libnl3_5_0/libnl-doc-3.5.0.tar.gz -P /sources/libnl-doc-3.5.0.tar.gz &&
+wget https://github.com/thom311/libnl/releases/download/libnl3_5_0/libnl-3.5.0.tar.gz -P /sources &&
+wget https://github.com/thom311/libnl/releases/download/libnl3_5_0/libnl-doc-3.5.0.tar.gz -P /sources &&
 
 tar xzvf /sources/libnl-3.5.0.tar.gz &&
 cd        libnl-3.5.0                &&
@@ -137,8 +137,8 @@ rm -rf libnl-3.5.0
 ## liboauth
 
 ```sh
-wget https://downloads.sourceforge.net/liboauth/liboauth-1.0.3.tar.gz -P /sources/liboauth-1.0.3.tar.gz &&
-wget https://www.linuxfromscratch.org/patches/blfs/svn/liboauth-1.0.3-openssl-1.1.0-3.patch -P /sources/patches/liboauth-1.0.3-openssl-1.1.0-3.patch &&
+wget https://downloads.sourceforge.net/liboauth/liboauth-1.0.3.tar.gz -P /sources &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/liboauth-1.0.3-openssl-1.1.0-3.patch -P /sources/patches &&
 
 tar xzvf /sources/liboauth-1.0.3.tar.gz &&
 cd        liboauth-1.0.3                &&
@@ -161,8 +161,8 @@ rm -rf liboauth-1.0.3
 ## libssh2
 
 ```sh
-wget https://www.libssh2.org/download/libssh2-1.9.0.tar.gz -P /sources/libssh2-1.9.0.tar.gz &&
-wget https://www.linuxfromscratch.org/patches/blfs/svn/libssh2-1.9.0-security_fixes-1.patch -P /sources/patches/libssh2-1.9.0-security_fixes-1.patch &&
+wget https://www.libssh2.org/download/libssh2-1.9.0.tar.gz -P /sources &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/libssh2-1.9.0-security_fixes-1.patch -P /sources/patches &&
 
 tar xzvf /sources/libssh2-1.9.0.tar.gz &&
 cd        libssh2-1.9.0                &&
@@ -184,7 +184,7 @@ rm -rf libssh2-1.9.0
 Fast C event loop library.
 
 ```sh
-wget https://dist.libuv.org/dist/v1.41.0/libuv-v1.41.0.tar.gz -P /sources/libuv-v1.41.0.tar.gz &&
+wget https://dist.libuv.org/dist/v1.41.0/libuv-v1.41.0.tar.gz -P /sources &&
 
 tar xzvf /sources/libuv-v1.41.0.tar.gz &&
 cd        libuv-v1.41.0                &&
@@ -200,12 +200,32 @@ cd .. &&
 rm -rf libuv-v1.41.0
 ```
 
+## libevent
+
+Provides a mechanism to execute a callback function when a specific event occurs on a file descriptor or after a timeout has been reached.
+
+```sh
+wget https://github.com/libevent/libevent/releases/download/release-2.1.12-stable/libevent-2.1.12-stable.tar.gz -P /sources &&
+
+tar xzvf /sources/libevent-2.1.12-stable.tar.gz &&
+cd        libevent-2.1.12-stable                &&
+
+./configure --prefix=/usr \
+            --disable-static &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libevent-2.1.12-stable
+```
+
 ## c-ares
 
 C library for asynchronous DNS requests. Used by `NodeJS`.
 
 ```sh
-wget https://c-ares.haxx.se/download/c-ares-1.17.1.tar.gz -P /sources/c-ares-1.17.1.tar.gz &&
+wget https://c-ares.haxx.se/download/c-ares-1.17.1.tar.gz -P /sources &&
 
 tar xzvf /sources/c-ares-1.17.1.tar.gz &&
 cd        c-ares-1.17.1                &&
@@ -229,8 +249,8 @@ rm -rf c-ares-1.17.1
 This depends upon `rustc` being installed. Unfortunately, this also requires an older version of `autoconf`, `2.13`, so that will need to be installed first. We have to use the `--program-suffix` parameter to disambiguate.
 
 ```sh
-wget https://ftp.gnu.org/gnu/autoconf/autoconf-2.13.tar.gz -P /sources/autoconf-2.13.tar.gz &&
-wget https://www.linuxfromscratch.org/patches/blfs/svn/autoconf-2.13-consolidated_fixes-1.patch -P /sources/patches/autoconf-2.13-consolidated_fixes-1.patch &&
+wget https://ftp.gnu.org/gnu/autoconf/autoconf-2.13.tar.gz -P /sources &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/autoconf-2.13-consolidated_fixes-1.patch -P /sources/patches &&
 
 tar xzvf /sources/autoconf-2.13.tar.gz &&
 cd        autoconf-2.13                &&
@@ -252,7 +272,7 @@ rm -rf autoconf-2.13
 ```
 
 ```sh
-wget https://archive.mozilla.org/pub/firefox/releases/78.11.0esr/source/firefox-78.11.0esr.source.tar.xz -P /sources/firefox-78.11.0esr.source.tar.xz &&
+wget https://archive.mozilla.org/pub/firefox/releases/78.11.0esr/source/firefox-78.11.0esr.source.tar.xz -P /sources &&
 
 tar xvf /sources/firefox-78.11.0esr.source.tar.xz &&
 cd       firefox-78.11.0                          &&
@@ -283,7 +303,7 @@ rm -rf firefox-78.11.0
 Optional `Firefox` dependency. Includes `Python` and `Perl` bindings.
 
 ```sh
-wget https://github.com/libproxy/libproxy/archive/refs/tags/0.4.17.tar.gz -P /sources/libproxy-0.4.17.tar.gz &&
+wget https://github.com/libproxy/libproxy/archive/refs/tags/0.4.17.tar.gz -P /sources &&
 
 tar xzvf /sources/libproxy-0.4.17.tar.gz &&
 cd        libproxy-0.4.17                &&
@@ -314,7 +334,7 @@ sudo useradd  -c "PolicyKit Daemon Owner" -d /etc/polkit-1 -u 27 \
 To build and install:
 
 ```sh
-wget https://www.freedesktop.org/software/polkit/releases/polkit-0.119.tar.gz -P /sources/polkit-0.119.tar.gz &&
+wget https://www.freedesktop.org/software/polkit/releases/polkit-0.119.tar.gz -P /sources &&
 
 tar xzvf /sources/polkit-0.119.tar.gz &&
 cd        polkit-0.119                &&
@@ -357,7 +377,7 @@ exit
 International Components for Unicode.
 
 ```sh
-wget https://github.com/unicode-org/icu/releases/download/release-69-1/icu4c-69_1-src.tgz -P /sources/icu4c-69_1-src.tgz &&
+wget https://github.com/unicode-org/icu/releases/download/release-69-1/icu4c-69_1-src.tgz -P /sources &&
 
 tar xzvf /sources/icu4c-69_1-src.tgz &&
 cd        icu/source                 &&
@@ -374,8 +394,8 @@ rm -rf icu
 ## libxml2
 
 ```sh
-wget http://xmlsoft.org/sources/libxml2-2.9.10.tar.gz -P /sources/libxml2-2.9.10.tar.gz &&
-wget http://www.linuxfromscratch.org/patches/blfs/10.1/libxml2-2.9.10-security_fixes-1.patch -P /sources/libxml2-2.9.10-security_fixes-1.patch &&
+wget http://xmlsoft.org/sources/libxml2-2.9.10.tar.gz -P /sources &&
+wget http://www.linuxfromscratch.org/patches/blfs/10.1/libxml2-2.9.10-security_fixes-1.patch -P /sources/patches &&
 
 tar xzvf /sources/libxml2-2.9.10.tar.gz &&
 cd        libxml2-2.9.10                &&
@@ -399,7 +419,7 @@ rm -rf libxml2-2.9.10
 ## JSON-C
 
 ```sh
-wget https://s3.amazonaws.com/json-c_releases/releases/json-c-0.15.tar.gz -P /sources/json-c-0.15.tar.gz &&
+wget https://s3.amazonaws.com/json-c_releases/releases/json-c-0.15.tar.gz -P /sources &&
 
 tar xzvf /sources/json-c-0.15.tar.gz &&
 cd        json-c-0.15                &&
@@ -424,7 +444,7 @@ rm -rf json-c-0.15
 Validating xml parser for C++.
 
 ```sh
-wget https://mirrors.sonic.net/apache//xerces/c/3/sources/xerces-c-3.2.3.tar.xz -P /sources/xerces-c-3.2.3.tar.xz &&
+wget https://mirrors.sonic.net/apache//xerces/c/3/sources/xerces-c-3.2.3.tar.xz -P /sources &&
 
 tar xvf /sources/xerces-c-3.2.3.tar.xz &&
 cd       xerces-c-3.2.3                &&
@@ -451,7 +471,7 @@ rm -rf xerces-c-3.2.3
 ## libyaml
 
 ```sh
-wget https://github.com/yaml/libyaml/archive/0.2.5/libyaml-0.2.5.tar.gz -P /sources/libyaml-0.2.5.tar.gz &&
+wget https://github.com/yaml/libyaml/archive/0.2.5/libyaml-0.2.5.tar.gz -P /sources &&
 
 tar xzvf /sources/libyaml-0.2.5.tar.gz &&
 cd        libyaml-0.2.5                &&
@@ -472,7 +492,7 @@ rm -rf libyaml-0.2.5
 Library for classification via Support Vector Machines. Used by `nmap`.
 
 ```sh
-curl -L https://github.com/cjlin1/liblinear/archive/v242/liblinear-242.tar.gz -P /sources/liblinear-242.tar.gz &&
+curl -L https://github.com/cjlin1/liblinear/archive/v242/liblinear-242.tar.gz -P /sources &&
 
 tar xzvf /sources/liblinear-242.tar.gz &&
 cd        liblinear-242                &&
@@ -516,7 +536,7 @@ rm -rf openmpi-4.1.1
 Libraries to aid HPC applications that use OpenMPI to discover hardware locality features. Includes the handy `lstopo` utility that visualizes your PCI bus connections in a terminal, information you would normally need to pull from the manuals for your processor and motherboard.
 
 ```sh
-wget https://download.open-mpi.org/release/hwloc/v2.4/hwloc-2.4.1.tar.gz -P /sources/hwloc-2.4.1.tar.gz &&
+wget https://download.open-mpi.org/release/hwloc/v2.4/hwloc-2.4.1.tar.gz -P /sources &&
 
 tar xzvf /sources/hwloc-2.4.1.tar.gz &&
 cd        hwloc-2.4.1                &&
@@ -536,7 +556,7 @@ rm -rf hwloc-2.4.1
 Many, many C++ libraries. Is an optional dependency of some other libraries and may result in better performance. Many later tools explicitly depend on it.
 
 ```sh
-wget https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz -P /sources/boost_1_76_0.tar.gz &&
+wget https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.gz -P /sources &&
 
 tar xzvf /sources/boost_1_76_0.tar.gz &&
 cd        boost_1_76_0                &&
@@ -557,7 +577,7 @@ sudo rm -rf boost_1_76_0
 Implementation of Adobe XMP.
 
 ```sh
-wget https://libopenraw.freedesktop.org/download/exempi-2.5.2.tar.bz2 -P /sources/exempi-2.5.2.tar.bz2 &&
+wget https://libopenraw.freedesktop.org/download/exempi-2.5.2.tar.bz2 -P /sources &&
 
 tar xvf /sources/exempi-2.5.2.tar.bz2 &&
 cd       exempi-2.5.2                 &&
@@ -577,13 +597,10 @@ rm -rf exempi-2.5.2
 Library and CLI for managing image and video metadata.
 
 ```sh
-wget https://www.exiv2.org/builds/exiv2-0.27.3-Source.tar.gz -P /sources/exiv2-0.27.3-Source.tar.gz &&
-wget https://www.linuxfromscratch.org/patches/blfs/svn/exiv2-0.27.3-security_fixes-1.patch -P /sources/patches/exiv2-0.27.3-security_fixes-1.patch &&
+wget https://www.exiv2.org/builds/exiv2-0.27.4-Source.tar.gz -P /sources &&
 
-tar xzvf /sources/exiv2-0.27.3-Source.tar.gz &&
-cd        exiv2-0.27.3-Source                &&
-
-patch -Np1 -i /sources/patches/exiv2-0.27.3-security_fixes-1.patch &&
+tar xzvf /sources/exiv2-0.27.4-Source.tar.gz &&
+cd        exiv2-0.27.4-Source                &&
 
 mkdir build &&
 cd    build &&
@@ -600,7 +617,7 @@ make              &&
 sudo make install &&
 
 cd ../.. &&
-rm -rf exiv2-0.27.3-Source
+rm -rf exiv2-0.27.4-Source
 ```
 
 ## GLib
@@ -608,8 +625,8 @@ rm -rf exiv2-0.27.3-Source
 Integral core library for `GNOME` but is also used by many other tools.
 
 ```sh
-wget https://download.gnome.org/sources/glib/2.68/glib-2.68.3.tar.xz -P /sources/glib-2.68.3.tar.xz &&
-wget https://www.linuxfromscratch.org/patches/blfs/svn/glib-2.68.3-skip_warnings-1.patch -P /sources/glib-2.68.3-skip_warnings-1.patch &&
+wget https://download.gnome.org/sources/glib/2.68/glib-2.68.3.tar.xz -P /sources &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/glib-2.68.3-skip_warnings-1.patch -P /sources/patches &&
 
 tar xvf /sources/glib-2.68.3.tar.xz &&
 cd       glib-2.68.3                &&
@@ -637,7 +654,7 @@ rm -rf glib-2.68.3
 Library for accessing and resolving information from the Public Suffix List.
 
 ```sh
-wget https://github.com/rockdaboot/libpsl/releases/download/0.21.1/libpsl-0.21.1.tar.gz -P /sources/libpsl-0.21.1.tar.gz &&
+wget https://github.com/rockdaboot/libpsl/releases/download/0.21.1/libpsl-0.21.1.tar.gz -P /sources &&
 
 tar xzvf /sources/libpsl-0.21.1.tar.gz &&
 cd        libpsl-0.21.1                &&
@@ -655,8 +672,10 @@ rm -rf libpsl-0.21.1
 
 ## libsoup
 
+HTTP client/server library intended for `GNOME` and uses the `GObject` introspection system, but also used by other tools.
+
 ```sh
-wget https://download.gnome.org/sources/libsoup/2.72/libsoup-2.72.0.tar.xz -P /sources/libsoup-2.72.0.tar.xz &&
+wget https://download.gnome.org/sources/libsoup/2.72/libsoup-2.72.0.tar.xz -P /sources &&
 
 tar xvf /sources/libsoup-2.72.0.tar.xz &&
 cd       libsoup-2.72.0                &&

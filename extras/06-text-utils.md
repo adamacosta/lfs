@@ -5,7 +5,7 @@
 JSON parsing library.
 
 ```sh
-wget https://github.com/kkos/oniguruma/releases/download/v6.9.7.1/onig-6.9.7.1.tar.gz -P /sources/onig-6.9.7.1.tar.gz &&
+wget https://github.com/kkos/oniguruma/releases/download/v6.9.7.1/onig-6.9.7.1.tar.gz -P /sources &&
 
 tar xzvf /sources/onig-6.9.7.1.tar.gz &&
 cd        onig-6.9.7                  &&
@@ -24,7 +24,7 @@ rm -rf onig-6.9.7
 Query JSON text streams.
 
 ```sh
-wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-1.6.tar.gz -P /sources/jq-1.6.tar.gz &&
+wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-1.6.tar.gz -P /sources &&
 
 tar xzvf /sources/jq-1.6.tar.gz &&
 cd        jq-1.6                &&
@@ -54,7 +54,7 @@ sudo chmod +x /usr/bin/yq
 If you opted to build and install the `go` compiler, you can build `yq` from source. Beware that, though there is a `Makefile`, you cannot run `make` and expect it to work, as this `Makefile` assumes it is being run from a `git` repo and also requires `docker`, which you may or may not have at this point. `go` has a fairly simple toolchain, so we'll just do it the hard way.
 
 ```sh
-wget https://github.com/mikefarah/yq/archive/refs/tags/v4.9.3.tar.gz -P /sources/yq-4.9.3.tar.gz &&
+wget https://github.com/mikefarah/yq/archive/refs/tags/v4.9.3.tar.gz -P /sources &&
 
 tar xzvf /sources/yq-4.9.3.tar.gz &&
 cd        yq-4.9.3                &&
@@ -74,8 +74,8 @@ Beware that if you don't explicitly set `GOPATH`, it defaults to `~/go` and the 
 ## sgml
 
 ```sh
-wget https://sourceware.org/ftp/docbook-tools/new-trials/SOURCES/sgml-common-0.6.3.tgz -P /sources/sgml-common-0.6.3.tgz &&
-wget http://www.linuxfromscratch.org/patches/blfs/10.1/sgml-common-0.6.3-manpage-1.patch -P /sources/sgml-common-0.6.3-manpage-1.patch &&
+wget https://sourceware.org/ftp/docbook-tools/new-trials/SOURCES/sgml-common-0.6.3.tgz -P /sources &&
+wget http://www.linuxfromscratch.org/patches/blfs/10.1/sgml-common-0.6.3-manpage-1.patch -P /sources/patches &&
 
 tar xzvf /sources/sgml-common-0.6.3.tgz &&
 cd        sgml-common-0.6.3             &&
@@ -100,7 +100,7 @@ rm -rf sgml-common-0.6.3
 ## docbook-xml
 
 ```sh
-wget http://www.docbook.org/xml/4.5/docbook-xml-4.5.zip -P /sources/docbook-xml-4.5.zip &&
+wget http://www.docbook.org/xml/4.5/docbook-xml-4.5.zip -P /sources &&
 
 unzip /sources/docbook-xml-4.5.zip -d docbook-xml-4.5 &&
 cd     docbook-xml-4.5
@@ -230,8 +230,8 @@ sudo rm -rf docbook-xml-4.5
 ## docbook-xslt
 
 ```sh
-wget https://github.com/docbook/xslt10-stylesheets/releases/download/release/1.79.2/docbook-xsl-nons-1.79.2.tar.bz2 -P /sources/docbook-xsl-nons-1.79.2.tar.bz2 &&
-wget http://www.linuxfromscratch.org/patches/blfs/10.1/docbook-xsl-nons-1.79.2-stack_fix-1.patch -P /sources/docbook-xsl-nons-1.79.2-stack_fix-1.patch &&
+wget https://github.com/docbook/xslt10-stylesheets/releases/download/release/1.79.2/docbook-xsl-nons-1.79.2.tar.bz2 -P /sources &&
+wget http://www.linuxfromscratch.org/patches/blfs/10.1/docbook-xsl-nons-1.79.2-stack_fix-1.patch -P /sources/patches &&
 
 tar xvf /sources/docbook-xsl-nons-1.79.2.tar.bz2 &&
 cd       docbook-xsl-nons-1.79.2                 &&
@@ -287,7 +287,7 @@ sudo xmlcatalog --noout --add "rewriteURI" \
 ## libxslt
 
 ```sh
-wget http://xmlsoft.org/sources/libxslt-1.1.34.tar.gz -P /sources/libxslt-1.1.34.tar.gz &&
+wget http://xmlsoft.org/sources/libxslt-1.1.34.tar.gz -P /sources &&
 
 tar xzvf /sources/libxslt-1.1.34.tar.gz &&
 cd        libxslt-1.1.34                &&
@@ -311,7 +311,7 @@ rm -rf libxslt-1.1.34
 ## itstool
 
 ```sh
-wget http://files.itstool.org/itstool/itstool-2.0.6.tar.bz2 -P /sources/itstool-2.0.6.tar.bz2 &&
+wget http://files.itstool.org/itstool/itstool-2.0.6.tar.bz2 -P /sources &&
 
 tar xvf /sources/itstool-2.0.6.tar.bz2 &&
 cd       itstool-2.0.6                 &&
@@ -328,7 +328,7 @@ rm -rf itstool-2.0.6
 ## xmlto
 
 ```sh
-wget https://releases.pagure.org/xmlto/xmlto-0.0.28.tar.bz2 -P /sources/xmlto-0.0.28.tar.bz2 &&
+wget https://releases.pagure.org/xmlto/xmlto-0.0.28.tar.bz2 -P /sources &&
 
 tar xvf /sources/xmlto-0.0.28.tar.bz2 &&
 cd       xmlto-0.0.28                 &&
@@ -345,7 +345,7 @@ rm -rf xmlto-0.0.28
 ## shared-mime-info
 
 ```sh
-wget https://gitlab.freedesktop.org/xdg/shared-mime-info/uploads/0ee50652091363ab0d17e335e5e74fbe/shared-mime-info-2.1.tar.xz -P /sources/shared-mime-info-2.1.tar.xz &&
+wget https://gitlab.freedesktop.org/xdg/shared-mime-info/uploads/0ee50652091363ab0d17e335e5e74fbe/shared-mime-info-2.1.tar.xz -P /sources &&
 
 tar xvf /sources/shared-mime-info-2.1.tar.xz &&
 cd       shared-mime-info-2.1                &&

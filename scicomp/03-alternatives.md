@@ -210,6 +210,28 @@ rm -rf R-4.1.0
 
 `Julia` vendors its own forks of `libuv` and `LLVM`. Most of the other dependencies would already be on the system if you've gotten this far and installed everything required by the `Python` stack and `Octave`. The exceptions will be built separately first.
 
+### libunwind
+
+Defines a portable and efficient C API to determine the call-chain of a program.
+
+```sh
+wget https://github.com/libunwind/libunwind/archive/v1.5/libunwind-1.5.0.tar.gz -P /sources &&
+
+tar xzvf /sources/libunwind-1.5.0.tar.gz &&
+cd        libunwind-1.5                  &&
+
+./autogen.sh &&
+./configure --prefix=/usr    \
+            --disable-static \
+            --disable-tests &&
+
+make              &&
+sudo make install &&
+
+cd .. &&
+rm -rf libunwind-1.5.0
+```
+
 ### OpenLibm
 
 Replacement for `libm`.
@@ -227,7 +249,7 @@ cd .. &&
 rm -rf openlibm-0.7.5
 ```
 
-### DSFMT
+### dSFMT
 
 Double precision SIMD-oriented Fast Mersenne Twister for pseudorandom number generation.
 
@@ -327,13 +349,13 @@ cd .. &&
 rm -rf utf8proc-2.6.1
 ```
 
-### P7Zip
-
-Note that `Julia` also depends upon the POSIX port of the Windows `7-Zip` tool, but as this project is four major versions behind the Windows original and hasn't been updated in five years, and `Julia` provides several vendored patches to address multiple CVEs, I am not installing this directly and will use the vendored version.
-
 ### Julia
 
 A garbage-collected, dynamically-typed language specialized for numerical, scientific, and statistical computing, aiming to provide performance approaching that of statically-compiled native code via JIT-compiling and caching. `Julia` tries to solve the so-called "two-language" problem where researchers tend to run experiments and prototype systems using high-level languages like `MATLAB`, `R`, and `Python`, and then port performance-critical or possibly all of the code to lower-level `C++` and `Fortran` for production use.
+
+Beware that you likely at least need to set the `USE_SYSTEM_CSL=1` flag to tell it to use your `gcc` and `C++` libraries. Otherwise, it will fail to link because the vendored versions are a bit behind the latest and won't match the compiler you're using. It is rarely possible to use compiler libs separate from the actual compiler.
+
+Presently, at least four tests fail, two of which seem to be certificate issues attempting to make network connections to localhost.
 
 ```sh
 wget https://github.com/JuliaLang/julia/releases/download/v1.6.1/julia-1.6.1.tar.gz -P /sources && 
@@ -341,10 +363,13 @@ wget https://github.com/JuliaLang/julia/releases/download/v1.6.1/julia-1.6.1.tar
 tar xzvf /sources/julia-1.6.1.tar.gz &&
 cd        julia-1.6.1                &&
 
-cat > Make.user <<"EOF"
+cat > Make.user <<"EOF" &&
+USE_SYSTEM_CSL=1
+USE_SYSTEM_LIBUNWIND=1
+USE_SYSTEM_PATCHELF=1
 USE_SYSTEM_OPENLIBM=1
-USE_SYSTEM_DSFMT=1
 USE_SYSTEM_PCRE=1
+USE_SYSTEM_DSFMT=1
 USE_SYSTEM_BLAS=1
 USE_SYSTEM_LAPACK=1
 USE_SYSTEM_GMP=1
@@ -354,33 +379,23 @@ USE_SYSTEM_LIBSSH2=1
 USE_SYSTEM_NGHTTP2=1
 USE_SYSTEM_CURL=1
 USE_SYSTEM_MPFR=1
-USE_SYSTEM_LIBSUITESPARSE=1
+USE_SYSTEM_SUITESPARSE=1
 USE_SYSTEM_UTF8PROC=1
 USE_SYSTEM_ZLIB=1
+Use_SYSTEM_P7ZIP=1
 MARCH=native
+LIBBLAS=-lopenblas
+LIBBLASNAME=libopenblas
 EOF
 
-make prefix=/usr sysconfdir=/etc              &&
-sudo make prefix=/usr sysconfdir=/etc install &&
+make prefix=/usr \
+     sysconfdir=/etc &&
+make -k test         &&
+sudo make prefix=/usr                       \
+          sysconfdir=/etc                   \
+          docdir=/usr/share/doc/julia-1.6.1 \
+          install &&
 
 cd .. &&
 rm -rf julia-1.6.1
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

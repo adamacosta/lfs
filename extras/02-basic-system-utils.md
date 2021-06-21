@@ -5,7 +5,7 @@
 Synchornize different file trees, indifferent to whether the target is local or remote. This will be built without support for the daemon.
 
 ```sh
-wget https://www.samba.org/ftp/rsync/src/rsync-3.2.3.tar.gz -P /sources/rsync-3.2.3.tar.gz &&
+wget https://www.samba.org/ftp/rsync/src/rsync-3.2.3.tar.gz -P /sources &&
 
 tar xzvf /sources/rsync-3.2.3.tar.gz &&
 cd        rsync-3.2.3                &&
@@ -27,7 +27,7 @@ rm -rf rsync-3.2.3
 Parallel drop-in replacement for `gzip`.
 
 ```sh
-wget https://zlib.net/pigz/pigz-2.6.tar.gz -P /sources/pigz-2.6.tar.gz &&
+wget https://zlib.net/pigz/pigz-2.6.tar.gz -P /sources &&
 
 tar xzvf /sources/pigz-2.6.tar.gz &&
 cd        pigz-2.6                &&
@@ -46,7 +46,7 @@ rm -rf pigz-2.6
 Parallel drop-in replacement for `bzip2`.
 
 ```sh
-wget https://launchpad.net/pbzip2/1.1/1.1.13/+download/pbzip2-1.1.13.tar.gz -P /sources/pbzip2-1.1.13.tar.gz &&
+wget https://launchpad.net/pbzip2/1.1/1.1.13/+download/pbzip2-1.1.13.tar.gz -P /sources &&
 
 tar xzvf /sources/pbzip2-1.1.13.tar.gz &&
 cd        pbzip2-1.1.13                &&
@@ -61,7 +61,7 @@ rm -rf pbzip2-1.1.13
 ## Zip
 
 ```sh
-wget https://downloads.sourceforge.net/infozip/zip30.tar.gz -P /sources/zip30.tar.gz &&
+wget https://downloads.sourceforge.net/infozip/zip30.tar.gz -P /sources &&
 
 tar xzvf /sources/zip30.tar.gz &&
 cd        zip30                &&
@@ -76,8 +76,8 @@ rm -rf zip30
 ## Unzip
 
 ```sh
-wget https://downloads.sourceforge.net/infozip/unzip60.tar.gz -P /sources/unzip60.tar.gz &&
-wget http://www.linuxfromscratch.org/patches/blfs/10.1/unzip-6.0-consolidated_fixes-1.patch -P /sources/unzip-6.0-consolidated_fixes-1.patch &&
+wget https://downloads.sourceforge.net/infozip/unzip60.tar.gz -P /sources &&
+wget http://www.linuxfromscratch.org/patches/blfs/10.1/unzip-6.0-consolidated_fixes-1.patch -P /sources/patches &&
 
 tar xzvf /sources/unzip60.tar.gz &&
 cd        unzip60                &&
@@ -92,10 +92,32 @@ cd .. &&
 rm -rf unzip60
 ```
 
+## p7zip
+
+This is the POSIX implementation of the Windows `7-Zip`, a single general-purpose compression tool that handles all widely-used algorithms
+
+```sh
+wget https://github.com/jinfeihan57/p7zip/archive/v17.04/p7zip-17.04.tar.gz -P /sources &&
+
+tar xzvf /sources/p7zip-17.04.tar.gz &&
+cd        p7zip-17.04                &&
+
+sed '/^gzip/d' -i install.sh &&
+sed -i '160a if(_buffer == nullptr || _size == _pos) return E_FAIL;' CPP/7zip/Common/StreamObjects.cpp &&
+
+make all3 &&
+sudo make DEST_HOME=/usr \
+          DEST_MAN=/usr/share/man \
+          DEST_SHARE_DOC=/usr/share/doc/p7zip-17.04 install &&
+
+cd .. &&
+rm -rf p7zip-17.04
+```
+
 ## tree
 
 ```sh
-wget http://mama.indstate.edu/users/ice/tree/src/tree-1.8.0.tgz -P /sources/tree-1.8.0.tgz &&
+wget http://mama.indstate.edu/users/ice/tree/src/tree-1.8.0.tgz -P /sources &&
 
 tar xzvf /sources/tree-1.8.0.tgz &&
 cd        tree-1.8.0             &&
@@ -111,7 +133,7 @@ rm -rf tree-1.8.0
 ## time
 
 ```sh
-wget https://ftp.gnu.org/gnu/time/time-1.9.tar.gz -P /sources/time-1.9.tar.gz &&
+wget https://ftp.gnu.org/gnu/time/time-1.9.tar.gz -P /sources &&
 
 tar xzvf /sources/time-1.9.tar.gz &&
 cd        time-1.9                &&
@@ -129,28 +151,8 @@ rm -rf time-1.9
 
 Terminal multiplexer. Allows running multiple sessions from a single terminal.
 
-First, get its dependency, `libevent`:
-
 ```sh
-wget https://github.com/libevent/libevent/releases/download/release-2.1.12-stable/libevent-2.1.12-stable.tar.gz -P /sources/libevent-2.1.12-stable.tar.gz &&
-
-tar xzvf /sources/libevent-2.1.12-stable.tar.gz &&
-cd        libevent-2.1.12-stable                &&
-
-./configure --prefix=/usr \
-            --disable-static &&
-
-make              &&
-sudo make install &&
-
-cd .. &&
-rm -rf libevent-2.1.12-stable
-```
-
-Now install `tmux`:
-
-```sh
-wget https://github.com/tmux/tmux/releases/download/3.2/tmux-3.2.tar.gz -P /sources/tmux-3.2.tar.gz &&
+wget https://github.com/tmux/tmux/releases/download/3.2/tmux-3.2.tar.gz -P /sources &&
 
 tar xzvf /sources/tmux-3.2.tar.gz &&
 cd        tmux-3.2                &&
@@ -169,7 +171,7 @@ rm -rf tmux-3.2
 Daemon to compress and rotate system logs so errant logging doesn't fill up your filesystem.
 
 ```sh
-wget https://github.com/logrotate/logrotate/releases/download/3.18.1/logrotate-3.18.1.tar.xz -P /sources/logrotate-3.18.1.tar.xz &&
+wget https://github.com/logrotate/logrotate/releases/download/3.18.1/logrotate-3.18.1.tar.xz -P /sources &&
 
 tar xvf /sources/logrotate-3.18.1.tar.xz &&
 cd       logrotate-3.18.1                &&
@@ -307,6 +309,29 @@ sudo make install &&
 
 cd .. &&
 rm -rf dbus-1.12.20
+```
+
+## patchelf
+
+A utility from `NixOS` that allows changing the dynamic linker and RPATH of `ELF` executables.
+
+```sh
+wget https://github.com/NixOS/patchelf/archive/0.12/patchelf-0.12.tar.gz -P /sources &&
+
+tar xzvf /sources/patchelf-0.12.tar.gz &&
+cd        patchelf-0.12                &&
+
+autoreconf -ifv &&
+
+./configure --prefix=/usr \
+            --docdir=/usr/share/doc/patchelf-0.12 &&
+
+make              &&
+make -k check     &&
+sudo make install &&
+
+cd .. &&
+rm -rf patchelf-0.12
 ```
 
 ## wget

@@ -44,7 +44,7 @@ https://github.com/liberationfonts/liberation-fonts/files/6418984/liberation-fon
 https://github.com/adobe-fonts/source-code-pro/releases/download/2.038R-ro%2F1.058R-it%2F1.018R-VAR/TTF-source-code-pro-2.038R-ro-1.058R-it.zip
 http://fftw.org/fftw-3.3.9.tar.gz
 https://download.gnome.org/sources/vala/0.52/vala-0.52.4.tar.xz
-https://download.gnome.org/sources/librsvg/2.50/librsvg-2.50.7.tar.xz
+https://download.gnome.org/sources/librsvg/2.51/librsvg-2.51.3.tar.xz
 https://downloads.sourceforge.net/lame/lame-3.100.tar.gz
 https://downloads.xiph.org/releases/ogg/libogg-1.3.5.tar.xz
 https://downloads.xiph.org/releases/vorbis/libvorbis-1.3.7.tar.xz
@@ -92,6 +92,8 @@ https://cr.yp.to/djbfft/djbfft-0.76.tar.gz
 http://liba52.sourceforge.net/files/a52dec-0.7.4.tar.gz
 https://downloads.sourceforge.net/mad/libmad-0.15.1b.tar.gz
 https://www.linuxfromscratch.org/patches/blfs/svn/libmad-0.15.1b-fixes-1.patch
+https://notroj.github.io/neon/neon-0.31.2.tar.gz
+https://github.com/metabrainz/libmusicbrainz/releases/download/release-5.1.0/libmusicbrainz-5.1.0.tar.gz
 https://github.com/anholt/libepoxy/releases/download/1.5.8/libepoxy-1.5.8.tar.xz
 https://download.gnome.org/sources/atk/2.36/atk-2.36.0.tar.xz
 https://download.gnome.org/sources/at-spi2-core/2.40/at-spi2-core-2.40.2.tar.xz
@@ -154,7 +156,7 @@ https://download.gnome.org/sources/libpeas/1.30/libpeas-1.30.0.tar.xz
 https://download.gnome.org/sources/libwnck/40/libwnck-40.0.tar.xz
 https://download.gnome.org/sources/evolution-data-server/3.40/evolution-data-server-3.40.2.tar.xz
 https://gitlab.freedesktop.org/upower/upower/uploads/93cfe7c8d66ed486001c4f3f55399b7a/upower-0.99.11.tar.xz
-https://download.gnome.org/sources/tracker/3.1/tracker-3.1.1.tar.xz
+https://download.gnome.org/sources/tracker/3.1/tracker-3.1.2.tar.xz
 https://download.gnome.org/sources/gexiv2/0.12/gexiv2-0.12.2.tar.xz
 https://download.gnome.org/sources/libgrss/0.7/libgrss-0.7.0.tar.xz
 https://www.linuxfromscratch.org/patches/blfs/svn/libgrss-0.7.0-bugfixes-1.patch
@@ -162,7 +164,7 @@ https://download.gnome.org/sources/libgxps/0.3/libgxps-0.3.2.tar.xz
 https://download.gnome.org/sources/libgsf/1.14/libgsf-1.14.47.tar.xz
 https://download.gnome.org/sources/dconf/0.40/dconf-0.40.0.tar.xz
 https://download.gnome.org/sources/dconf-editor/3.38/dconf-editor-3.38.3.tar.xz
-https://download.gnome.org/sources/tracker-miners/3.1/tracker-miners-3.1.1.tar.xz
+https://download.gnome.org/sources/tracker-miners/3.1/tracker-miners-3.1.2.tar.xz
 https://download.gnome.org/sources/gsound/1.0/gsound-1.0.2.tar.xz
 https://download.gnome.org/sources/gnome-backgrounds/40/gnome-backgrounds-40.1.tar.xz
 https://download.gnome.org/sources/gvfs/1.48/gvfs-1.48.1.tar.xz
@@ -170,6 +172,7 @@ https://download.gnome.org/sources/libhandy/1.2/libhandy-1.2.2.tar.xz
 https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.26.tar.xz
 https://github.com/flatpak/libportal/releases/download/0.4/libportal-0.4.tar.xz
 https://download.gnome.org/sources/nautilus/40/nautilus-40.2.tar.xz
+https://download.gnome.org/sources/sushi/3.38/sushi-3.38.1.tar.xz
 https://download.gnome.org/sources/zenity/3.32/zenity-3.32.0.tar.xz
 https://download.gnome.org/sources/gnome-bluetooth/3.34/gnome-bluetooth-3.34.5.tar.xz
 https://download.gnome.org/sources/gnome-keyring/40/gnome-keyring-40.0.tar.xz
@@ -180,9 +183,9 @@ https://digip.org/jansson/releases/jansson-2.13.1.tar.gz
 http://libndp.org/files/libndp-1.8.tar.gz
 https://www.jedsoft.org/releases/slang/slang-2.3.2.tar.bz2
 https://releases.pagure.org/newt/newt-0.52.21.tar.gz
-https://download.gnome.org/sources/NetworkManager/1.30/NetworkManager-1.30.4.tar.xz
+https://download.gnome.org/sources/NetworkManager/1.33/NetworkManager-1.33.1.tar.xz
 https://download.gnome.org/sources/gnome-settings-daemon/40/gnome-settings-daemon-40.0.1.tar.xz
-https://download.gnome.org/sources/mutter/40/mutter-40.2.tar.xz
+https://download.gnome.org/sources/mutter/40/mutter-40.2.1.tar.xz
 https://people.freedesktop.org/~mccann/dist/sound-theme-freedesktop-0.8.tar.bz2
 https://download.gnome.org/sources/adwaita-icon-theme/40/adwaita-icon-theme-40.1.1.tar.xz
 https://download.gnome.org/sources/libnma/1.8/libnma-1.8.30.tar.xz
@@ -240,6 +243,10 @@ https://www.linuxfromscratch.org/patches/blfs/svn/avahi-0.8-ipv6_race_condition_
 https://download.gnome.org/sources/seahorse/40/seahorse-40.0.tar.xz
 https://download.gnome.org/sources/epiphany/40/epiphany-40.2.tar.xz
 https://download-fallback.gnome.org/sources/totem/3.38/totem-3.38.1.tar.xz
+https://github.com/mypaint/libmypaint/releases/download/v1.6.1/libmypaint-1.6.1.tar.xz
+https://github.com/Jehan/mypaint-brushes/archive/v1.3.0/mypaint-brushes-v1.3.0.tar.gz
+https://www.linuxfromscratch.org/patches/blfs/svn/mypaint-brushes-1.3.0-automake_1.16-1.patch
+https://download.gimp.org/pub/gimp/v2.10/gimp-2.10.24.tar.bz2
 https://www.lua.org/ftp/lua-5.2.4.tar.gz
 https://www.linuxfromscratch.org/patches/blfs/svn/lua-5.2.4-shared_library-1.patch
 https://download.videolan.org/vlc/3.0.15/vlc-3.0.15.tar.xz

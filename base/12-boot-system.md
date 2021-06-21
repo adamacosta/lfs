@@ -28,8 +28,8 @@ sudo chown -R lfs:lfs /sources
 From `$LFS/sources/build_dir`:
 
 ```sh
-tar xvf /sources/linux-5.12.7.tar.xz &&
-cd       linux-5.12.7
+tar xvf /sources/linux-5.12.12.tar.xz &&
+cd       linux-5.12.12
 ```
 
 The kernel does not use a `./configure` script, instead relying on a menu-based config generator that is created by running `make`. First, create a default config with reasonable defaults for your detected system:
@@ -214,21 +214,21 @@ sudo mount --bind /boot /mnt/lfs/boot
 Now install the kernel image into the boot partition:
 
 ```sh
-sudo cp -iv arch/x86/boot/bzImage /boot/vmlinuz-5.12.9-lfs-systemd
+sudo cp -iv arch/x86/boot/bzImage /boot/vmlinuz-5.12.12-lfs
 ```
 
 To also install the symbol map and `.config` file for debugging purposes:
 
 ```sh
-sudo cp -iv System.map /boot/System.map-5.12.9 &&
-sudo cp -iv .config /boot/config-5.12.9
+sudo cp -iv System.map /boot/System.map-5.12.12 &&
+sudo cp -iv .config /boot/config-5.12.12
 ```
 
 To install the kernel documentation:
 
 ```sh
-sudo install -d /usr/share/doc/linux-5.12.9 &&
-sudo cp -r Documentation/* /usr/share/doc/linux-5.12.9
+sudo install -d /usr/share/doc/linux-5.12.12 &&
+sudo cp -r Documentation/* /usr/share/doc/linux-5.12.12
 ```
 
 ### Microsoft Hyper-V integration services for Linux
@@ -236,7 +236,7 @@ sudo cp -r Documentation/* /usr/share/doc/linux-5.12.9
 This is only needed if you intend to run your system in a VM on a Microsoft Hyper-V hypervisor.
 
 ```sh
-cd linux-5.12.9/tools/hv
+cd linux-5.12.12/tools/hv
 
 CFLAGS+=' -DKVP_SCRIPTS_PATH=\"/usr/lib/hyperv/kvp_scripts/\"' make
 make install

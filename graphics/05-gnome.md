@@ -652,10 +652,10 @@ rm -rf upower-0.99.11
 The `GNOME` file indexing and search service.
 
 ```sh
-wget https://download.gnome.org/sources/tracker/3.1/tracker-3.1.1.tar.xz -P /sources/gnome &&
+wget https://download.gnome.org/sources/tracker/3.1/tracker-3.1.2.tar.xz -P /sources/gnome &&
 
-tar xvf /sources/gnome/tracker-3.1.1.tar.xz &&
-cd       tracker-3.1.1                      &&
+tar xvf /sources/gnome/tracker-3.1.2.tar.xz &&
+cd       tracker-3.1.2                      &&
 
 mkdir build &&
 cd    build &&
@@ -669,7 +669,7 @@ ninja              &&
 sudo ninja install &&
 
 cd ../.. &&
-rm -rf tracker-3.1.1
+rm -rf tracker-3.1.2
 ```
 
 ## gexiv
@@ -819,10 +819,10 @@ sudo rm -v /etc/xdg/autostart/tracker-miner-*
 Then install the current version.
 
 ```sh
-wget https://download.gnome.org/sources/tracker-miners/3.1/tracker-miners-3.1.1.tar.xz -P /sources/gnome &&
+wget https://download.gnome.org/sources/tracker-miners/3.1/tracker-miners-3.1.2.tar.xz -P /sources/gnome &&
 
-tar xvf /sources/gnome/tracker-miners-3.1.1.tar.xz &&
-cd       tracker-miners-3.1.1                      &&
+tar xvf /sources/gnome/tracker-miners-3.1.2.tar.xz &&
+cd       tracker-miners-3.1.2                      &&
 
 mkdir build &&
 cd    build &&
@@ -835,7 +835,7 @@ ninja              &&
 sudo ninja install &&
 
 cd ../.. &&
-rm -rf tracker-miners-3.1.1
+rm -rf tracker-miners-3.1.2
 ```
 
 ## GSound
@@ -1010,6 +1010,30 @@ sudo ninja install &&
 
 cd ../.. &&
 rm -rf nautilus-40.2
+```
+
+## Sushi
+
+Preview files in `Nautilus`.
+
+```sh
+wget https://download.gnome.org/sources/sushi/3.38/sushi-3.38.1.tar.xz -P /sources/gnome &&
+
+tar xvf /sources/gnome/sushi-3.38.1.tar.xz &&
+cd       sushi-3.38.1                      &&
+
+mkdir build &&
+cd    build &&
+
+meson --prefix=/usr       \
+      --buildtype=release \
+      .. &&
+
+ninja              &&
+sudo ninja install &&
+
+cd ../.. &&
+rm -rf sushi-3.38.1
 ```
 
 ## Zenity
@@ -1295,10 +1319,10 @@ rm -rf newt-0.52.21
 ### NetworkManager
 
 ```sh
-wget https://download.gnome.org/sources/NetworkManager/1.30/NetworkManager-1.30.4.tar.xz -P /sources/gnome &&
+wget https://download.gnome.org/sources/NetworkManager/1.33/NetworkManager-1.33.1.tar.xz -P /sources/gnome &&
 
-tar xvf /sources/gnome/NetworkManager-1.30.4.tar.xz &&
-cd       NetworkManager-1.30.4                      &&
+tar xvf /sources/gnome/NetworkManager-1.33.1.tar.xz &&
+cd       NetworkManager-1.33.1                      &&
 
 sed '/initrd/d' -i src/core/meson.build &&
 
@@ -1321,10 +1345,10 @@ meson --prefix=/usr              \
 
 ninja                                              &&
 sudo ninja install                                 &&
-sudo mv -v /usr/share/doc/NetworkManager{,-1.30.4} &&
+sudo mv -v /usr/share/doc/NetworkManager{,-1.33.1} &&
 
 cd ../.. &&
-rm -rf NetworkManager-1.30.4
+rm -rf NetworkManager-1.33.1
 ```
 
 In case you do want to use `NetworkManager`, it requires some configuration. You will also need to disable `systemd-networkd` and `iwd`, as you cannot have multiple daemons attempting to control your network interface devices.
@@ -1357,10 +1381,10 @@ rm -rf gnome-settings-daemon-40.0.1
 The `GNOME` window manager.
 
 ```sh
-wget https://download.gnome.org/sources/mutter/40/mutter-40.2.tar.xz -P /sources/gnome &&
+wget https://download.gnome.org/sources/mutter/40/mutter-40.2.1.tar.xz -P /sources/gnome &&
 
-tar xvf /sources/gnome/mutter-40.2.tar.xz &&
-cd       mutter-40.2                      &&
+tar xvf /sources/gnome/mutter-40.2.1.tar.xz &&
+cd       mutter-40.2.1                      &&
 
 sed -i '/libmutter_dep = declare_dependency(/a sources: mutter_built_sources,' src/meson.build &&
 
@@ -1374,7 +1398,7 @@ ninja              &&
 sudo ninja install &&
 
 cd ../.. &&
-rm -rf mutter-40.2
+rm -rf mutter-40.2.1
 ```
 
 ## Sound Theme FreeDesktop

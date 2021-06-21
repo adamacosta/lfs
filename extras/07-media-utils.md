@@ -202,6 +202,33 @@ cd ../.. &&
 rm -rf libjpeg-turbo-2.0.6
 ```
 
+### JasPer
+
+Free software-based implementation of the JPEG-2000 standard
+
+```sh
+wget https://github.com/jasper-software/jasper/archive/version-2.0.32/jasper-2.0.32.tar.gz -P /sources &&
+
+tar xzvf /sources/jasper-2.0.32.tar.gz &&
+cd        jasper-version-2.0.32        &&
+
+mkdir BUILD &&
+cd    BUILD &&
+
+cmake -DCMAKE_INSTALL_PREFIX=/usr    \
+      -DCMAKE_BUILD_TYPE=Release     \
+      -DCMAKE_SKIP_INSTALL_RPATH=YES \
+      -DJAS_ENABLE_DOC=NO            \
+      -DCMAKE_INSTALL_DOCDIR=/usr/share/doc/jasper-2.0.32 \
+      ..  &&
+
+make              &&
+sudo make install &&
+
+cd ../.. &&
+rm -rf jasper-version-2.0.32
+```
+
 ### libTIFF
 
 ```sh
@@ -288,6 +315,29 @@ sudo cp -v -R doc/* /usr/share/doc/giflib-5.2.1    &&
 
 cd .. &&
 rm -rf giflib-5.2.1
+```
+
+## librsvg
+
+SVG library and toolset. For Hacker News street cred, written in Rust.
+
+```sh
+wget https://download.gnome.org/sources/librsvg/2.51/librsvg-2.51.3.tar.xz -P /sources &&
+
+tar xvf /sources/librsvg-2.51.3.tar.xz &&
+cd       librsvg-2.51.3                &&
+
+./configure --prefix=/usr    \
+            --enable-vala    \
+            --disable-static \
+            --docdir=/usr/share/doc/librsvg-2.51.3 &&
+
+make              &&
+make -k check      &&
+sudo make install &&
+
+cd .. &&
+rm -rf librsvg-2.51.3
 ```
 
 ## libexif
@@ -573,26 +623,38 @@ PDF rendering library.
 `clang` is optional but required for the fuzzing and address sanitizers to work, which may help prevent security issues.
 
 ```sh
-wget https://poppler.freedesktop.org/poppler-21.05.0.tar.xz -P /sources &&
+wget https://poppler.freedesktop.org/poppler-21.06.1.tar.xz -P /sources &&
+wget https://poppler.freedesktop.org/poppler-data-0.4.10.tar.gz -P /sources &&
 
-tar xvf /sources/poppler-21.05.0.tar.xz &&
-cd       poppler-21.05.0                &&
+tar xvf /sources/poppler-21.06.1.tar.xz &&
+cd       poppler-21.06.1                &&
 
-mkdir -v build &&
-cd       build &&
+mkdir build                         &&
+cd    build                         &&
 
-cmake -DCMAKE_INSTALL_PREFIX=/usr                      \
-      -DCMAKE_BUILD_TYPE=release                       \
-      -DBUILD_GTK_TESTS=OFF                            \
-      -DECM_ENABLE_SANITIZERS='address;leak;undefined' \
-      -DCMAKE_CXX_COMPILER=clang++                     \
-      .. &&
+cmake  -DCMAKE_BUILD_TYPE=Release   \
+       -DCMAKE_INSTALL_PREFIX=/usr  \
+       -DTESTDATADIR=$PWD/testfiles \
+       -DENABLE_UNSTABLE_API_ABI_HEADERS=ON \
+       .. &&
 
 make              &&
 sudo make install &&
 
-cd ../.. &&
-rm -rf poppler-21.05.0
+sudo install -v -m755 -d           /usr/share/doc/poppler-21.06.1 &&
+sudo cp -vr ../glib/reference/html /usr/share/doc/poppler-21.06.1 &&
+
+cd ../..               &&
+rm -rf poppler-21.06.1 &&
+
+tar xvf /sources/poppler-data-0.4.10.tar.gz &&
+
+cd poppler-data-0.4.10 &&
+
+sudo make prefix=/usr install &&
+
+cd .. &&
+rm -rf poppler-data-0.4.10
 ```
 
 ## GraphViz

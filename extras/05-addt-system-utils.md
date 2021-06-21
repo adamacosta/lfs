@@ -5,7 +5,7 @@
 Extract files from the Windows RAR archive.
 
 ```sh
-wget https://www.rarlab.com/rar/unrarsrc-6.0.6.tar.gz -P /sources/unrarsrc-6.0.6.tar.gz &&
+wget https://www.rarlab.com/rar/unrarsrc-6.0.6.tar.gz -P /sources &&
 
 tar xzvf /sources/unrarsrc-6.0.6.tar.gz &&
 cd        unrar                         &&
@@ -20,8 +20,8 @@ rm -rf unrarsrc-6.0.6
 ## CyrusSASL
 
 ```sh
-wget https://github.com/cyrusimap/cyrus-sasl/releases/download/cyrus-sasl-2.1.27/cyrus-sasl-2.1.27.tar.gz -P /sources/cyrus-sasl-2.1.27.tar.gz &&
-wget https://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.27-doc_fixes-1.patch -P /sources/patches/cyrus-sasl-2.1.27-doc_fixes-1.patch &&
+wget https://github.com/cyrusimap/cyrus-sasl/releases/download/cyrus-sasl-2.1.27/cyrus-sasl-2.1.27.tar.gz -P /sources &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.27-doc_fixes-1.patch -P /sources/patches &&
 
 tar xzvf /sources/cyrus-sasl-2.1.27.tar.gz &&
 cd        cyrus-sasl-2.1.27                &&
@@ -50,8 +50,8 @@ rm -rf cyrus-sasl-2.1.27
 ## openldap (client only)
 
 ```sh
-wget https://www.openldap.org/software/download/OpenLDAP/openldap-release/openldap-2.5.5.tgz -P openldap-2.5.5.tgz
-wget https://www.linuxfromscratch.org/patches/blfs/svn/openldap-2.5.5-consolidated-1.patch -P openldap-2.5.5-consolidated-1.patch &&
+wget https://www.openldap.org/software/download/OpenLDAP/openldap-release/openldap-2.5.5.tgz -P /sources
+wget https://www.linuxfromscratch.org/patches/blfs/svn/openldap-2.5.5-consolidated-1.patch -P /sources/patches &&
 
 tar xzvf /sources/openldap-2.5.5.tgz &&
 cd        openldap-2.5.5
@@ -75,22 +75,23 @@ rm -rf openldap-2.5.5
 ## sendmail
 
 ```sh
-curl ftp://ftp.sendmail.org/pub/sendmail/sendmail.8.16.1.tar.gz -P sendmail.8.16.1.tar.gz
-tar xzvf sendmail.8.16.1.tar.gz
-cd sendmail-8.16.1
+curl ftp://ftp.sendmail.org/pub/sendmail/sendmail.8.16.1.tar.gz -P /sources &&
+
+tar xzvf /sources/sendmail.8.16.1.tar.gz &&
+cd        sendmail-8.16.1                &&
 
 sudo groupadd -g 26 smmsp                               &&
 sudo useradd -c "Sendmail Daemon" -g smmsp -d /dev/null \
-        -s /bin/false -u 26 smmsp                  &&
+             -s /bin/false -u 26 smmsp                  &&
 sudo chmod -v 1777 /var/mail                            &&
-sudo install -v -m700 -d /var/spool/mqueue
+sudo install -v -m700 -d /var/spool/mqueue              &&
 
-cat >> devtools/Site/site.config.m4 << "EOF"
+cat >> devtools/Site/site.config.m4 << "EOF" &&
 APPENDDEF(`confENVDEF',`-DSTARTTLS -DLDAPMAP')
 APPENDDEF(`confLIBS', `-lssl -lcrypto -lldap -llber')
 EOF
 
-cat >> devtools/Site/site.config.m4 << "EOF"
+cat >> devtools/Site/site.config.m4 << "EOF" &&
 define(`confMANGRP',`root')
 define(`confMANOWN',`root')
 define(`confSBINGRP',`root')
@@ -107,9 +108,11 @@ cp generic-linux.mc sendmail.mc &&
 sh Build sendmail.cf
 
 sudo install -v -d -m755 /etc/mail &&
-sudo sh Build install-cf &&
-cd ../..            &&
-sudo sh Build install    &&
+sudo sh Build install-cf           &&
+
+cd ../.. &&
+
+sudo sh Build install                                      &&
 sudo install -v -m644 cf/cf/{submit,sendmail}.mc /etc/mail &&
 sudo cp -v -R cf/* /etc/mail                               &&
 sudo install -v -m755 -d /usr/share/doc/sendmail-8.16.1/{cf,sendmail} &&
@@ -125,14 +128,14 @@ done &&
 sudo install -v -m644 sendmail/aliases.5    /usr/share/man/man5 &&
 sudo install -v -m644 sendmail/mailq.1      /usr/share/man/man1 &&
 sudo install -v -m644 sendmail/newaliases.1 /usr/share/man/man1 &&
-sudo install -v -m644 vacation/vacation.1   /usr/share/man/man1
+sudo install -v -m644 vacation/vacation.1   /usr/share/man/man1 &&
 
 cd doc/op                                       &&
 sed -i 's/groff/GROFF_NO_SGR=1 groff/' Makefile &&
-make op.txt
+make op.txt                                     &&
 
-sudo install -v -d -m755 /usr/share/doc/sendmail-8.16.1 &&
-sudo install -v -m644 op.ps op.txt /usr/share/doc/sendmail-8.16.1
+sudo install -v -d -m755 /usr/share/doc/sendmail-8.16.1           &&
+sudo install -v -m644 op.ps op.txt /usr/share/doc/sendmail-8.16.1 &&
 
 cd ../../..
 rm -rf sendmail-8.16.1
@@ -141,8 +144,8 @@ rm -rf sendmail-8.16.1
 ## SQLite
 
 ```sh
-wget https://sqlite.org/2021/sqlite-autoconf-3350500.tar.gz -P /sources/sqlite-autoconf-3350500.tar.gz &&
-wget https://sqlite.org/2021/sqlite-doc-3350500.zip -P /sources/sqlite-doc-3350500.zip &&
+wget https://sqlite.org/2021/sqlite-autoconf-3350500.tar.gz -P /sources &&
+wget https://sqlite.org/2021/sqlite-doc-3350500.zip -P /sources &&
 
 tar xzvf /sources/sqlite-autoconf-3350500.tar.gz &&
 cd        sqlite-autoconf-3350500                &&
@@ -177,7 +180,7 @@ At this point, you may wish to rebuild `Python` to enable the optional loadable 
 Utilities for creating shell archives.
 
 ```sh
-wget https://ftp.gnu.org/gnu/sharutils/sharutils-4.15.2.tar.xz -P /sources/sharutils-4.15.2.tar.xz &&
+wget https://ftp.gnu.org/gnu/sharutils/sharutils-4.15.2.tar.xz -P /sources &&
 
 tar xvf /sources/sharutils-4.15.2.tar.xz &&
 cd       sharutils-4.15.2                &&
@@ -200,7 +203,7 @@ rm -rf sharutils-4.15.2
 ## BerkeleyDB
 
 ```sh
-wget https://anduin.linuxfromscratch.org/BLFS/bdb/db-5.3.28.tar.gz -P /sources/db-5.3.28.tar.gz &&
+wget https://anduin.linuxfromscratch.org/BLFS/bdb/db-5.3.28.tar.gz -P /sources &&
 
 tar xzvf /sources/db-5.3.28.tar.gz &&
 cd        db-5.3.28                &&
@@ -232,7 +235,7 @@ rm -rf db-5.3.28
 GNU spellchecker.
 
 ```sh
-wget https://ftp.gnu.org/gnu/aspell/aspell-0.60.8.tar.gz -P /sources/aspell-0.60.8.tar.gz &&
+wget https://ftp.gnu.org/gnu/aspell/aspell-0.60.8.tar.gz -P /sources &&
 
 tar xzvf /sources/aspell-0.60.8.tar.gz &&
 cd        aspell-0.60.8                &&
@@ -257,7 +260,7 @@ rm -rf aspell-0.60.8
 Now install a dictionary. Note that I am choosing English because I am an American English speaker, but you can go to the GNU Aspell ftp server and find a different dictionary if you prefer, or even install many.
 
 ```sh
-wget https://ftp.gnu.org/gnu/aspell/dict/en/aspell6-en-2020.12.07-0.tar.bz2 -P /sources/aspell6-en-2020.12.07-0.tar.bz2 &&
+wget https://ftp.gnu.org/gnu/aspell/dict/en/aspell6-en-2020.12.07-0.tar.bz2 -P /sources &&
 
 tar xvf /sources/aspell6-en-2020.12.07-0.tar.bz2 &&
 cd       aspell6-en-2020.12.07-0                 &&
@@ -282,7 +285,7 @@ sudo sh -c 'aspell -d en dump master | aspell -l en expand >> /usr/share/dict/wo
 Interface to spell checking libraries.
 
 ```sh
-wget https://github.com/AbiWord/enchant/releases/download/v2.2.15/enchant-2.2.15.tar.gz -P /sources/enchant-2.2.15.tar.gz &&
+wget https://github.com/AbiWord/enchant/releases/download/v2.2.15/enchant-2.2.15.tar.gz -P /sources &&
 
 tar xzvf /sources/enchant-2.2.15.tar.gz &&
 cd        enchant-2.2.15                &&
@@ -302,7 +305,7 @@ rm -rf enchant-2.2.15
 Additional spell checking libraries used by various desktop programs.
 
 ```sh
-wget https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -P /sources/hunspell-1.7.0.tar.gz &&
+wget https://github.com/hunspell/hunspell/files/2573619/hunspell-1.7.0.tar.gz -P /sources &&
 
 tar xzvf /sources/hunspell-1.7.0.tar.gz &&
 cd        hunspell-1.7.0                &&
@@ -325,12 +328,14 @@ rm -rf hunspell-1.7.0
 Mail client.
 
 ```sh
-wget https://bitbucket.org/mutt/mutt/downloads/mutt-2.0.5.tar.gz -P mutt-2.0.5.tar.gz
-tar xzvf mutt-2.0.5.tar.gz
-cd mutt-2.0.5
+wget https://bitbucket.org/mutt/mutt/downloads/mutt-2.0.5.tar.gz -P /souces &&
+
+tar xzvf /sources/mutt-2.0.5.tar.gz &&
+cd        mutt-2.0.5                &&
 
 sed -i -e 's/ -with_backspaces//' -e 's/elinks/links/' \
-  -e 's/-no-numbering -no-references//' doc/Makefile.in
+       -e 's/-no-numbering -no-references//' doc/Makefile.in &&
+
 ./configure --prefix=/usr                           \
             --sysconfdir=/etc                       \
             --with-docdir=/usr/share/doc/mutt-2.0.5 \
@@ -339,11 +344,12 @@ sed -i -e 's/ -with_backspaces//' -e 's/elinks/links/' \
             --enable-pop                            \
             --enable-imap                           \
             --enable-hcache                         \
-            --enable-sidebar
-make
-sudo make install
+            --enable-sidebar &&
 
-cd ..
+make              &&
+sudo make install &&
+
+cd .. &&
 rm -rf mutt-2.0.5
 ```
 
@@ -358,24 +364,26 @@ cat /usr/share/doc/mutt-2.0.5/samples/gpg.rc >> ~/.muttrc
 Job scheduler.
 
 ```sh
-wget http://software.calhariz.com/at/at_3.2.1.orig.tar.gz -P at_3.2.1.orig.tar.gz
-tar xzvf at_3.2.1.orig.tar.gz
-cd at-3.2.1
+wget http://software.calhariz.com/at/at_3.2.1.orig.tar.gz -P /sources &&
 
-sudo groupadd -g 17 atd &&
-sudo useradd -d /dev/null -c "atd daemon" -g atd -s /bin/false -u 17 atd
+tar xzvf /sources/at_3.2.1.orig.tar.gz &&
+cd        at-3.2.1
+
+sudo groupadd -g 17 atd                                                   && 
+sudo useradd  -d /dev/null -c "atd daemon" -g atd -s /bin/false -u 17 atd &&
 
 ./configure --with-daemon_username=atd        \
             --with-daemon_groupname=atd       \
             SENDMAIL=/usr/sbin/sendmail       \
             --with-jobdir=/var/spool/atjobs   \
             --with-atspool=/var/spool/atspool \
-            --with-systemdsystemunitdir=/lib/systemd/system
-make
-sudo make install docdir=/usr/share/doc/at-3.2.1 \
-                  atdocdir=/usr/share/doc/at-3.2.1
+            --with-systemdsystemunitdir=/usr/lib/systemd/system && 
 
-cd ..
+make                                               &&
+sudo make install docdir=/usr/share/doc/at-3.2.1 \
+                  atdocdir=/usr/share/doc/at-3.2.1 &&
+
+cd .. &&
 rm -rf at-3.2.1
 ```
 
@@ -384,7 +392,7 @@ rm -rf at-3.2.1
 Parallel job runner.
 
 ```sh
-wget https://ftp.gnu.org/gnu/parallel/parallel-20210522.tar.bz2 -P /sources/parallel-20210522.tar.bz2 &&
+wget https://ftp.gnu.org/gnu/parallel/parallel-20210522.tar.bz2 -P /sources &&
 
 tar xvf /sources/parallel-20210522.tar.bz2 &&
 cd       parallel-20210522                 &&
@@ -404,57 +412,62 @@ rm -rf parallel-20210522
 Archiving tool utilized to build the ram disk archives or `initrd` that can be used to bootstrap Linux with a root filesystem prepopulated with tools, libraries, and kernel modules needed to bring up the real root filesystem. Also used by the Redhat Package Manager.
 
 ```sh
-wget https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2 -P cpio-2.13.tar.bz2
-tar xvf cpio-2.13.tar.bz2
-cd cpio-2.13
+wget https://ftp.gnu.org/gnu/cpio/cpio-2.13.tar.bz2 -P /sources &&
 
-sed -i '/The name/,+2 d' src/global.c
+tar xvf /sources/cpio-2.13.tar.bz2 &&
+cd       cpio-2.13
+
+sed -i '/The name/,+2 d' src/global.c &&
+
 ./configure --prefix=/usr \
             --bindir=/bin \
             --enable-mt   \
-            --with-rmt=/usr/libexec/rmt
-make -j
+            --with-rmt=/usr/libexec/rmt &&
+
+make                                                      &&
 makeinfo --html            -P doc/html      doc/cpio.texi &&
 makeinfo --html --no-split -P doc/cpio.html doc/cpio.texi &&
-makeinfo --plaintext       -P doc/cpio.txt  doc/cpio.texi
-sudo make install &&
-sudo install -v -m755 -d /usr/share/doc/cpio-2.13/html &&
+makeinfo --plaintext       -P doc/cpio.txt  doc/cpio.texi &&
+sudo make install                                         &&
+sudo install -v -m755 -d /usr/share/doc/cpio-2.13/html    &&
 sudo install -v -m644    doc/html/* \
-                    /usr/share/doc/cpio-2.13/html &&
+                         /usr/share/doc/cpio-2.13/html    &&
 sudo install -v -m644    doc/cpio.{html,txt} \
-                    /usr/share/doc/cpio-2.13
+                         /usr/share/doc/cpio-2.13         &&
 
-cd ..
+cd .. &&
 rm -rf cpio-2.13
 ```
 
 ## fcron
 
 ```sh
-wget http://fcron.free.fr/archives/fcron-3.2.1.src.tar.gz -P fcron-3.2.1.src.tar.gz
-tar xzvf fcron-3.2.1.src.tar.gz
-cd fcron-3.2.1
+wget http://fcron.free.fr/archives/fcron-3.2.1.src.tar.gz -P /sources &&
 
-sudo groupadd -g 22 fcron &&
-sudo useradd -d /dev/null -c "Fcron User" -g fcron -s /bin/false -u 22 fcron
+tar xzvf /sources/fcron-3.2.1.src.tar.gz &&
+cd        fcron-3.2.1                    &&
+
+sudo groupadd -g 22 fcron                                                     &&
+sudo useradd  -d /dev/null -c "Fcron User" -g fcron -s /bin/false -u 22 fcron &&
 
 ./configure --prefix=/usr          \
             --sysconfdir=/etc      \
             --localstatedir=/var   \
             --without-sendmail     \
             --with-piddir=/run     \
-            --with-boot-install=no
-make -j
-sudo make install
+            --with-boot-install=no &&
 
-cd ..
+make              &&
+sudo make install &&
+
+cd .. &&
 rm -rf fcron-3.2.1
 ```
 
 ## PCRE2
 
 ```sh
-wget https://ftp.pcre.org/pub/pcre/pcre2-10.37.tar.bz2 -P /sources/pcre2-10.37.tar.bz2 &&
+wget https://ftp.pcre.org/pub/pcre/pcre2-10.37.tar.bz2 -P /sources &&
 
 tar xvf /sources/pcre2-10.37.tar.bz2 &&
 cd       pcre2-10.37                 &&
@@ -468,7 +481,7 @@ cd       pcre2-10.37                 &&
             --enable-pcre2grep-libz             \
             --enable-pcre2grep-libbz2           \
             --enable-pcre2test-libreadline      \
-            --disable-static                    &&
+            --disable-static &&
 
 make              &&
 sudo make install &&
@@ -480,7 +493,7 @@ rm -rf pcre2-10.37
 ## pciutils
 
 ```sh
-wget https://www.kernel.org/pub/software/utils/pciutils/pciutils-3.7.0.tar.xz -P /sources/pciutils-3.7.0.tar.xz &&
+wget https://www.kernel.org/pub/software/utils/pciutils/pciutils-3.7.0.tar.xz -P /sources &&
 
 tar xvf /sources/pciutils-3.7.0.tar.xz &&
 cd       pciutils-3.7.0                &&
@@ -503,7 +516,7 @@ rm -rf pciutils-3.7.0
 ## libusb
 
 ```sh
-wget https://github.com/libusb/libusb/releases/download/v1.0.24/libusb-1.0.24.tar.bz2 -P /sources/libusb-1.0.24.tar.bz2 &&
+wget https://github.com/libusb/libusb/releases/download/v1.0.24/libusb-1.0.24.tar.bz2 -P /sources &&
 
 tar xvf /sources/libusb-1.0.24.tar.bz2 &&
 cd       libusb-1.0.24                 &&
@@ -521,13 +534,13 @@ rm -rf libusb-1.0.24
 ## usbutils
 
 ```sh
-wget https://www.kernel.org/pub/linux/utils/usb/usbutils/usbutils-013.tar.xz -P /sources/usbutils-013.tar.xz &&
+wget https://www.kernel.org/pub/linux/utils/usb/usbutils/usbutils-013.tar.xz -P /sources &&
 
 tar xvf /sources/usbutils-013.tar.xz &&
 cd       usbutils-013                &&
 
 ./autogen.sh --prefix=/usr \
-            --datadir=/usr/share/hwdata &&
+             --datadir=/usr/share/hwdata &&
 
 make                                                                    &&
 sudo make install                                                       &&
@@ -575,7 +588,7 @@ exit
 ## libburn
 
 ```sh
-wget https://files.libburnia-project.org/releases/libburn-1.5.4.tar.gz -P /sources/libburn-1.5.4.tar.gz &&
+wget https://files.libburnia-project.org/releases/libburn-1.5.4.tar.gz -P /sources &&
 
 tar xzvf /sources/libburn-1.5.4.tar.gz &&
 cd        libburn-1.5.4                &&
@@ -593,7 +606,7 @@ rm -rf libburn-1.5.4
 ## libisofs
 
 ```sh
-wget https://files.libburnia-project.org/releases/libisofs-1.5.4.tar.gz -P /sources/libisofs-1.5.4.tar.gz &&
+wget https://files.libburnia-project.org/releases/libisofs-1.5.4.tar.gz -P /sources &&
 
 tar xzvf /sources/libisofs-1.5.4.tar.gz &&
 cd        libisofs-1.5.4                &&
@@ -611,7 +624,7 @@ rm -rf libisofs-1.5.4
 ## libisoburn
 
 ```sh
-wget https://files.libburnia-project.org/releases/libisoburn-1.5.4.tar.gz -P /sources/libisoburn-1.5.4.tar.gz &&
+wget https://files.libburnia-project.org/releases/libisoburn-1.5.4.tar.gz -P /sources &&
 
 tar xzvf /sources/libisoburn-1.5.4.tar.gz &&
 cd        libisoburn-1.5.4                &&
@@ -630,8 +643,8 @@ rm -rf libisoburn-1.5.4
 ## libcdio
 
 ```sh
-wget https://ftp.gnu.org/gnu/libcdio/libcdio-2.1.0.tar.bz2 -P /sources/libcdio-2.1.0.tar.bz2 &&
-wget https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-10.2+2.0.1.tar.bz2 -P /sources/libcdio-paranoia-10.2+2.0.1.tar.bz2 &&
+wget https://ftp.gnu.org/gnu/libcdio/libcdio-2.1.0.tar.bz2 -P /sources &&
+wget https://ftp.gnu.org/gnu/libcdio/libcdio-paranoia-10.2+2.0.1.tar.bz2 -P /sources &&
 
 tar xvf /sources/libcdio-2.1.0.tar.bz2 &&
 cd       libcdio-2.1.0                 &&
@@ -661,7 +674,7 @@ rm -rf libcdio-paranoia-10.2+2.0.1
 ## libdvdread
 
 ```sh
-wget https://get.videolan.org/libdvdread/6.1.2/libdvdread-6.1.2.tar.bz2 -P /sources/libdvdread-6.1.2.tar.bz2 &&
+wget https://get.videolan.org/libdvdread/6.1.2/libdvdread-6.1.2.tar.bz2 -P /sources &&
 
 tar xvf /sources/libdvdread-6.1.2.tar.bz2 &&
 cd       libdvdread-6.1.2                 &&
@@ -682,7 +695,7 @@ rm -rf libdvdread-6.1.2
 Use the `--disable-device-mapper` flag to `configure` if you did not install `LVM2`.
 
 ```sh
-wget https://ftp.gnu.org/gnu/parted/parted-3.4.tar.xz -P /sources/parted-3.4.tar.xz &&
+wget https://ftp.gnu.org/gnu/parted/parted-3.4.tar.xz -P /sources &&
 
 tar xvf /sources/parted-3.4.tar.xz &&
 cd       parted-3.4                &&
@@ -710,7 +723,7 @@ sudo rm -rf parted-3.4
 ## sysstat
 
 ```sh
-wget http://sebastien.godard.pagesperso-orange.fr/sysstat-12.5.4.tar.xz -P /sources/sysstat-12.5.4.tar.xz &&
+wget http://sebastien.godard.pagesperso-orange.fr/sysstat-12.5.4.tar.xz -P /sources &&
 
 tar xvf /sources/sysstat-12.5.4.tar.xz &&
 cd       sysstat-12.5.4                &&
@@ -735,7 +748,7 @@ rm -rf sysstat-12.5.4
 ## libtirpc
 
 ```sh
-wget https://downloads.sourceforge.net/libtirpc/libtirpc-1.3.2.tar.bz2 -P /sources/libtirpc-1.3.2.tar.bz2 &&
+wget https://downloads.sourceforge.net/libtirpc/libtirpc-1.3.2.tar.bz2 -P /sources &&
 
 tar xvf /sources/libtirpc-1.3.2.tar.bz2 &&
 cd       libtirpc-1.3.2                 &&
@@ -755,7 +768,7 @@ rm -rf libtirpc-1.3.2
 ## lsof
 
 ```sh
-wget https://www.mirrorservice.org/sites/lsof.itap.purdue.edu/pub/tools/unix/lsof/lsof_4.91.tar.gz -P /sources/lsof_4.91.tar.gz &&
+wget https://www.mirrorservice.org/sites/lsof.itap.purdue.edu/pub/tools/unix/lsof/lsof_4.91.tar.gz -P /sources &&
 
 tar xzvf /sources/lsof_4.91.tar.gz &&
 cd        lsof_4.91                &&
@@ -776,7 +789,7 @@ rm -rf lsof_4.91
 ## bubblewrap
 
 ```sh
-wget https://github.com/projectatomic/bubblewrap/releases/download/v0.4.1/bubblewrap-0.4.1.tar.xz -P /sources/bubblewrap-0.4.1.tar.xz &&
+wget https://github.com/projectatomic/bubblewrap/releases/download/v0.4.1/bubblewrap-0.4.1.tar.xz -P /sources &&
 
 tar xvf /sources/bubblewrap-0.4.1.tar.xz &&
 cd       bubblewrap-0.4.1                &&
@@ -801,7 +814,7 @@ File systems  --->
 ```
 
 ```sh
-wget https://github.com/libfuse/libfuse/releases/download/fuse-3.10.4/fuse-3.10.4.tar.xz -P /sources/fuse-3.10.4.tar.xz &&
+wget https://github.com/libfuse/libfuse/releases/download/fuse-3.10.4/fuse-3.10.4.tar.xz -P /sources &&
 
 tar xvf /sources/fuse-3.10.4.tar.xz &&
 cd       fuse-3.10.4                &&
@@ -830,7 +843,7 @@ rm -rf fuse-3.10.4
 ## libatasmart
 
 ```sh
-wget http://0pointer.de/public/libatasmart-0.19.tar.xz -P /sources/libatasmart-0.19.tar.xz &&
+wget http://0pointer.de/public/libatasmart-0.19.tar.xz -P /sources &&
 
 tar xvf /sources/libatasmart-0.19.tar.xz &&
 cd       libatasmart-0.19                &&
@@ -848,7 +861,7 @@ rm -rf libatasmart-0.19
 ## libbytesize
 
 ```sh
-wget https://github.com/storaged-project/libbytesize/releases/download/2.5/libbytesize-2.5.tar.gz -P /sources/libbytesize-2.5.tar.gz &&
+wget https://github.com/storaged-project/libbytesize/releases/download/2.5/libbytesize-2.5.tar.gz -P /sources &&
 
 tar xzvf /sources/libbytesize-2.5.tar.gz &&
 cd        libbytesize-2.5                &&
@@ -883,7 +896,7 @@ Cryptographic API  --->
 ```
 
 ```sh
-wget https://www.kernel.org/pub/linux/utils/cryptsetup/v2.3/cryptsetup-2.3.6.tar.xz -P /sources/cryptsetup-2.3.6.tar.xz &&
+wget https://www.kernel.org/pub/linux/utils/cryptsetup/v2.3/cryptsetup-2.3.6.tar.xz -P /sources &&
 
 tar xvf /sources/cryptsetup-2.3.6.tar.xz &&
 cd       cryptsetup-2.3.6                &&
@@ -902,7 +915,7 @@ rm -rf cryptsetup-2.3.6
 Library for handling volume encryption keys. `SWIG` is needed to build the Python bindings. Otherwise, pass the `--without-python3` flag to `configure`.
 
 ```sh
-wget https://github.com/felixonmars/volume_key/archive/volume_key-0.3.12.tar.gz -P /sources/volume_key-0.3.12.tar.gz &&
+wget https://github.com/felixonmars/volume_key/archive/volume_key-0.3.12.tar.gz -P /sources &&
 
 tar xzvf /sources/volume_key-0.3.12.tar.gz &&
 cd        volume_key-volume_key-0.3.12     &&
@@ -921,7 +934,7 @@ rm -rf volume_key-volume_key-0.3.12
 ## libblockdev
 
 ```sh
-wget https://github.com/storaged-project/libblockdev/releases/download/2.25-1/libblockdev-2.25.tar.gz -P /sources/libblockdev-2.25.tar.gz &&
+wget https://github.com/storaged-project/libblockdev/releases/download/2.25-1/libblockdev-2.25.tar.gz -P /sources &&
 
 tar xzvf /sources/libblockdev-2.25.tar.gz &&
 cd        libblockdev-2.25                &&
@@ -949,8 +962,8 @@ rm -rf libblockdev-2.25
 Utility for reading and manipulating GUID partition tables.
 
 ```sh
-wget https://downloads.sourceforge.net/gptfdisk/gptfdisk-1.0.8.tar.gz -P /sources/gptfdisk-1.0.8.tar.gz &&
-wget https://www.linuxfromscratch.org/patches/blfs/svn/gptfdisk-1.0.8-convenience-1.patch -P /sources/patches/gptfdisk-1.0.8-convenience-1.patch &&
+wget https://downloads.sourceforge.net/gptfdisk/gptfdisk-1.0.8.tar.gz -P /sources &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/gptfdisk-1.0.8-convenience-1.patch -P /sources/patches &&
 
 tar xzvf /sources/gptfdisk-1.0.8.tar.gz &&
 cd        gptfdisk-1.0.8                &&
@@ -977,7 +990,7 @@ File systems --->
 ```
 
 ```sh
-wget https://github.com/dosfstools/dosfstools/releases/download/v4.2/dosfstools-4.2.tar.gz -P /sources/dosfstools-4.2.tar.gz &&
+wget https://github.com/dosfstools/dosfstools/releases/download/v4.2/dosfstools-4.2.tar.gz -P /sources &&
 
 tar xzvf /sources/dosfstools-4.2.tar.gz &&
 cd        dosfstools-4.2                &&
@@ -1004,7 +1017,7 @@ File systems --->
 ```
 
 ```sh
-wget https://www.kernel.org/pub/linux/utils/fs/xfs/xfsprogs/xfsprogs-5.12.0.tar.xz -P /sources/xfsprogs-5.12.0.tar.xz &&
+wget https://www.kernel.org/pub/linux/utils/fs/xfs/xfsprogs/xfsprogs-5.12.0.tar.xz -P /sources &&
 
 tar xvf /sources/xfsprogs-5.12.0.tar.xz &&
 cd       xfsprogs-5.12.0                &&
@@ -1025,7 +1038,7 @@ rm -rf xfsprogs-5.12.0
 ## udisks
 
 ```sh
-wget https://github.com/storaged-project/udisks/releases/download/udisks-2.9.2/udisks-2.9.2.tar.bz2 -P /sources/udisks-2.9.2.tar.bz2 &&
+wget https://github.com/storaged-project/udisks/releases/download/udisks-2.9.2/udisks-2.9.2.tar.bz2 -P /sources &&
 
 tar xvf /sources/udisks-2.9.2.tar.bz2 &&
 cd       udisks-2.9.2                 &&
@@ -1045,8 +1058,8 @@ rm -rf udisks-2.9.2
 ## CrackLib
 
 ```sh
-wget https://github.com/cracklib/cracklib/releases/download/v2.9.7/cracklib-2.9.7.tar.bz2 -P /sources/cracklib-2.9.7.tar.bz2 &&
-wget https://github.com/cracklib/cracklib/releases/download/v2.9.7/cracklib-words-2.9.7.bz2 -P /sources/cracklib-words-2.9.7.bz2 &&
+wget https://github.com/cracklib/cracklib/releases/download/v2.9.7/cracklib-2.9.7.tar.bz2 -P /sources &&
+wget https://github.com/cracklib/cracklib/releases/download/v2.9.7/cracklib-words-2.9.7.bz2 -P /sources &&
 
 tar xvf /sources/cracklib-2.9.7.tar.bz2 &&
 cd       cracklib-2.9.7                 &&
@@ -1077,7 +1090,7 @@ rm -rf cracklib-2.9.7
 ## libpwquality
 
 ```sh
-wget https://github.com/libpwquality/libpwquality/releases/download/libpwquality-1.4.4/libpwquality-1.4.4.tar.bz2 -P /sources/libpwquality-1.4.4.tar.bz2 &&
+wget https://github.com/libpwquality/libpwquality/releases/download/libpwquality-1.4.4/libpwquality-1.4.4.tar.bz2 -P /sources &&
 
 tar xvf /sources/libpwquality-1.4.4.tar.bz2 &&
 cd       libpwquality-1.4.4                 &&
@@ -1097,7 +1110,7 @@ rm -rf libpwquality-1.4.4
 ## AccountsService
 
 ```sh
-wget https://www.freedesktop.org/software/accountsservice/accountsservice-0.6.55.tar.xz -P /sources/accountsservice-0.6.55.tar.xz &&
+wget https://www.freedesktop.org/software/accountsservice/accountsservice-0.6.55.tar.xz -P /sources &&
 
 tar xvf /sources/accountsservice-0.6.55.tar.xz &&
 cd       accountsservice-0.6.55                &&
@@ -1121,7 +1134,7 @@ rm -rf accountsservice-0.6.55
 ## Kerberos
 
 ```sh
-wget https://kerberos.org/dist/krb5/1.19/krb5-1.19.1.tar.gz -P /sources/krb5-1.19.1.tar.gz &&
+wget https://kerberos.org/dist/krb5/1.19/krb5-1.19.1.tar.gz -P /sources &&
 
 tar xzvf /sources/krb5-1.19.1.tar.gz &&
 cd        krb5-1.19.1                &&
@@ -1158,7 +1171,7 @@ rm -rf krb5-1.19.1
 Allows you to mount a remote directory tree as if it were local from any host you have `ssh` access to. Not particularly performant or robuts, but very handy for quickly using files on a remote host without needing to manually `ssh` and `scp` back and forth.
 
 ```sh
-wget https://github.com/libfuse/sshfs/releases/download/sshfs-3.7.2/sshfs-3.7.2.tar.xz -P /sources/sshfs-3.7.2.tar.xz &&
+wget https://github.com/libfuse/sshfs/releases/download/sshfs-3.7.2/sshfs-3.7.2.tar.xz -P /sources &&
 
 tar xvf /sources/sshfs-3.7.2.tar.xz &&
 cd       sshfs-3.7.2                &&
@@ -1195,7 +1208,7 @@ userid@example.com:/path /media/path fuse.sshfs _netdev,IdentityFile=/home/useri
 Interact with the CPU governors from userspace.
 
 ```sh
-wget https://mirrors.edge.kernel.org/pub/linux/utils/kernel/cpufreq/cpufrequtils-008.tar.xz -P /sources/cpufrequtils-008.tar.xz &&
+wget https://mirrors.edge.kernel.org/pub/linux/utils/kernel/cpufreq/cpufrequtils-008.tar.xz -P /sources &&
 
 tar xvf /sources/cpufrequtils-008.tar.xz &&
 cd       cpufrequtils-008                &&
@@ -1212,7 +1225,7 @@ rm -rf cpufrequtils-008
 Library and utilities for exporting hardware monitoring information from the Linux kernel to userspace.
 
 ```sh
-wget https://github.com/lm-sensors/lm-sensors/archive/refs/tags/V3-6-0.tar.gz -P /sources/lm-sensors-3.6.0.tar.gz &&
+wget https://github.com/lm-sensors/lm-sensors/archive/refs/tags/V3-6-0.tar.gz -P /sources &&
 
 tar xzvf /sources/lm-sensors-3.6.0.tar.gz &&
 cd        lm-sensors-3-6-0                &&
@@ -1231,7 +1244,7 @@ rm -rf lm-sensors-3-6-0
 An enhanced, interactive version of `top`.
 
 ```sh
-wget https://github.com/htop-dev/htop/archive/refs/tags/3.0.5.tar.gz -P /sources/htop-3.0.5.tar.gz &&
+wget https://github.com/htop-dev/htop/archive/refs/tags/3.0.5.tar.gz -P /sources &&
 
 tar xzvf /sources/htop-3.0.5.tar.gz &&
 cd        htop-3.0.5                &&
