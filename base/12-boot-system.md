@@ -374,8 +374,7 @@ cat > /usr/bin/mkinitramfs << "EOF"
 # This file based in part on the mkinitramfs script for the LFS LiveCD
 # written by Alexander E. Patrakov and Jeremy Huntwork.
 
-copy()
-{
+copy() {
   local file
 
   if [ "$2" = "lib" ]; then
@@ -384,6 +383,7 @@ copy()
     file=$(type -p $1)
   fi
 
+  printf "."
   if [ -n "$file" ] ; then
     cp $file $WDIR/usr/$2
   else
@@ -393,26 +393,33 @@ copy()
   fi
 }
 
-if [ -z $1 ] ; then
-  INITRAMFS_FILE=initrd.img-no-kmods
-else
+# export a sane PATH
+export PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+# Sanitize environment further
+# GREP_OPTIONS="--color=always" will break everything
+# CDPATH can affect cd and pushd
+# LIBMOUNT_* options can affect findmnt and other tools
+unset GREP_OPTIONS CDPATH "${!LIBMOUNT_@}"
+
+if [ -n "$1" ] ; then
   KERNEL_VERSION=$1
-  INITRAMFS_FILE=initrd.img-$KERNEL_VERSION
+else
+  KERNEL_VERSION=$(uname -r)
 fi
 
-if [ -n "$KERNEL_VERSION" ] && [ ! -d "/usr/lib/modules/$1" ] ; then
-  echo "No modules directory named $1"
+INITRAMFS_FILE=initrd.img-$KERNEL_VERSION-$(uname -n)
+
+if [ -n "$KERNEL_VERSION" ] && [ ! -d "/usr/lib/modules/$KERNEL_VERSION" ] ; then
+  echo "No modules directory named $KERNEL_VERSION"
   exit 1
 fi
 
-printf "Creating $INITRAMFS_FILE... "
+echo "===> Creating $INITRAMFS_FILE"
 
 binfiles="sh cat cp dd killall ls mkdir mknod mount "
 binfiles="$binfiles umount sed sleep ln rm uname"
-binfiles="$binfiles readlink basename"
-
-# Systemd installs udevadm in /bin. Other udev implementations have it in /sbin
-if [ -x /usr/bin/udevadm ] ; then binfiles="$binfiles udevadm"; fi
+binfiles="$binfiles readlink basename udevadm"
 
 sbinfiles="modprobe blkid switch_root"
 
@@ -435,8 +442,8 @@ WDIR=$(mktemp -d /tmp/initrd-work.XXXXXXXXXX)
 
 # Create base directory structure
 mkdir -p $WDIR/{dev,run,sys,proc,usr/{bin,lib/{firmware,modules},sbin}}
-if [ -d "/usr/lib/modules/$1" ] ; then
-  mkdir -p $WDIR/usr/lib/modules/$1
+if [ -d "/usr/lib/modules/$KERNEL_VERSION" ] ; then
+  mkdir -p $WDIR/usr/lib/modules/$KERNEL_VERSION
 fi
 mkdir -p $WDIR/etc/{modprobe.d,udev/rules.d}
 touch $WDIR/etc/modprobe.d/modprobe.conf
@@ -459,7 +466,11 @@ for file in $(find /etc/udev/rules.d/ -type f) ; do
 done
 
 # Install any firmware present
-cp -a /usr/lib/firmware $WDIR/usr/lib
+printf "===> Installing firmware"
+#cp -a /usr/lib/firmware $WDIR/usr/lib
+find /usr/lib/firmware -type f -printf '.' \
+  -exec cp -a --parents {} $WDIR/ \;
+printf "\n"
 
 # Copy the RAID configuration file if present
 if [ -f /etc/mdadm.conf ] ; then
@@ -469,7 +480,7 @@ fi
 # Install the init file
 install -m0755 $DATADIR/$INITIN $WDIR/init
 
-if [  -n "$KERNEL_VERSION" ] ; then
+if [ -n "$KERNEL_VERSION" ] ; then
   if [ -x /usr/bin/kmod ] ; then
     binfiles="$binfiles kmod"
   else
@@ -479,6 +490,7 @@ if [  -n "$KERNEL_VERSION" ] ; then
 fi
 
 # Install basic binaries
+printf "===> Installing binaries"
 for f in $binfiles ; do
   ldd /usr/bin/$f | sed "s/\t//" | cut -d " " -f1 >> $unsorted
   copy /usr/bin/$f bin
@@ -488,6 +500,7 @@ for f in $sbinfiles ; do
   ldd /usr/sbin/$f | sed "s/\t//" | cut -d " " -f1 >> $unsorted
   copy $f sbin
 done
+printf "\n"
 
 # Add udevd libraries if not in /usr/sbin
 if [ -x /usr/lib/udev/udevd ] ; then
@@ -528,6 +541,7 @@ if  [ -x /usr/sbin/lvm ] ; then
 fi
 
 # Install libraries
+printf "===> Installing libraries"
 sort $unsorted | uniq | while read library ; do
 # linux-vdso and linux-gate are pseudo libraries and do not correspond to a file
 # libsystemd-shared is in /lib/systemd, so it is not found by copy, and
@@ -540,6 +554,7 @@ sort $unsorted | uniq | while read library ; do
 
   copy $library lib
 done
+printf "\n"
 
 if [ -d /usr/lib/udev ]; then
   cp -a /usr/lib/udev $WDIR/usr/lib
@@ -551,38 +566,42 @@ if [ -d /usr/lib/elogind ]; then
   cp -a /usr/lib/elogind $WDIR/usr/lib
 fi
 
-# Install the kernel modules if requested
-if [ -n "$KERNEL_VERSION" ]; then
-  find                                                                            \
-     /usr/lib/modules/$KERNEL_VERSION/kernel/{crypto,fs,lib}                      \
-     /usr/lib/modules/$KERNEL_VERSION/kernel/drivers/{block,ata,md,firewire}      \
-     /usr/lib/modules/$KERNEL_VERSION/kernel/drivers/{scsi,message,pcmcia,virtio} \
-     /usr/lib/modules/$KERNEL_VERSION/kernel/drivers/usb/{host,storage}           \
-     -type f 2> /dev/null | cpio --make-directories -p --quiet $WDIR
+# Install the kernel modules
+printf "===> Installing kernel modules"
+find                                                                           \
+  /usr/lib/modules/$KERNEL_VERSION/kernel/{crypto,fs,lib}                      \
+  /usr/lib/modules/$KERNEL_VERSION/kernel/drivers/{block,ata,md,firewire}      \
+  /usr/lib/modules/$KERNEL_VERSION/kernel/drivers/{scsi,message,pcmcia,virtio} \
+  /usr/lib/modules/$KERNEL_VERSION/kernel/drivers/usb/{host,storage}           \
+  -type f 2> /dev/null -printf '.' -exec cp -a --parents {} $WDIR/ \;
+printf "\n"
 
-  cp /usr/lib/modules/$KERNEL_VERSION/modules.{builtin,order}                     \
-            $WDIR/usr/lib/modules/$KERNEL_VERSION
+cp /usr/lib/modules/$KERNEL_VERSION/modules.{builtin,order} \
+    $WDIR/usr/lib/modules/$KERNEL_VERSION
 
-  depmod -b $WDIR $KERNEL_VERSION
-fi
+depmod -b $WDIR $KERNEL_VERSION
 
+echo "===> Creating the cpio archive"
 ( cd $WDIR ; find . | cpio -o -H newc --quiet | gzip -9 ) > $INITRAMFS_FILE
 
 # Prepare early loading of microcode if available
 if ls /usr/lib/firmware/intel-ucode/* >/dev/null 2>&1 ||
    ls /usr/lib/firmware/amd-ucode/*   >/dev/null 2>&1; then
 
-# first empty WDIR to reuse it
+  printf "===> Adding microcode"
+  # first empty WDIR to reuse it
   rm -r $WDIR/*
 
   DSTDIR=$WDIR/kernel/x86/microcode
   mkdir -p $DSTDIR
 
   if [ -d /usr/lib/firmware/amd-ucode ]; then
+    printf "."
     cat /usr/lib/firmware/amd-ucode/microcode_amd*.bin > $DSTDIR/AuthenticAMD.bin
   fi
 
   if [ -d /usr/lib/firmware/intel-ucode ]; then
+    printf "."
     cat /usr/lib/firmware/intel-ucode/* > $DSTDIR/GenuineIntel.bin
   fi
 
@@ -590,12 +609,12 @@ if ls /usr/lib/firmware/intel-ucode/* >/dev/null 2>&1 ||
   cat microcode.img $INITRAMFS_FILE > tmpfile
   mv tmpfile $INITRAMFS_FILE
   rm microcode.img
+  printf "\n"
 fi
 
 # Remove the temporary directories and files
 rm -rf $WDIR $unsorted
-printf "done.\n"
-
+echo "===> Finished creating $INITRAMFS_FILE"
 EOF
 ```
 
@@ -732,7 +751,6 @@ do_mount_root
 killall -w ${UDEVD##*/}
 
 exec switch_root /.root "$init" "$@"
-
 EOF
 ```
 

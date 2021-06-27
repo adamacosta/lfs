@@ -25,7 +25,7 @@ strip --strip-unneeded $LFS/tools/bin/*
 
 ```sh
 cd $LFS &&
-tar cJpvf $HOME/lfs-temp-tools-10.1-systemd.tar.xz --exclude='sources' .
+tar cJpvf $HOME/lfs-temp-tools.tar.xz --exclude='sources' .
 ```
 
 If a restore is needed, run:
@@ -33,5 +33,5 @@ If a restore is needed, run:
 ```sh
 cd $LFS
 rm -rf ./*
-tar xpvf $HOME/lfs-temp-tools-10.1-systemd.tar.xz
+tar xpvf $HOME/lfs-temp-tools.tar.xz
 ```

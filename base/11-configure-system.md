@@ -178,7 +178,7 @@ passwd -l root
 chsh -s /bin/zsh
 ```
 
-Create a non-root user and set a passwd:
+Create a non-root user and set a passwd. The example below creates a user named 'lfs', but if you're doing a dual-boot with another Linux system, you may instead want to create a user or users identical those on the other system. As long as they are created in the same order, they will have the same UID and can share home directories, in which case you can create the user here without a home directory and change the `/etc/fstab` file when setting up the system to boot, to mount the shared volume instead. This, of course, requires the home directory on all systems to be on a separate filesystem from the root.
 
 ```sh
 useradd -m -G wheel -s /bin/zsh lfs

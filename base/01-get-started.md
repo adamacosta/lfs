@@ -152,8 +152,8 @@ EOF
 From the host system, download the list of packages and checksums provided by Linux From Scratch and use it to download the required packages into the `$LFS/sources` directory:
 
 ```sh
-wget https://www.linuxfromscratch.org/lfs/view/development/wget-list &&
-wget https://www.linuxfromscratch.org/lfs/view/development/md5sums   &&
+wget https://www.linuxfromscratch.org/lfs/view/systemd/wget-list &&
+wget https://www.linuxfromscratch.org/lfs/view/systemd/md5sums   &&
 
 wget --input-file=wget-list --continue --directory-prefix=$LFS/sources/base &&
 
@@ -165,11 +165,22 @@ popd
 
 ### Updates from LFS
 
-We will be using packages from the development version of Linux From Scratch, rather than stable LFS, as well as `linux-5.12.7`, which is the latest stable version of the Linux kernel. Download these and replace the versions provided by `LFS`:
+We will be using packages from the development version of Linux From Scratch, rather than stable LFS, as well as `linux-5.12.13`, which is the latest stable version of the Linux kernel. Download these and replace the versions provided by `LFS`:
 
 ```sh
-wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.12.11.tar.xz -O $LFS/sources/linux-5.12.11.tar.xz &&
-rm  $LFS/sources/base/linux-5.12.11.tar.xz
+wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.12.13.tar.xz -P $LFS/sources/base &&
+rm  $LFS/sources/base/linux-5.12.10.tar.xz
+```
+
+### Add-ons
+
+These additional packages are not in the default LFS list, but are needed for `systemd-boot` to work, which we will be using in lieu of `GRUB`:
+
+```sh
+wget https://github.com/kontais/gnu-efi/archive/download/3.0.12/gnuefi-3.0.12.tar.gz -P $LFS/sources &&
+wget https://github.com/rhboot/efivar/releases/download/37/efivar-37.tar.bz2 -P $LFS/sources &&
+wget https://www.linuxfromscratch.org/patches/blfs/svn/efivar-37-gcc_9-1.patch -P $LFS/sources &&
+rm grub-2.06~rc1.tar.xz
 ```
 
 We will also download `isl-0.24`, which is an optional dependency of `gcc` for manipulating constrained integer sets:
@@ -178,47 +189,36 @@ We will also download `isl-0.24`, which is an optional dependency of `gcc` for m
 wget http://isl.gforge.inria.fr/isl-0.24.tar.xz -O $LFS/sources/isl-0.24.tar.xz
 ```
 
-### Add-ons
-
-These additional packages are not in the default LFS list, but are needed for `systemd-boot` to work, which we will be using in lieu of `GRUB`:
-
-```sh
-wget https://github.com/kontais/gnu-efi/archive/refs/tags/3.0.12.tar.gz -O $LFS/sources/gnu-efi-3.0.12.tar.gz          &&
-wget https://github.com/rhboot/efivar/releases/download/37/efivar-37.tar.bz2 -O $LFS/sources/efivar-37.tar.bz2         &&
-wget https://www.linuxfromscratch.org/patches/blfs/svn/efivar-37-gcc_9-1.patch -O $LFS/sources/efivar-37-gcc_9-1.patch &&
-rm grub-2.06~rc1.tar.xz
-```
-
 We will also add `curl`, `openssh`, `pam`, and `sudo` to make life a bit easier for using the new system as a headless VM, allowing connection without needing to use a management console. Even for a bare metal headless system, this can be handy since you can utilize a graphical web browser and cut and paste features via `ssh` from a terminal emulator rather than the bare console.
 
 ```sh
-wget https://curl.se/download/curl-7.76.1.tar.gz -O $LFS/sources/curl-7.76.1.tar.gz                                                &&
-wget https://mirror.esc7.net/pub/OpenBSD/OpenSSH/portable/openssh-8.6p1.tar.gz -O $LFS/sources/openssh-8.6p1.tar.gz                &&
-wget https://github.com/linux-pam/linux-pam/releases/download/v1.5.1/Linux-PAM-1.5.1.tar.xz -O $LFS/sources/Linux-PAM-1.5.1.tar.xz &&
-wget https://www.sudo.ws/dist/sudo-1.9.7p1.tar.gz -O $LFS/sources/sudo-1.9.7p1.tar.gz
+wget https://curl.se/download/curl-7.76.1.tar.gz -P $LFS/sources &&
+wget https://mirror.esc7.net/pub/OpenBSD/OpenSSH/portable/openssh-8.6p1.tar.gz -P $LFS/sources &&
+wget https://github.com/linux-pam/linux-pam/releases/download/v1.5.1/Linux-PAM-1.5.1.tar.xz -P $LFS/sources &&
+wget https://www.sudo.ws/dist/sudo-1.9.7p1.tar.gz -P $LFS/sources
 ```
 
 We will also be adding `libtasn`, `p11-kit`, `make-ca`, `nettle`, `libunistring`, `GnuTLS`, `PCRE`, and `zsh`:
 
 ```sh
-wget https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.16.0.tar.gz -O $LFS/sources/libtasn1-4.16.0.tar.gz                              &&
-wget https://github.com/p11-glue/p11-kit/releases/download/0.24.0/p11-kit-0.24.0.tar.xz -O $LFS/sources/p11-kit-0.24.0.tar.xz &&
-wget https://github.com/djlucas/make-ca/releases/download/v1.7/make-ca-1.7.tar.xz -O $LFS/sources/make-ca-1.7.tar.xz             &&
-wget https://ftp.gnu.org/gnu/nettle/nettle-3.7.3.tar.gz -O $LFS/sources/nettle-3.7.3.tar.gz                                      &&
-wget https://ftp.gnu.org/gnu/libunistring/libunistring-0.9.10.tar.xz -O $LFS/sources/libunistring-0.9.10.tar.gz                  &&
-wget https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/gnutls-3.7.0.tar.xz -O $LFS/sources/gnutls-3.7.0.tar.xz                        &&
-wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.bz2 -O $LFS/sources/pcre-8.44.tar.bz2                                           &&
-wget http://www.zsh.org/pub/zsh-5.8.tar.xz -O $LFS/sources/zsh-5.8.tar.xz
+wget https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.16.0.tar.gz -P $LFS/sources &&
+wget https://github.com/p11-glue/p11-kit/releases/download/0.24.0/p11-kit-0.24.0.tar.xz -P $LFS/sources &&
+wget https://github.com/djlucas/make-ca/releases/download/v1.7/make-ca-1.7.tar.xz -P $LFS/sources &&
+wget https://ftp.gnu.org/gnu/nettle/nettle-3.7.3.tar.gz -P $LFS/sources &&
+wget https://ftp.gnu.org/gnu/libunistring/libunistring-0.9.10.tar.xz -P $LFS/sources &&
+wget https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/gnutls-3.7.0.tar.xz -P $LFS/sources &&
+wget https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.bz2 -P $LFS/sources &&
+wget http://www.zsh.org/pub/zsh-5.8.tar.xz -P $LFS/sources
 ```
 
 Get the `BLFS` `systemd` units:
 
 ```sh
-wget http://www.linuxfromscratch.org/blfs/downloads/10.1-systemd/blfs-systemd-units-20210122.tar.xz -O $LFS/sources/blfs-systemd-units-20210122.tar.xz
+wget http://www.linuxfromscratch.org/blfs/downloads/10.1-systemd/blfs-systemd-units-20210122.tar.xz -P $LFS/sources
 ```
 
 Finally, get the `which` utility, which is handy for finding paths to executables. Many packages in Beyond Linux From Scratch require this for their configure and build processes to detect the presence of dependencies and you are likely to be used to using it anyway.
 
 ```sh
-wget https://carlowood.github.io/which/which-2.21.tar.gz -O $LFS/sources/which-2.21.tar.gz
+wget https://carlowood.github.io/which/which-2.21.tar.gz -P $LFS/sources
 ```

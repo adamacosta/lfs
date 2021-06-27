@@ -2,8 +2,7 @@
 # This file based in part on the mkinitramfs script for the LFS LiveCD
 # written by Alexander E. Patrakov and Jeremy Huntwork.
 
-copy()
-{
+copy() {
   local file
 
   if [ "$2" = "lib" ]; then
@@ -37,7 +36,7 @@ else
   KERNEL_VERSION=$(uname -r)
 fi
 
-INITRAMFS_FILE=initrd.img-$KERNEL_VERSION
+INITRAMFS_FILE=initrd.img-$KERNEL_VERSION-$(uname -n)
 
 if [ -n "$KERNEL_VERSION" ] && [ ! -d "/usr/lib/modules/$KERNEL_VERSION" ] ; then
   echo "No modules directory named $KERNEL_VERSION"

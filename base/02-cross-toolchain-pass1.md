@@ -23,7 +23,7 @@ export MAKEFLAGS="-j"
 echo "export MAKEFLAGS=\"-j\"" >> ~/.bashrc
 ```
 
-`LFS_TGT` describes the machine triplet of the target architecture you are building for. See [Implementation of Cross-Compilation for LFS](https://www.linuxfromscratch.org/lfs/view/stable-systemd/partintro/toolchaintechnotes.html) for details, but this is likely to be `x86_64-pc-linux-gnu` on your real system. Recall that Linux From Scratch sets it to `x86_64-lfs-linux-gnu` during the cross-compilation phase. This is to trick the various `configure` scripts out of using host tools and forcing them to use the cross-compilation tools.
+`LFS_TGT` describes the machine triplet of the target architecture you are building for. See [Implementation of Cross-Compilation for LFS](https://www.linuxfromscratch.org/lfs/view/stable-systemd/partintro/toolchaintechnotes.html) for details, but this is likely to be `x86_64-unknown-linux-gnu` on your real system. Recall that Linux From Scratch sets it to `x86_64-lfs-linux-gnu` during the cross-compilation phase. This is to trick the various `configure` scripts out of using host tools and forcing them to use the cross-compilation tools.
 
 Optionally, you can create an in-memory filesystem for building if you have sufficient memory, which may speed up the builds:
 

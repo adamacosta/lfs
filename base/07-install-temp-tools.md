@@ -15,8 +15,8 @@ cd build_dir
 First, we need to complete the build of `gcc` pass 2, which did not initially include `libstdc++`.
 
 ```sh
-tar xvf $LFS/sources/gcc-11.1.0.tar.xz &&
-cd       gcc-11.1.0                    &&
+tar xvf /sources/gcc-11.1.0.tar.xz &&
+cd       gcc-11.1.0                &&
 
 ln -s gthr-posix.h libgcc/gthr-default.h &&
 
@@ -41,8 +41,8 @@ rm -rf gcc-11.1.0
 ## gettext
 
 ```sh
-tar xvf $LFS/sources/gettext-0.21.tar.xz &&
-cd       gettext-0.21                    &&
+tar xvf /sources/gettext-0.21.tar.xz &&
+cd       gettext-0.21                &&
 
 ./configure --disable-shared &&
 
@@ -56,8 +56,8 @@ rm -rf gettext-0.21
 ## bison
 
 ```sh
-tar xvf $LFS/sources/bison-3.7.6.tar.xz &&
-cd       bison-3.7.6                    &&
+tar xvf /sources/bison-3.7.6.tar.xz &&
+cd       bison-3.7.6                &&
 
 ./configure --prefix=/usr \
             --docdir=/usr/share/doc/bison-3.7.5 &&
@@ -71,8 +71,8 @@ rm -rf bison-3.7.6
 ## perl
 
 ```sh
-tar xvf $LFS/sources/perl-5.32.1.tar.xz &&
-cd       perl-5.32.1                    &&
+tar xvf /sources/perl-5.32.1.tar.xz &&
+cd       perl-5.32.1                &&
 
 sh Configure -des                                        \
              -Dprefix=/usr                               \
@@ -96,8 +96,8 @@ rm -rf perl-5.32.1
 We do not need `pip` in the temporary environment.
 
 ```sh
-tar xvf $LFS/sources/Python-3.9.5.tar.xz &&
-cd       Python-3.9.5                    &&
+tar xvf /sources/Python-3.9.5.tar.xz &&
+cd       Python-3.9.5                &&
 
 ./configure --prefix=/usr   \
             --enable-shared \
@@ -113,8 +113,8 @@ rm -rf Python-3.9.5
 ## texinfo
 
 ```sh
-tar xvf $LFS/sources/texinfo-6.7.tar.xz &&
-cd       texinfo-6.7                    &&
+tar xvf /sources/texinfo-6.7.tar.xz &&
+cd       texinfo-6.7                &&
 
 ./configure --prefix=/usr &&
 
@@ -128,8 +128,8 @@ rm -rf texinfo-6.7
 ## util-linux
 
 ```sh
-tar xvf $LFS/sources/util-linux-2.36.2.tar.xz &&
-cd       util-linux-2.36.2                    &&
+tar xvf /sources/util-linux-2.36.2.tar.xz &&
+cd       util-linux-2.36.2                &&
 
 mkdir -pv /var/lib/hwclock &&
 
